@@ -29,20 +29,21 @@ Code contains `Spark` keywords as classes prefixes. this will soon be replaced w
 This library is still under development and is currently released as Beta, although tested, bugs and issues may be present, some code might require cleanups.
 
 ## Usage
-(WIP)flesh this out more
 
 ### Basic 
 
 There are two prerequisites for this library:
 
-1. you must call `ParticleDeviceSetupLibrary.init()` in your Application.onCreate() or in the onCreate() of your first Activity.  e.g.:
+- You must call `ParticleDeviceSetupLibrary.init()` in your Application.onCreate() or in the onCreate() of your first Activity, e.g.:
+
 (WIP) fix code snippet
 
 ```java
 ParticleDeviceSetupLibrary.init(this.getApplicationContext(), ...) 
 ```
 
-2. You must add the following entries to your application's AndroidManifest.xml file:
+- You must add the following entries to your application's AndroidManifest.xml file:
+
 (WIP) is this still required?
 
 ```xml
@@ -100,11 +101,12 @@ and then in order to invoke the Device setup wizard in your app:
 
 ```java
 // invoking UI code
-``
+```
 
 ### Advanced
 
 You can get an the device ID of the successfully set-up device after setup completes by:
+
 (WIP) complete how once code is ready
 
 ```java
