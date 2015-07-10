@@ -38,7 +38,6 @@ public class GetReadyActivity extends BaseActivity {
 
     private AsyncApiWorker<SparkCloud, ClaimCodeResponse> claimCodeWorker;
 
-//    private VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,31 +48,6 @@ public class GetReadyActivity extends BaseActivity {
         softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
-
-//        Uri setupVideoUri = EZ.buildRawResourceUri(this,
-//                getString(R.string.get_ready_video_file_name));
-//        videoView = Ui.findView(this, R.id.get_ready_video);
-//        videoView.setVideoURI(setupVideoUri);
-//        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mediaPlayer) {
-//                videoView.start();
-//            }
-//        });
-//        videoView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getAction() != MotionEvent.ACTION_DOWN) {
-//                    return false;
-//                }
-//                if (videoView.isPlaying()) {
-//                    videoView.pause();
-//                } else {
-//                    videoView.start();
-//                }
-//                return true;
-//            }
-//        });
 
         Ui.findView(this, R.id.action_im_ready).setOnClickListener(
                 new View.OnClickListener() {
@@ -119,25 +93,6 @@ public class GetReadyActivity extends BaseActivity {
         }
 
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        // avoid some layout flicker.
-//        EZ.runOnMainThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                videoView.start();
-//            }
-//        });
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        videoView.pause();
-//    }
-
 
     private void onReadyButtonClicked() {
         // FIXME: check here that another of these tasks isn't already running

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.Pair;
 import android.util.SparseArray;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.squareup.phrase.Phrase;
 
 import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.SparkCloud;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
@@ -79,7 +81,7 @@ public class SuccessActivity extends BaseActivity {
 
         int resultCode = getIntent().getIntExtra(EXTRA_RESULT_CODE, -1);
 
-        boolean isSuccess = list(RESULT_SUCCESS, RESULT_SUCCESS_UNKNOWN_OWNERSHIP).contains(resultCode);
+        final boolean isSuccess = list(RESULT_SUCCESS, RESULT_SUCCESS_UNKNOWN_OWNERSHIP).contains(resultCode);
         if (!isSuccess) {
             ImageView image = Ui.findView(this, R.id.result_image);
             image.setImageResource(R.drawable.fail);
@@ -97,11 +99,23 @@ public class SuccessActivity extends BaseActivity {
                         sparkCloud,
                         SDKGlobals.getSensitiveDataStorage(),
                         SDKGlobals.getAppDataStorage());
+
+                // FIXME: we shouldn't do this in the lib.  looks like another argument for Fragments.
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK
                         | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+
+                Intent result;
+                result = new Intent(ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.ACTION_DEVICE_SETUP_COMPLETE)
+                        .putExtra(ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL, isSuccess);
+                if (isSuccess) {
+                    result.putExtra(ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.EXTRA_CONFIGURED_DEVICE_ID,
+                            DeviceSetupState.deviceToBeSetUpId);
+                }
+                LocalBroadcastManager.getInstance(v.getContext()).sendBroadcast(result);
+
                 finish();
             }
         });

@@ -95,17 +95,39 @@ manifest or you will not go to space today. -->
     android:screenOrientation="portrait"
     android:theme="@style/ParticleSetupTheme.NoActionBar"
     android:windowSoftInputMode="adjustResize|stateVisible" />
+<activity
+    android:name="io.particle.android.sdk.accountsetup.CreateAccountActivity"
+    android:label="@string/title_activity_create_account"
+    android:screenOrientation="portrait"
+    android:theme="@style/ParticleSetupTheme.NoActionBar"
+    android:windowSoftInputMode="adjustResize|stateHidden">
+</activity>
+<activity
+    android:name="io.particle.android.sdk.accountsetup.LoginActivity"
+    android:label="@string/title_activity_login"
+    android:screenOrientation="portrait"
+    android:theme="@style/ParticleSetupTheme.NoActionBar"
+    android:windowSoftInputMode="adjustResize|stateHidden" />
+<activity
+    android:name="io.particle.android.sdk.accountsetup.PasswordResetActivity"
+    android:label="@string/title_activity_password_reset"
+    android:screenOrientation="portrait"
+    android:theme="@style/ParticleSetupTheme.NoActionBar"
+    android:windowSoftInputMode="adjustResize|stateVisible" />
 ```
 
 and then in order to invoke the Device setup wizard in your app:
 
 ```java
-// invoking UI code
+ParticleDeviceSetupLibrary.init();  // if you haven't already called this
+ParticleDeviceSetupLibrary.startDeviceSetup(someContext);
 ```
 
 ### Advanced
 
-You can get an the device ID of the successfully set-up device after setup completes by:
+You can get the device ID of the successfully set-up device after setup completes by listening
+for the intent broadcast defined by ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.
+(WIP) flesh out further
 
 (WIP) complete how once code is ready
 

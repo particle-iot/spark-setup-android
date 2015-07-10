@@ -1,0 +1,239 @@
+package io.particle.android.sdk.accountsetup;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.squareup.phrase.Phrase;
+
+import io.particle.android.sdk.cloud.SDKGlobals;
+import io.particle.android.sdk.cloud.SparkCloud;
+import io.particle.android.sdk.cloud.SparkCloudException;
+import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.ui.BaseActivity;
+import io.particle.android.sdk.ui.NextActivitySelector;
+import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.TLog;
+import io.particle.android.sdk.utils.ui.ParticleUi;
+import io.particle.android.sdk.utils.ui.Ui;
+import io.particle.android.sdk.utils.ui.WebViewActivity;
+
+import static io.particle.android.sdk.utils.Py.list;
+import static io.particle.android.sdk.utils.Py.truthy;
+
+
+public class LoginActivity extends BaseActivity {
+
+    private static final TLog log = TLog.get(LoginActivity.class);
+
+    /**
+     * Keep track of the login task to ensure we can cancel it if requested, ensure against
+     * duplicate requests, etc.
+     */
+    private Async.AsyncApiWorker<SparkCloud, Void> loginTask = null;
+
+    // UI references.
+    private EditText emailView;
+    private EditText passwordView;
+
+    private SparkCloud sparkCloud;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
+
+        sparkCloud = SparkCloud.get(this);
+
+        // Set up the login form.
+        emailView = Ui.findView(this, R.id.email);
+        passwordView = Ui.findView(this, R.id.password);
+        passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.action_log_in || id == EditorInfo.IME_NULL) {
+                    attemptLogin();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        for (EditText tv : list(emailView, passwordView)) {
+            tv.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    emailView.setError(null);
+                    passwordView.setError(null);
+                }
+            });
+        }
+
+        Button submit = Ui.findView(this, R.id.action_log_in);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin();
+            }
+        });
+
+        Ui.setText(this, R.id.log_in_header_text,
+                Phrase.from(this, R.string.log_in_header_text)
+                        .put("brand_name", getString(R.string.brand_name))
+                        .format()
+        );
+
+        Ui.setTextFromHtml(this, R.id.user_has_no_account, R.string.msg_no_account)
+                .setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(v.getContext(), CreateAccountActivity.class));
+                        finish();
+                    }
+                });
+
+        Ui.setTextFromHtml(this, R.id.forgot_password, R.string.msg_forgot_password);
+    }
+
+    public void onPasswordResetClicked(View v) {
+        Intent intent;
+        if (getResources().getBoolean(R.bool.organization)) {
+            intent = PasswordResetActivity.buildIntent(this, emailView.getText().toString());
+        } else {
+            intent = WebViewActivity.buildIntent(this,
+                    Uri.parse(getString(R.string.forgot_password_uri)));
+        }
+        startActivity(intent);
+    }
+
+    /**
+     * Attempts to sign in or register the account specified by the login form.
+     * If there are form errors (invalid email, missing fields, etc.), the
+     * errors are presented and no actual login attempt is made.
+     */
+    public void attemptLogin() {
+        if (loginTask != null) {
+            log.wtf("Login being attempted again even though the button isn't enabled?!");
+            return;
+        }
+
+        // Reset errors.
+        emailView.setError(null);
+        passwordView.setError(null);
+
+        // Store values at the time of the login attempt.
+        final String email = emailView.getText().toString();
+        final String password = passwordView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+
+        // Check for a valid password, if the user entered one.
+        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            passwordView.setError(getString(R.string.error_invalid_password));
+            focusView = passwordView;
+            cancel = true;
+        }
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            emailView.setError(getString(R.string.error_field_required));
+            focusView = emailView;
+            cancel = true;
+
+        } else if (!isEmailValid(email)) {
+            emailView.setError(getString(R.string.error_invalid_email));
+            focusView = emailView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            ParticleUi.showSparkButtonProgress(this, R.id.action_log_in, true);
+            loginTask = Async.executeAsync(sparkCloud, new Async.ApiWork<SparkCloud, Void>() {
+                @Override
+                public Void callApi(SparkCloud sparkCloud) throws SparkCloudException {
+                    sparkCloud.logIn(email, password);
+                    // Get all devices too, in case this user already has configured
+                    // devices and is just logging in to this device for the first time,
+                    // or has re-installed the app (etc)
+                    sparkCloud.getDevices();
+                    return null;
+                }
+
+                @Override
+                public void onTaskFinished() {
+                    loginTask = null;
+                }
+
+                @Override
+                public void onSuccess(Void result) {
+                    log.d("Logged in...");
+                    if (isFinishing()) {
+                        return;
+                    }
+                    startActivity(NextActivitySelector.getNextActivityIntent(
+                            LoginActivity.this,
+                            sparkCloud,
+                            SDKGlobals.getSensitiveDataStorage(),
+                            SDKGlobals.getAppDataStorage()));
+                    finish();
+                }
+
+                @Override
+                public void onFailure(SparkCloudException error) {
+                    log.d("onFailed(): " + error.getMessage());
+                    ParticleUi.showSparkButtonProgress(LoginActivity.this,
+                            R.id.action_log_in, false);
+                    // FIXME: check specifically for 401 errors
+                    // and set a better error message
+                    passwordView.setError(error.getBestMessage());
+                    passwordView.requestFocus();
+                }
+            });
+        }
+    }
+
+    private boolean isEmailValid(String email) {
+        return truthy(email) && email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        // FIXME: we should probably fix this number...  just making sure
+        // there are no blank passwords.
+        return (password.length() > 0);
+    }
+
+}
+
+
+
