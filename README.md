@@ -198,7 +198,7 @@ Particle Android Device Setup library is available through as a [JCenter reposit
 
 ```gradle
 dependencies {
-    compile 'io.particle:devicesetup:0.1.0'
+    compile 'io.particle:devicesetup:0.1.3'
 }
 ```
 
