@@ -15,7 +15,7 @@ ext {
 
     libraryDescription = "The Particle Device Setup library provides everything you need to " +
             "offer your users a simple initial setup process for Particle-powered devices.  This " +
-            "inclues all the necessary device communication code, an easily customizable UI, and " +
+            "includes all the necessary device communication code, an easily customizable UI, and " +
             "a simple developer API."
 
     siteUrl = 'https://github.com/spark/spark-setup-android'
