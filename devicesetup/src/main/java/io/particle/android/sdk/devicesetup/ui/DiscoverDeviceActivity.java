@@ -21,8 +21,8 @@ import java.security.PublicKey;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.SparkCloud;
-import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.WifiListFragment;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
@@ -120,10 +120,7 @@ public class DiscoverDeviceActivity extends BaseActivity
             public void onClick(View view) {
                 sparkCloud.logOut();
                 log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
-                Intent loginIntent = ParticleDeviceSetupLibrary.getInstance()
-                        .getIntentBuilder()
-                        .buildLoginActivityIntent(DiscoverDeviceActivity.this);
-                startActivity(loginIntent);
+                startActivity(new Intent(DiscoverDeviceActivity.this, LoginActivity.class));
                 finish();
             }
         });

@@ -12,10 +12,10 @@ import com.squareup.phrase.Phrase;
 
 import java.util.Arrays;
 
+import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.Responses.ClaimCodeResponse;
 import io.particle.android.sdk.cloud.SparkCloud;
 import io.particle.android.sdk.cloud.SparkCloudException;
-import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
@@ -178,9 +178,7 @@ public class GetReadyActivity extends BaseActivity {
     }
 
     private void startLoginActivity() {
-        Intent loginIntent = ParticleDeviceSetupLibrary.getInstance()
-                .getIntentBuilder().buildLoginActivityIntent(this);
-        startActivity(loginIntent);
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
     private void showProgress(boolean show) {

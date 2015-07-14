@@ -95,7 +95,7 @@ public class ParticleDeviceSetupLibrary {
 
     // FIXME: allow the SDK consumer to optionally pass in some kind of dynamic intent builder here
     // instead of a static class
-    // FIXME: or stop requiring an activity at all and just use a single activity for setup which
+    // FIXME: or, stop requiring an activity at all and just use a single activity for setup which
     // uses Fragments internally...
     /**
      * Initialize the device setup SDK
