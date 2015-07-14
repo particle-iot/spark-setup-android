@@ -1,5 +1,38 @@
 apply plugin: 'com.android.library'
 
+// This is the library version used when deploying the artifact
+version = '0.1.2'  // currently set to match the cloud SDK version just for consistency
+
+
+ext {
+    bintrayRepo = 'android'
+    bintrayName = 'devicesetup'
+    bintrayOrg = 'particle'
+
+    publishedGroupId = 'io.particle'
+    libraryName = 'Particle (formerly Spark) Android Device Setup library'
+    artifact = 'devicesetup'
+
+    libraryDescription = "The Particle Device Setup library provides everything you need to " +
+            "offer your users a simple initial setup process for Particle-powered devices.  This " +
+            "inclues all the necessary device communication code, an easily customizable UI, and " +
+            "a simple developer API."
+
+    siteUrl = 'https://github.com/spark/spark-setup-android'
+    gitUrl = 'https://github.com/spark/spark-setup-android.git'
+
+    libraryVersion = project.version
+
+    developerId = 'idok'
+    developerName = 'Ido Kleinman'
+    developerEmail = 'ido@particle.io'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -45,3 +78,7 @@ dependencies {
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:support-annotations:22.2.0'
 }
+
+
+apply from: '../pom_generator_v1.gradle'
+apply from: '../bintray_upload_v1.gradle'
