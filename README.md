@@ -217,7 +217,7 @@ then sync and rebuild your module.
 
 ## Requirements / limitations
 
-- Android OS 4.1 and up 
+- Android OS 4.0 (API 15) and up 
 - Android Studio 1.2 and up
 
 ## Communication
