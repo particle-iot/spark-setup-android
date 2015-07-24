@@ -43,6 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void invokeDeviceSetup()
     {
-        ParticleDeviceSetupLibrary.startDeviceSetup(this.getBaseContext());
+        ParticleDeviceSetupLibrary.startDeviceSetup(this);
     }
 }
