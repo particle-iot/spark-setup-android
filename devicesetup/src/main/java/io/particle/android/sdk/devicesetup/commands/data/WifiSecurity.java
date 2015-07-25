@@ -1,5 +1,6 @@
 package io.particle.android.sdk.devicesetup.commands.data;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 public enum WifiSecurity {
@@ -37,6 +38,9 @@ public enum WifiSecurity {
     }
 
     public static WifiSecurity fromInteger(Integer value) {
+        Preconditions.checkNotNull(value);
+        Preconditions.checkArgument(fromIntMap.containsKey(value), "Value not found in map: " + value);
+
         return fromIntMap.get(value);
     }
 
