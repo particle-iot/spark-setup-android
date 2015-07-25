@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -53,6 +54,11 @@ public class WifiScanResultLoader extends AsyncTaskLoader<Set<ScanResultNetwork>
     public Set<ScanResultNetwork> loadInBackground() {
         List<ScanResult> scanResults = wifiManager.getScanResults();
         log.d("Latest (unfiltered) scan results: " + scanResults);
+
+        if (scanResults == null) {
+            scanResults = Collections.emptyList();
+            log.wtf("wifiManager.getScanResults() returned null??");
+        }
 
         if (loadCount % 3 == 0) {
             wifiManager.startScan();
