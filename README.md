@@ -44,8 +44,10 @@ your code in any way.
 
 **Beta notice**
 
-This library is still under development and is currently released as Beta, although tested, bugs
-and issues may be present, some code might require cleanups.
+This library is still under development and is currently in beta.  Although it is tested
+and mostly API-stable, bugs and other issues may be present, and the API may change prior
+to leaving beta.
+
 
 ## Usage
 
@@ -184,7 +186,7 @@ set on the `EXTRA_CONFIGURED_DEVICE_ID` value.)
 
 ### Customization
 
-Customize setup look and feel by modifying values and references in the `customization.xml` file
+Customize setup look and feel by overriding values from the `customization.xml` file
 under `devicesetup -> src -> main -> res -> values`.
 
 #### Product/brand info:
@@ -240,14 +242,9 @@ under `devicesetup -> src -> main -> res -> values`.
 
 ## Installation
 
-Particle Android Device Setup library is available through as a
-[JCenter repository](https://bintray.com/particle/android/devicesetup/). JCenter is the default
-dependency repository for Android Studio. To install the Android Cloud SDK in your project, add
-the following to your app module gradle file:
-
-(WIP)finalize according to JCenter published name/URL of repo. Also - what do we do with
-versioning here? We don't want to update the documentation each time we update version,
-on the other hand we don't want to break users apps when something changes
+The Particle Android Device Setup library is available via
+[JCenter](https://bintray.com/particle/android/devicesetup/). To include it in your
+project, add this to the `dependencies` section of your app module's `build.gradle`:
 
 ```gradle
 dependencies {
@@ -255,7 +252,10 @@ dependencies {
 }
 ```
 
-make sure your _main project_ gradle file contains (that's the default):
+
+Also note that the library is hosted on JCenter, but not Maven Central.
+
+Make sure your top-level Gradle file contains the following:
 
 ```gradle
 allprojects {
