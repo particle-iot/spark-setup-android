@@ -51,20 +51,22 @@ and issues may be present, some code might require cleanups.
 
 ### Basic 
 
-There are two prerequisites for this library:
+The Device Setup library has two main requirements:
 
 - You must call `ParticleDeviceSetupLibrary.init()` in your Application.onCreate() or in the
 onCreate() of your first Activity, e.g.:
-
-(WIP) fix code snippet
-
 ```java
-ParticleDeviceSetupLibrary.init(this.getApplicationContext(), ...) 
+    ParticleDeviceSetupLibrary.init(this.getApplicationContext(), MyMainActivity.class);
 ```
 
-- You must add the following entries to your application's AndroidManifest.xml file:
+The class passed in as the second argument to `init()` is used to return you to the
+"main activity" of your app once setup has completed (or whatever other activity you
+wish to start once setup is complete).
 
-(WIP) is this still required?
+
+- You must add all of the following entries to your application's `AndroidManifest.xml` file.
+(Due to Android platform requirements, we cannot provide these manifest entries for
+you automatically.)
 
 ```xml
 <!-- All of the following are from the device setup lib, and must be present in your app's
@@ -120,8 +122,7 @@ manifest or you will not go to space today. -->
     android:label="@string/title_activity_create_account"
     android:screenOrientation="portrait"
     android:theme="@style/ParticleSetupTheme.NoActionBar"
-    android:windowSoftInputMode="adjustResize|stateHidden">
-</activity>
+    android:windowSoftInputMode="adjustResize|stateHidden" />
 <activity
     android:name="io.particle.android.sdk.accountsetup.LoginActivity"
     android:label="@string/title_activity_login"
@@ -136,24 +137,50 @@ manifest or you will not go to space today. -->
     android:windowSoftInputMode="adjustResize|stateVisible" />
 ```
 
-and then in order to invoke the Device setup wizard in your app:
+
+Then, to invoke the Device Setup wizard in your app, just call:
 
 ```java
-ParticleDeviceSetupLibrary.init();  // if you haven't already called this
 ParticleDeviceSetupLibrary.startDeviceSetup(someContext);
 ```
 
+
 ### Advanced
 
-You can get the device ID of the successfully set-up device after setup completes by listening
-for the intent broadcast defined by ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.
-(WIP) flesh out further
+You can get the device ID of the successfully set-up device after setup
+completes by listening for the intent broadcast defined by
+ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.
 
-(WIP) complete how once code is ready
+A convenience wrapper for this broadcast has been created as well,
+`ParticleDeviceSetupLibrary.DeviceSetupCompleteReceiver`.  Just override
+the required methods, then call the `.register()` before starting the
+device setup wizard, and call `.unregister()` once it's done.
 
 ```java
-// ??
+DeviceSetupCompleteReceiver receiver = new DeviceSetupCompleteReceiver() {
+
+    @Override
+    public void onSetupSuccess(long configuredDeviceId) {
+        Toaster.s(someContext, "Hooray, you set up device " + configuredDeviceId);
+    }
+
+    @Override
+    public void onSetupFailure() {
+        Toaster.s(someContext, "Sorry, device setup failed.  (sad trombone)");
+    }
+};
+receiver.register(someContext);
+ParticleDeviceSetupLibrary.startDeviceSetup(someContext);
 ```
+
+And then when setup is complete...
+```java
+receiver.unregister(someContext);
+```
+
+(tl;dr: listen for `ACTION_DEVICE_SETUP_COMPLETE`, and the device ID will be
+set on the `EXTRA_CONFIGURED_DEVICE_ID` value.)
+
 
 ### Customization
 
