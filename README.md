@@ -235,21 +235,18 @@ allprojects {
 }
 ```
 
-then sync and rebuild your module. 
 
+## Requirements
 
-## Requirements / limitations
-
-- Android OS 4.0 (API 15) and up 
-- Android Studio 1.2 and up
+- Android OS 4.0 (API 15) or higher
+- Android Studio 1.2 or higher
 
 ## Communication
 
-- If you **need help**, use [Our community website](http://community.spark.io)
-- If you **found a bug**, _and can provide steps to reliably reproduce it_, open an issue.
-- If you **have a feature request**, open an issue.
-- If you **want to contribute**, submit a pull request.
-
+- If you **need help**, head to [our community website](http://community.particle.io), under the `Mobile` category
+- If you **found a bug**, _and can provide steps to reliably reproduce it_, open an issue, label it as `bug`.
+- If you **have a feature request**, open an issue, and label it with `enhancement`.
+- If you **want to contribute**, submit a pull request.  Be sure to check out spark.github.io for our contribution guidelines.  You'll also need to sign our [CLA](https://docs.google.com/a/particle.io/forms/d/1_2P-vRKGUFg5bmpcKLHO_qNZWGi5HKYnfrrkd-sbZoA/viewform).
 
 ## Maintainers
 
@@ -258,5 +255,5 @@ then sync and rebuild your module.
 
 ## License
 
-Particle Android Cloud SDK is available under the Apache License 2.0. See the LICENSE file
-for more info.
+The Particle Device Setup library is available under the Apache License 2.0.
+See the `LICENSE` file for the complete text of the license.
