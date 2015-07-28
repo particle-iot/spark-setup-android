@@ -4,9 +4,10 @@
 
 # Particle Device Setup library (beta)
 
-The Particle Device Setup library is meant for integrating the initial setup process of Particle
-devices in your app. This library will enable you to easily invoke a standalone setup wizard UI
-for setting up internet-connect products powered by a Photon/P0/P1.
+The Particle Device Setup library provides everything you need to offer your
+users a simple initial setup process for Particle-powered devices.  This includes
+all the necessary device communication code, an easily customizable UI, and a
+simple developer API.
 
 The setup UI can be easily customized by a modifying XML file values which is made
 available to the user. Customization includes: look & feel, colors, fonts as well as
