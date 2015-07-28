@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/devicesetup" />
+            <option value="$PROJECT_DIR$/exampleapp" />
           </set>
         </option>
       </GradleProjectSettings>

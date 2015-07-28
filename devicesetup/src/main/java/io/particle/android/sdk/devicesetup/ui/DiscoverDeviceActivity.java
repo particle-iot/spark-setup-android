@@ -63,6 +63,8 @@ public class DiscoverDeviceActivity extends BaseActivity
     private WifiListFragment wifiListFragment;
     private MaterialDialog connectToApSpinnerDialog;
 
+    private boolean isResumed = false;
+
     private int discoverProcessAttempts = 0;
 
 
@@ -136,9 +138,22 @@ public class DiscoverDeviceActivity extends BaseActivity
     @Override
     protected void onStart() {
         super.onStart();
+
         if (!wifiManager.isWifiEnabled()) {
             onWifiDisabled();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isResumed = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isResumed = false;
     }
 
     private void resetWorker() {
@@ -217,8 +232,7 @@ public class DiscoverDeviceActivity extends BaseActivity
     @Override
     public void onApConnectionFailed(WifiConfiguration config) {
         hideProgressDialog();
-        // FIXME: iOS app doesn't have an analog for this.
-        // Show an alert dialog I guess?
+
         if (!canStartProcessAgain()) {
             onMaxAttemptsReached();
         } else {
@@ -311,6 +325,11 @@ public class DiscoverDeviceActivity extends BaseActivity
     }
 
     private void onMaxAttemptsReached() {
+        if (!isResumed) {
+            finish();
+            return;
+        }
+
         String errorMsg = Phrase.from(this, R.string.unable_to_connect_to_soft_ap)
                 .put("device_name", getString(R.string.device_name))
                 .format().toString();
