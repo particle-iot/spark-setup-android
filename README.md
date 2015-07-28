@@ -4,13 +4,26 @@
 
 # Particle Device Setup library (beta)
 
-The Particle Device Setup library is meant for integrating the initial setup process of Particle devices in your app.
-This library will enable you to easily invoke a standalone setup wizard UI for setting up internet-connect products
-powered by a Photon/P0/P1. The setup UI can be easily customized by a modifying XML file values which is made available to the user. Customization includes: look & feel, colors, fonts as well as custom brand logos. There are good defaults if you don’t set these properties, but you can override the look and feel as needed to suit the look of the rest of your app.
+The Particle Device Setup library is meant for integrating the initial setup process of Particle
+devices in your app. This library will enable you to easily invoke a standalone setup wizard UI
+for setting up internet-connect products powered by a Photon/P0/P1.
 
-As you may have heard, the wireless setup process for the Photon uses very different underlying technology from the Core. Where the Core used Smart Config, the Photon uses what we call “soft AP” — the Photon advertises a Wi-Fi network, you join that network from your mobile app to exchange credentials, and then the Photon connects using the Wi-Fi credentials you supplied.
+The setup UI can be easily customized by a modifying XML file values which is made
+available to the user. Customization includes: look & feel, colors, fonts as well as
+custom brand logos. There are good defaults if you don’t set these properties, but
+you can override the look and feel as needed to suit the look of the rest of your app.
 
-With the Device Setup library, you make one simple call from your app, for example when the user hits a “setup my device” button, and a whole series of screens then guides the user through the device setup process. When the process finishes, the user is back on the screen where she hit the “setup my device” button, and your code has been passed the ID of the device she just setup and claimed.
+As you may have heard, the wireless setup process for the Photon uses very
+different underlying technology from the Core. Where the Core used _SmartConfig_,
+the Photon uses what we call “soft AP” — the Photon advertises a Wi-Fi network,
+you join that network from your mobile app to exchange credentials, and then the
+Photon connects using the Wi-Fi credentials you supplied.
+
+With the Device Setup library, you make one simple call from your app, for example when
+the user hits a “setup my device” button, and a whole series of screens then guides the
+user through the device setup process. When the process finishes, the user is back on
+the screen where she hit the “setup my device” button, and your code has been passed the
+ID of the device she just setup and claimed.
 
 <!---
 [![CI Status](http://img.shields.io/travis/spark/SparkSetup.svg?style=flat)](https://travis-ci.org/spark/SparkSetup)
@@ -21,12 +34,14 @@ With the Device Setup library, you make one simple call from your app, for examp
 
 **Rebranding notice**
 
-Spark has been recently rebranded as Particle. 
-Code contains `Spark` keywords as classes prefixes. this will soon be replaced with `Particle`. This should not bother or affect your code in any way.
+Spark has been recently rebranded as Particle.  Code contains `Spark` keywords as classes
+prefixes. this will soon be replaced with `Particle`. This should not bother or affect
+your code in any way.
 
 **Beta notice**
 
-This library is still under development and is currently released as Beta, although tested, bugs and issues may be present, some code might require cleanups.
+This library is still under development and is currently released as Beta, although tested, bugs
+and issues may be present, some code might require cleanups.
 
 ## Usage
 
@@ -34,7 +49,8 @@ This library is still under development and is currently released as Beta, altho
 
 There are two prerequisites for this library:
 
-- You must call `ParticleDeviceSetupLibrary.init()` in your Application.onCreate() or in the onCreate() of your first Activity, e.g.:
+- You must call `ParticleDeviceSetupLibrary.init()` in your Application.onCreate() or in the
+onCreate() of your first Activity, e.g.:
 
 (WIP) fix code snippet
 
@@ -137,7 +153,8 @@ for the intent broadcast defined by ParticleDeviceSetupLibrary.DeviceSetupComple
 
 ### Customization
 
-Customize setup look and feel by modifying values and references in the `customization.xml` file under `devicesetup -> src -> main -> res -> values`. 
+Customize setup look and feel by modifying values and references in the `customization.xml` file
+under `devicesetup -> src -> main -> res -> values`.
 
 #### Product/brand info:
 
@@ -192,9 +209,14 @@ Customize setup look and feel by modifying values and references in the `customi
 
 ## Installation
 
-Particle Android Device Setup library is available through as a [JCenter repository](https://bintray.com/particle/android/devicesetup/). JCenter is the default dependency repository for Android Studio. To install the Android Cloud SDK in your project, add the following to your app module gradle file:
+Particle Android Device Setup library is available through as a
+[JCenter repository](https://bintray.com/particle/android/devicesetup/). JCenter is the default
+dependency repository for Android Studio. To install the Android Cloud SDK in your project, add
+the following to your app module gradle file:
 
-(WIP)finalize according to JCenter published name/URL of repo. Also - what do we do with versioning here? We don't want to update the documentation each time we update version, on the other hand we don't want to break users apps when something changes
+(WIP)finalize according to JCenter published name/URL of repo. Also - what do we do with
+versioning here? We don't want to update the documentation each time we update version,
+on the other hand we don't want to break users apps when something changes
 
 ```gradle
 dependencies {
@@ -235,4 +257,5 @@ then sync and rebuild your module.
 
 ## License
 
-Particle Android Cloud SDK is available under the Apache License 2.0. See the LICENSE file for more info.
+Particle Android Cloud SDK is available under the Apache License 2.0. See the LICENSE file
+for more info.
