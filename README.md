@@ -38,9 +38,8 @@ you want the to Photon to use.
 
 **Rebranding notice**
 
-Spark has been recently rebranded as Particle.  Code contains `Spark` keywords as classes
-prefixes. this will soon be replaced with `Particle`. This should not bother or affect
-your code in any way.
+Spark recently rebranded as Particle.  Some themes and code still contains `Spark` in their names.
+This will soon be replaced with `Particle`, but API impact should be minimal.
 
 **Beta notice**
 
