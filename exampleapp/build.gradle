@@ -23,4 +23,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'io.particle:devicesetup:0.1.2'
+    // If you want to test out changes you've made to the setup lib source using this example app,
+    // comment out the line above, and uncomment this line below.
+//    compile project(':devicesetup')
 }
