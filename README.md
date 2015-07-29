@@ -29,13 +29,6 @@ connect to this soft AP network, and using this connection, it can provide
 the Particle device with the credentials it needs for the Wi-Fi network
 you want the to Photon to use.
 
-<!---
-[![CI Status](http://img.shields.io/travis/spark/SparkSetup.svg?style=flat)](https://travis-ci.org/spark/SparkSetup)
-[![Version](https://img.shields.io/cocoapods/v/Spark-Setup.svg?style=flat)](http://cocoapods.org/pods/SparkSetup)
-[![License](https://img.shields.io/cocoapods/l/Spark-Setup.svg?style=flat)](http://cocoapods.org/pods/SparkSetup)
-[![Platform](https://img.shields.io/cocoapods/p/Spark-Setup.svg?style=flat)](http://cocoapods.org/pods/SparkSetup)
--->
-
 **Rebranding notice**
 
 Spark recently rebranded as Particle.  Some themes and code still contains `Spark` in their names.
@@ -48,13 +41,24 @@ and mostly API-stable, bugs and other issues may be present, and the API may cha
 to leaving beta.
 
 
+## Getting Started
+
+The library is available as a Gradle dependency via [JCenter](https://bintray.com/particle/android/devicesetup/).  See the Installation section below for more details.
+**TL;DR**: just add `compile 'io.particle:devicesetup:0.1.3'` to your `build.gradle`. Sync, build, installed!
+
+You can also [download the Library as a zip](https://github.com/spark/spark-setup-android/archive/master.zip).
+
+You can find the open-source Github repository for the Android Device Setup library [right here](https://github.com/spark/spark-setup-android).
+
+For a basic usage example the `example_app` module included in the Android Studio project of the library.
+
 ## Usage
 
 ### Basic 
 
 The Device Setup library has two main requirements:
 
-- You must call `ParticleDeviceSetupLibrary.init()` in your Application.onCreate() or in the
+- You must call `ParticleDeviceSetupLibrary.init(...)` in your Application.onCreate() or in the
 onCreate() of your first Activity, e.g.:
 ```java
     ParticleDeviceSetupLibrary.init(this.getApplicationContext(), MyMainActivity.class);
@@ -263,7 +267,6 @@ allprojects {
     }
 }
 ```
-
 
 ## Requirements
 
