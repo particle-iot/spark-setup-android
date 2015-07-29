@@ -48,8 +48,6 @@ The library is available as a Gradle dependency via [JCenter](https://bintray.co
 
 You can also [download the Library as a zip](https://github.com/spark/spark-setup-android/archive/master.zip).
 
-You can find the open-source Github repository for the Android Device Setup library [right here](https://github.com/spark/spark-setup-android).
-
 For a basic usage example the `example_app` module included in the Android Studio project of the library.
 
 ## Usage
