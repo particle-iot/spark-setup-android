@@ -247,7 +247,7 @@ project, add this to the `dependencies` section of your app module's `build.grad
 
 ```gradle
 dependencies {
-    compile 'io.particle:devicesetup:0.1.3'
+    compile 'io.particle:devicesetup:0.1.4'
 }
 ```
 
