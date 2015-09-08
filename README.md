@@ -44,7 +44,7 @@ to leaving beta.
 ## Getting Started
 
 The library is available as a Gradle dependency via [JCenter](https://bintray.com/particle/android/devicesetup/).  See the Installation section below for more details.
-**TL;DR**: just add `compile 'io.particle:devicesetup:0.1.4'` to your `build.gradle`. Sync, build, installed!
+**TL;DR**: just add `compile 'io.particle:devicesetup:0.2.0'` to your `build.gradle`. Sync, build, installed!
 
 You can also [download the Library as a zip](https://github.com/spark/spark-setup-android/archive/master.zip).
 
@@ -241,6 +241,26 @@ under `devicesetup -> src -> main -> res -> values`.
     <color name="element_text_disabled_color">#E0E0E0</color>
  ```
 
+### Organizations:
+Setting the boolean resource `organization` to `true`[1] in one of your resource files) will enable organization mode, which uses different API endpoints and requires special permissions (See Particle Dashboard).
+If you enable organization mode, be sure to also provide string resources for `organization_slug` and `product_slug`, using the values you created on the [Particle Dashboard](https://docs.particle.io/guide/tools-and-features/dashboard/).
+To provide the `ParticleCloud` class with correct OAuth credentials for creating customers (so app users could create an account), [read the instructions here](https://docs.particle.io/reference/android/#oauth-client-configuration).
+To learn how to create these credentials for your organization [read here](https://docs.particle.io/guide/how-to-build-a-product/authentication/#creating-an-oauth-client).
+
+[1] i.e.: adding `<bool name="organization">false</bool>`
+
+
+```xml
+<!-- enable organization mode -->
+<bool name="organization">true</bool>
+<!-- organization display name -->
+<string name="organization_name">Acme Wireless-Enabled Widget Company</string>
+<!-- organizational name for API endpoint URL - must specify for orgMode *new* -->
+<string name="organization_slug">acme_wireless_enabled_widgets</string>
+<!-- enable product string for API endpoint URL - must specify for orgMode *new* -->
+<string name="product_slug">acme-widget-model-123</string>
+```
+
 ## Installation
 
 The Particle Android Device Setup library is available via
@@ -249,7 +269,7 @@ project, add this to the `dependencies` section of your app module's `build.grad
 
 ```gradle
 dependencies {
-    compile 'io.particle:devicesetup:0.1.4'
+    compile 'io.particle:devicesetup:0.2.0'
 }
 ```
 
