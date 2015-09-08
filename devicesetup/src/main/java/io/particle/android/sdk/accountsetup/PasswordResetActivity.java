@@ -11,8 +11,8 @@ import android.widget.EditText;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 
-import io.particle.android.sdk.cloud.SparkCloud;
-import io.particle.android.sdk.cloud.SparkCloudException;
+import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.TLog;
@@ -30,9 +30,9 @@ public class PasswordResetActivity extends AppCompatActivity {
     public static final String EXTRA_EMAIL = "EXTRA_EMAIL";
 
 
-    private SparkCloud sparkCloud;
+    private ParticleCloud sparkCloud;
     private EditText emailView;
-    private Async.AsyncApiWorker<SparkCloud, Void> resetTask = null;
+    private Async.AsyncApiWorker<ParticleCloud, Void> resetTask = null;
 
 
     public static Intent buildIntent(Context context, String email) {
@@ -51,7 +51,7 @@ public class PasswordResetActivity extends AppCompatActivity {
 
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
-        sparkCloud = SparkCloud.get(this);
+        sparkCloud = ParticleCloud.get(this);
 
         Ui.findView(this, R.id.action_cancel).setOnClickListener(
                 new View.OnClickListener() {
@@ -86,11 +86,11 @@ public class PasswordResetActivity extends AppCompatActivity {
     }
 
     private void performReset() {
-        ParticleUi.showSparkButtonProgress(this, R.id.action_reset_password, true);
+        ParticleUi.showParticleButtonProgress(this, R.id.action_reset_password, true);
 
-        resetTask = Async.executeAsync(sparkCloud, new Async.ApiWork<SparkCloud, Void>() {
+        resetTask = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
-            public Void callApi(SparkCloud sparkCloud) throws SparkCloudException {
+            public Void callApi(ParticleCloud sparkCloud) throws ParticleCloudException {
                 sparkCloud.requestPasswordReset(emailView.getText().toString());
                 return null;
             }
@@ -98,7 +98,7 @@ public class PasswordResetActivity extends AppCompatActivity {
             @Override
             public void onTaskFinished() {
                 resetTask = null;
-                ParticleUi.showSparkButtonProgress(PasswordResetActivity.this, R.id.action_reset_password, false);
+                ParticleUi.showParticleButtonProgress(PasswordResetActivity.this, R.id.action_reset_password, false);
             }
 
             @Override
@@ -109,7 +109,7 @@ public class PasswordResetActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(SparkCloudException error) {
+            public void onFailure(ParticleCloudException error) {
                 log.d("onFailed(): " + error.getMessage());
                 onResetAttemptFinished("Could not find a user with supplied email address, please " +
                         " check the address supplied or create a new user via the signup screen");

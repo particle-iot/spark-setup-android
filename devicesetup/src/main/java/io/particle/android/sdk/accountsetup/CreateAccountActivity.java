@@ -1,25 +1,20 @@
 package io.particle.android.sdk.accountsetup;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Patterns;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.squareup.phrase.Phrase;
 
+import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.SDKGlobals;
-import io.particle.android.sdk.cloud.SparkCloud;
-import io.particle.android.sdk.cloud.SparkCloudException;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
@@ -40,13 +35,12 @@ public class CreateAccountActivity extends BaseActivity {
      * Keep track of the login task to ensure we can cancel it if requested, ensure against
      * duplicate requests, etc.
      */
-    private Async.AsyncApiWorker<SparkCloud, Void> createAccountTask = null;
+    private Async.AsyncApiWorker<ParticleCloud, Void> createAccountTask = null;
 
     // UI references.
     private EditText emailView;
     private EditText passwordView;
     private EditText verifyPasswordView;
-    private EditText activationCodeView;
 
     private boolean useOrganizationSignup;
 
@@ -67,37 +61,7 @@ public class CreateAccountActivity extends BaseActivity {
         passwordView = Ui.findView(this, R.id.password);
         verifyPasswordView = Ui.findView(this, R.id.verify_password);
 
-        activationCodeView = Ui.findView(this, R.id.activation_code);
-        activationCodeView.setFilters(new InputFilter[]{
-                new InputFilter.AllCaps(),
-                new InputFilter.LengthFilter(4)
-        });
-
         useOrganizationSignup = getResources().getBoolean(R.bool.organization);
-
-        if (useOrganizationSignup) {
-            // see if we were handed an activation code...
-            Uri intentUri = getIntent().getData();
-            if (intentUri != null) {
-                activationCodeView.setText(
-                        intentUri.getQueryParameter("activation_code"));
-            }
-
-            activationCodeView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                    if (id == R.id.action_log_in || id == EditorInfo.IME_NULL) {
-                        attemptCreateAccount();
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-        } else {
-            activationCodeView.setVisibility(View.GONE);
-        }
-
 
         Button submit = Ui.findView(this, R.id.action_create_account);
         submit.setOnClickListener(new View.OnClickListener() {
@@ -150,7 +114,6 @@ public class CreateAccountActivity extends BaseActivity {
         // Store values at the time of the login attempt.
         final String email = emailView.getText().toString();
         final String password = passwordView.getText().toString();
-        final String activationCode = activationCodeView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -182,19 +145,6 @@ public class CreateAccountActivity extends BaseActivity {
             cancel = true;
         }
 
-        if (useOrganizationSignup) {
-            // Check for a valid activation code
-            if (!truthy(activationCode)) {
-                activationCodeView.setError(getString(R.string.error_field_required));
-                focusView = activationCodeView;
-                cancel = true;
-            } else if (!isActivationCodeValid(activationCode)) {
-                activationCodeView.setError(getString(R.string.error_invalid_activation_code));
-                focusView = activationCodeView;
-                cancel = true;
-            }
-        }
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -203,15 +153,16 @@ public class CreateAccountActivity extends BaseActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            ParticleUi.showSparkButtonProgress(this, R.id.action_create_account, true);
-            final SparkCloud sparkCloud = SparkCloud.get(this);
-            createAccountTask = Async.executeAsync(sparkCloud, new Async.ApiWork<SparkCloud, Void>() {
+            ParticleUi.showParticleButtonProgress(this, R.id.action_create_account, true);
+            final ParticleCloud cloud = ParticleCloud.get(this);
+            createAccountTask = Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
                 @Override
-                public Void callApi(SparkCloud sparkCloud) throws SparkCloudException {
+                public Void callApi(ParticleCloud particleCloud) throws ParticleCloudException {
                     if (useOrganizationSignup) {
-                        sparkCloud.signUpWithOrganization(email, password, activationCode, getString(R.string.organization_name));
+                        particleCloud.signUpAndLogInWithCustomer(email, password,
+                                getString(R.string.organization_slug));
                     } else {
-                        sparkCloud.signUpWithUser(email, password);
+                        particleCloud.signUpWithUser(email, password);
                     }
                     return null;
                 }
@@ -227,26 +178,30 @@ public class CreateAccountActivity extends BaseActivity {
                     if (isFinishing()) {
                         return;
                     }
-                    attemptLogin(email, password);
+                    if (useOrganizationSignup) {
+                        // with org setup, we're already logged in upon successful account creation
+                        onLoginSuccess(cloud);
+                    } else {
+                        attemptLogin(email, password);
+                    }
                 }
 
                 @Override
-                public void onFailure(SparkCloudException error) {
+                public void onFailure(ParticleCloudException error) {
                     // FIXME: look at old Spark app for what we do here UI & workflow-wise
                     log.d("onFailed()");
-                    ParticleUi.showSparkButtonProgress(CreateAccountActivity.this,
+                    ParticleUi.showParticleButtonProgress(CreateAccountActivity.this,
                             R.id.action_create_account, false);
 
                     String msg = "Unknown error";
-                    if (error.getKind() == SparkCloudException.Kind.NETWORK) {
+                    if (error.getKind() == ParticleCloudException.Kind.NETWORK) {
                         msg = "Error communicating with server";
 
                     } else if (error.getResponseData() != null) {
 
                         if (error.getResponseData().getHttpStatusCode() == 401
                                 && getResources().getBoolean(R.bool.organization)) {
-                            msg = "Make sure your user email does not already exist and that you have " +
-                                    "entered the activation code correctly and that it was not already used";
+                            msg = "An account with this email address may already exist.";
                         } else {
                             msg = error.getServerErrorMsg();
                         }
@@ -269,16 +224,21 @@ public class CreateAccountActivity extends BaseActivity {
         return (password.length() > 0);
     }
 
-    private boolean isActivationCodeValid(String activationCode) {
-        return activationCode != null && activationCode.length() == 4;
+    private void onLoginSuccess(ParticleCloud cloud) {
+        startActivity(NextActivitySelector.getNextActivityIntent(
+                CreateAccountActivity.this,
+                cloud,
+                SDKGlobals.getSensitiveDataStorage(),
+                SDKGlobals.getAppDataStorage()));
+        finish();
     }
 
     private void attemptLogin(final String username, final String password) {
-        final SparkCloud sparkCloud = SparkCloud.get(this);
-        Async.executeAsync(sparkCloud, new Async.ApiWork<SparkCloud, Void>() {
+        final ParticleCloud cloud = ParticleCloud.get(this);
+        Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
-            public Void callApi(SparkCloud sparkCloud) throws SparkCloudException {
-                sparkCloud.logIn(username, password);
+            public Void callApi(ParticleCloud particleCloud) throws ParticleCloudException {
+                particleCloud.logIn(username, password);
                 return null;
             }
 
@@ -288,18 +248,13 @@ public class CreateAccountActivity extends BaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                startActivity(NextActivitySelector.getNextActivityIntent(
-                        CreateAccountActivity.this,
-                        sparkCloud,
-                        SDKGlobals.getSensitiveDataStorage(),
-                        SDKGlobals.getAppDataStorage()));
-                finish();
+                onLoginSuccess(cloud);
             }
 
             @Override
-            public void onFailure(SparkCloudException error) {
+            public void onFailure(ParticleCloudException error) {
                 log.w("onFailed(): " + error.getMessage());
-                ParticleUi.showSparkButtonProgress(CreateAccountActivity.this,
+                ParticleUi.showParticleButtonProgress(CreateAccountActivity.this,
                         R.id.action_create_account, false);
                 passwordView.setError(error.getBestMessage());
                 passwordView.requestFocus();

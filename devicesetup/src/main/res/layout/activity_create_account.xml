@@ -61,6 +61,7 @@
                 android:hint="@string/prompt_verify_password"
                 android:inputType="textPassword"/>
 
+            <!-- FIXME: remove later -->
             <EditText
                 android:id="@+id/activation_code"
                 style="@style/SparkEditText"
@@ -71,6 +72,7 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="text"
                 android:maxLength="4"
+                android:visibility="gone"
                 android:textAllCaps="true"/>
 
             <RelativeLayout

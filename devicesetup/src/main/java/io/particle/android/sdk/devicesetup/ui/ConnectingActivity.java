@@ -17,9 +17,9 @@ import java.security.PublicKey;
 import java.util.List;
 import java.util.Set;
 
-import io.particle.android.sdk.cloud.SparkCloud;
-import io.particle.android.sdk.cloud.SparkCloudException;
-import io.particle.android.sdk.cloud.SparkDevice;
+import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudException;
+import io.particle.android.sdk.cloud.ParticleDevice;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.SetupProcessException;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
@@ -86,7 +86,7 @@ public class ConnectingActivity extends BaseActivity {
     private String networkSecretPlaintext;
     private PublicKey publicKey;
     private String deviceSoftApSsid;
-    private SparkCloud sparkCloud;
+    private ParticleCloud sparkCloud;
     private String deviceId;
     private boolean needToClaimDevice;
 
@@ -102,7 +102,7 @@ public class ConnectingActivity extends BaseActivity {
         softAPConfigRemover = new SoftAPConfigRemover(this);
 
         publicKey = DeviceSetupState.publicKey;
-        sparkCloud = SparkCloud.get(this);
+        sparkCloud = ParticleCloud.get(this);
         deviceId = DeviceSetupState.deviceToBeSetUpId;
         needToClaimDevice = DeviceSetupState.deviceNeedsToBeClaimed;
 
@@ -255,16 +255,16 @@ public class ConnectingActivity extends BaseActivity {
                     public void run() {
                         try {
                             Set<String> names = set();
-                            for (SparkDevice device : sparkCloud.getDevices()) {
+                            for (ParticleDevice device : sparkCloud.getDevices()) {
                                 if (device != null && device.getName() != null) {
                                     names.add(device.getName());
                                 }
                             }
-                            SparkDevice device = sparkCloud.getDevice(deviceId);
+                            ParticleDevice device = sparkCloud.getDevice(deviceId);
                             if (device != null && !truthy(device.getName())) {
                                 device.setName(CoreNameGenerator.generateUniqueName(names));
                             }
-                        } catch (SparkCloudException e) {
+                        } catch (ParticleCloudException e) {
                             // FIXME: do real error handling here
                             e.printStackTrace();
                         } catch (Exception e) {

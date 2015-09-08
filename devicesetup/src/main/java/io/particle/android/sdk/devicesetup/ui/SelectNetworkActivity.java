@@ -32,7 +32,7 @@ public class SelectNetworkActivity extends BaseActivity
         Ui.findView(this, R.id.action_rescan).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ParticleUi.showSparkButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, true);
+                ParticleUi.showParticleButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, true);
                 wifiListFragment.scanAsync();
             }
         });
@@ -65,7 +65,7 @@ public class SelectNetworkActivity extends BaseActivity
 
     @Override
     public void onLoadFinished() {
-        ParticleUi.showSparkButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, false);
+        ParticleUi.showParticleButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, false);
     }
 
     @Override

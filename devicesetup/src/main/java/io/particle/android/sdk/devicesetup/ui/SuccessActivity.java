@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import com.squareup.phrase.Phrase;
 
 import io.particle.android.sdk.cloud.SDKGlobals;
-import io.particle.android.sdk.cloud.SparkCloud;
+import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
@@ -70,14 +70,14 @@ public class SuccessActivity extends BaseActivity {
                 R.string.setup_failure_lost_connection_to_device));
     }
 
-    private SparkCloud sparkCloud;
+    private ParticleCloud particleCloud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_success);
 
-        sparkCloud = SparkCloud.get(this);
+        particleCloud = ParticleCloud.get(this);
 
         int resultCode = getIntent().getIntExtra(EXTRA_RESULT_CODE, -1);
 
@@ -96,7 +96,7 @@ public class SuccessActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intent = NextActivitySelector.getNextActivityIntent(
                         v.getContext(),
-                        sparkCloud,
+                        particleCloud,
                         SDKGlobals.getSensitiveDataStorage(),
                         SDKGlobals.getAppDataStorage());
 

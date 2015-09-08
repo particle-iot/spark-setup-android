@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import io.particle.android.sdk.accountsetup.CreateAccountActivity;
 import io.particle.android.sdk.accountsetup.LoginActivity;
-import io.particle.android.sdk.cloud.SparkCloud;
+import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 import io.particle.android.sdk.persistance.AppDataStorage;
@@ -22,12 +22,12 @@ public class NextActivitySelector {
 
     private static final TLog log = TLog.get(NextActivitySelector.class);
 
-    private final SparkCloud cloud;
+    private final ParticleCloud cloud;
     private final SensitiveDataStorage credStorage;
     private final AppDataStorage appData;
     private final Class<? extends Activity> mainActivityClass;
 
-    private NextActivitySelector(SparkCloud cloud,
+    private NextActivitySelector(ParticleCloud cloud,
                                  SensitiveDataStorage credStorage,
                                  AppDataStorage appData,
                                  Class<? extends Activity> mainActivityClass) {
@@ -37,10 +37,10 @@ public class NextActivitySelector {
         this.mainActivityClass = mainActivityClass;
     }
 
-    public static Intent getNextActivityIntent(Context ctx, SparkCloud sparkCloud,
+    public static Intent getNextActivityIntent(Context ctx, ParticleCloud particleCloud,
                                                SensitiveDataStorage credStorage,
                                                AppDataStorage appDataStorage) {
-        NextActivitySelector selector = new NextActivitySelector(sparkCloud, credStorage,
+        NextActivitySelector selector = new NextActivitySelector(particleCloud, credStorage,
                 appDataStorage, ParticleDeviceSetupLibrary.getInstance().getMainActivityClass());
 
         Class <? extends Activity> nextActivity = selector.buildIntentForNextActivity();

@@ -9,7 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.common.base.Preconditions;
 
-import io.particle.android.sdk.cloud.SDKGlobals;
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 
 
@@ -109,7 +109,7 @@ public class ParticleDeviceSetupLibrary {
     public static void init(Context ctx, Class<? extends Activity> mainActivity) {
         if (instance == null) {
             // ensure the cloud SDK is initialized
-            SDKGlobals.init(ctx);
+            ParticleCloudSDK.init(ctx);
             instance = new ParticleDeviceSetupLibrary(mainActivity);
         }
     }

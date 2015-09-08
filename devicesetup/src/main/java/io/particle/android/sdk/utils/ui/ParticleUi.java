@@ -10,8 +10,8 @@ public class ParticleUi {
 
     // since it's specific to the SDK UI, this method assumes that the id of the
     // progress spinner in the button layout is "R.id.button_progress_indicator"
-    public static void showSparkButtonProgress(FragmentActivity activity, int buttonId,
-                                               final boolean show) {
+    public static void showParticleButtonProgress(FragmentActivity activity, int buttonId,
+                                                  final boolean show) {
         Ui.fadeViewVisibility(activity, R.id.button_progress_indicator, show);
         Ui.findView(activity, buttonId).setEnabled(!show);
     }

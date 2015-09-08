@@ -16,8 +16,8 @@ import android.widget.TextView;
 import com.squareup.phrase.Phrase;
 
 import io.particle.android.sdk.cloud.SDKGlobals;
-import io.particle.android.sdk.cloud.SparkCloud;
-import io.particle.android.sdk.cloud.SparkCloudException;
+import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
@@ -39,13 +39,13 @@ public class LoginActivity extends BaseActivity {
      * Keep track of the login task to ensure we can cancel it if requested, ensure against
      * duplicate requests, etc.
      */
-    private Async.AsyncApiWorker<SparkCloud, Void> loginTask = null;
+    private Async.AsyncApiWorker<ParticleCloud, Void> loginTask = null;
 
     // UI references.
     private EditText emailView;
     private EditText passwordView;
 
-    private SparkCloud sparkCloud;
+    private ParticleCloud sparkCloud;
 
 
     @Override
@@ -55,7 +55,7 @@ public class LoginActivity extends BaseActivity {
 
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
-        sparkCloud = SparkCloud.get(this);
+        sparkCloud = ParticleCloud.get(this);
 
         // Set up the login form.
         emailView = Ui.findView(this, R.id.email);
@@ -178,10 +178,10 @@ public class LoginActivity extends BaseActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            ParticleUi.showSparkButtonProgress(this, R.id.action_log_in, true);
-            loginTask = Async.executeAsync(sparkCloud, new Async.ApiWork<SparkCloud, Void>() {
+            ParticleUi.showParticleButtonProgress(this, R.id.action_log_in, true);
+            loginTask = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, Void>() {
                 @Override
-                public Void callApi(SparkCloud sparkCloud) throws SparkCloudException {
+                public Void callApi(ParticleCloud sparkCloud) throws ParticleCloudException {
                     sparkCloud.logIn(email, password);
                     // Get all devices too, in case this user already has configured
                     // devices and is just logging in to this device for the first time,
@@ -210,9 +210,9 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onFailure(SparkCloudException error) {
+                public void onFailure(ParticleCloudException error) {
                     log.d("onFailed(): " + error.getMessage());
-                    ParticleUi.showSparkButtonProgress(LoginActivity.this,
+                    ParticleUi.showParticleButtonProgress(LoginActivity.this,
                             R.id.action_log_in, false);
                     // FIXME: check specifically for 401 errors
                     // and set a better error message

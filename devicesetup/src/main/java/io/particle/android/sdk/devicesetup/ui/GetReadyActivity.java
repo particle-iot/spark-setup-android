@@ -1,7 +1,9 @@
 package io.particle.android.sdk.devicesetup.ui;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -13,9 +15,9 @@ import com.squareup.phrase.Phrase;
 import java.util.Arrays;
 
 import io.particle.android.sdk.accountsetup.LoginActivity;
+import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.Responses.ClaimCodeResponse;
-import io.particle.android.sdk.cloud.SparkCloud;
-import io.particle.android.sdk.cloud.SparkCloudException;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
@@ -33,10 +35,10 @@ public class GetReadyActivity extends BaseActivity {
 
     private static final TLog log = TLog.get(GetReadyActivity.class);
 
-    private SparkCloud sparkCloud;
+    private ParticleCloud sparkCloud;
     private SoftAPConfigRemover softAPConfigRemover;
 
-    private AsyncApiWorker<SparkCloud, ClaimCodeResponse> claimCodeWorker;
+    private AsyncApiWorker<ParticleCloud, ClaimCodeResponse> claimCodeWorker;
 
 
     @Override
@@ -44,7 +46,7 @@ public class GetReadyActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_ready);
 
-        sparkCloud = SparkCloud.get(this);
+        sparkCloud = ParticleCloud.get(this);
         softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
@@ -98,10 +100,18 @@ public class GetReadyActivity extends BaseActivity {
         // FIXME: check here that another of these tasks isn't already running
         DeviceSetupState.reset();
         showProgress(true);
-        claimCodeWorker = Async.executeAsync(sparkCloud, new Async.ApiWork<SparkCloud, ClaimCodeResponse>() {
+        final Context ctx = this;
+        claimCodeWorker = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, ClaimCodeResponse>() {
             @Override
-            public ClaimCodeResponse callApi(SparkCloud sparkCloud) throws SparkCloudException {
-                return sparkCloud.generateClaimCode();
+            public ClaimCodeResponse callApi(ParticleCloud sparkCloud) throws ParticleCloudException {
+                Resources res = ctx.getResources();
+                if (res.getBoolean(R.bool.organization)) {
+                    return sparkCloud.generateClaimCodeForOrg(
+                            res.getString(R.string.organization_slug),
+                            res.getString(R.string.product_slug));
+                } else {
+                    return sparkCloud.generateClaimCode();
+                }
             }
 
             @Override
@@ -125,9 +135,9 @@ public class GetReadyActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(SparkCloudException error) {
+            public void onFailure(ParticleCloudException error) {
                 log.d("Generating claim code failed");
-                SparkCloudException.ResponseErrorData errorData = error.getResponseData();
+                ParticleCloudException.ResponseErrorData errorData = error.getResponseData();
                 if (errorData != null && errorData.getHttpStatusCode() == 401) {
 
                     if (isFinishing()) {
@@ -182,7 +192,7 @@ public class GetReadyActivity extends BaseActivity {
     }
 
     private void showProgress(boolean show) {
-        ParticleUi.showSparkButtonProgress(this, R.id.action_im_ready, show);
+        ParticleUi.showParticleButtonProgress(this, R.id.action_im_ready, show);
     }
 
 }

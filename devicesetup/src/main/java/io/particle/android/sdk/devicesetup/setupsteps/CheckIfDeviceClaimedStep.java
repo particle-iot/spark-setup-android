@@ -3,19 +3,19 @@ package io.particle.android.sdk.devicesetup.setupsteps;
 
 import java.util.List;
 
-import io.particle.android.sdk.cloud.SparkCloud;
-import io.particle.android.sdk.cloud.SparkCloudException;
-import io.particle.android.sdk.cloud.SparkDevice;
+import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudException;
+import io.particle.android.sdk.cloud.ParticleDevice;
 
 
 public class CheckIfDeviceClaimedStep extends SetupStep {
 
-    private final SparkCloud sparkCloud;
+    private final ParticleCloud sparkCloud;
     private final String deviceBeingConfiguredId;
     // FIXME: this seems kind of lame, look into a diff approach to determine this
     private boolean needToClaimDevice;
 
-    public CheckIfDeviceClaimedStep(StepConfig stepConfig, SparkCloud sparkCloud,
+    public CheckIfDeviceClaimedStep(StepConfig stepConfig, ParticleCloud sparkCloud,
                                     String deviceBeingConfiguredId, boolean needToClaimDevice) {
         super(stepConfig);
         this.sparkCloud = sparkCloud;
@@ -25,15 +25,15 @@ public class CheckIfDeviceClaimedStep extends SetupStep {
 
     @Override
     protected void onRunStep() throws SetupStepException {
-        List<SparkDevice> devices;
+        List<ParticleDevice> devices;
         try {
             devices = sparkCloud.getDevices();
-        } catch (SparkCloudException e) {
+        } catch (ParticleCloudException e) {
             throw new SetupStepException(e);
         }
 
         log.d("Got devices back from the cloud...");
-        for (SparkDevice device : devices) {
+        for (ParticleDevice device : devices) {
             if (deviceBeingConfiguredId.equalsIgnoreCase(device.getID())) {
                 log.d("Success, device " + device.getID() + " claimed!");
                 needToClaimDevice = false;
