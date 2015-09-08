@@ -66,6 +66,17 @@ android {
     }
 }
 
+// TESTING ONLY: to build against a locally built version of the cloud SDK, uncomment these
+// lines, and the "compile(name:'cloudsdk', ext:'aar')" line below under dependencies.
+// (If you don't know what this means or why we (the SDK maintainers at Particle) would want to
+// do this, then you can safely ignore all this and keep it commented out. :)
+//repositories {
+//    flatDir {
+//        dirs 'libs'
+//    }
+//}
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
@@ -83,8 +94,10 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.2.1'
     compile 'com.android.support:support-v4:22.2.1'
     compile 'com.android.support:support-annotations:22.2.1'
-}
 
+    // TESTING ONLY (see other TESTING comments further up)
+//    compile(name: 'cloudsdk', ext: 'aar')
+}
 
 apply from: '../pom_generator_v1.gradle'
 apply from: '../bintray_upload_v1.gradle'

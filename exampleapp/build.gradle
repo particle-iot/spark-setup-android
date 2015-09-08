@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "io.particle.devicesetup.exampleapp"
@@ -20,10 +20,18 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'io.particle:devicesetup:0.1.2'
-    // If you want to test out changes you've made to the setup lib source using this example app,
-    // comment out the line above, and uncomment this line below.
-//    compile project(':devicesetup')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    // BY DEFAULT, BUILD APP AGAINST THE LOCAL SETUP LIB SOURCE REPO
+    // (i.e.: you can make modifications to the device setup lib source in the local repo, and
+    // the changes will appear in the example app just by rebuilding, as you'd expect)
+    compile project(':devicesetup')
+    //
+    //  *OR*
+    //
+    // comment out that above line, and
+    // UNCOMMENT THE FOLLOWING TO USE A PUBLISHED VERSION OF THE SDK:
+//    compile 'io.particle:devicesetup:0.2.0'
+
+    compile 'com.android.support:appcompat-v7:22.2.1'
 }
