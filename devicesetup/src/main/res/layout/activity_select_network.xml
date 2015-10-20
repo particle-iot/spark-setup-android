@@ -28,7 +28,7 @@
 
         <fragment
             android:id="@+id/wifi_list_fragment"
-            android:name="io.particle.android.sdk.devicesetup.WifiListFragment"
+            android:name="io.particle.android.sdk.devicesetup.ui.WifiListFragment"
             android:layout_width="match_parent"
             android:layout_height="0px"
             android:layout_gravity="center_horizontal"

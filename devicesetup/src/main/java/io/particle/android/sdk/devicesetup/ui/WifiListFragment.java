@@ -1,4 +1,4 @@
-package io.particle.android.sdk.devicesetup;
+package io.particle.android.sdk.devicesetup.ui;
 
 
 import android.app.Activity;
@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
+import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.model.WifiNetwork;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.TLog;
