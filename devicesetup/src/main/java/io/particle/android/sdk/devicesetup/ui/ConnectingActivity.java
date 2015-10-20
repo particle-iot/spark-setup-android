@@ -172,7 +172,7 @@ public class ConnectingActivity extends BaseActivity {
                         .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
                         .setStepId(R.id.configure_device_wifi_credentials)
                         .build(),
-                client, networkToConnectTo, networkSecretPlaintext, publicKey);
+                client, networkToConnectTo, networkSecretPlaintext, publicKey, this);
 
         ConnectDeviceToNetworkStep connectDeviceToNetworkStep = new ConnectDeviceToNetworkStep(
                 StepConfig.newBuilder()
@@ -180,7 +180,7 @@ public class ConnectingActivity extends BaseActivity {
                         .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
                         .setStepId(R.id.connect_to_wifi_network)
                         .build(),
-                client);
+                client, this);
 
         WaitForDisconnectionFromDeviceStep waitForDisconnectionFromDeviceStep = new WaitForDisconnectionFromDeviceStep(
                 StepConfig.newBuilder()

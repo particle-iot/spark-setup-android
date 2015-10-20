@@ -1,5 +1,7 @@
 package io.particle.android.sdk.devicesetup.commands;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -23,13 +25,13 @@ public class CommandClient {
     public static final int DEFAULT_TIMEOUT_SECONDS = 10;
 
 
-    public static CommandClient newClient(InetSocketAddress socketAddress) {
+    public static CommandClient newClient(@NonNull InetSocketAddress socketAddress) {
         return new CommandClient(socketAddress);
     }
 
     // FIXME: set these defaults in a resource file
     public static CommandClient newClientUsingDefaultSocketAddress() {
-        return new CommandClient(new InetSocketAddress("192.168.0.1", 5609));
+        return newClient(new InetSocketAddress("192.168.0.1", 5609));
     }
 
 
@@ -45,26 +47,29 @@ public class CommandClient {
         this.deviceAddress = deviceAddress;
     }
 
-    public void sendCommand(Command command) throws IOException {
-        sendAndMaybeReceive(command, Void.class);
+    public void sendCommand(Command command, CeciNestPasUnSocketFactory socketFactory) throws IOException {
+        sendAndMaybeReceive(command, Void.class, socketFactory);
     }
 
-    public <T> T sendCommandAndReturnResponse(Command command, Class<T> responseType)
+    public <T> T sendCommandAndReturnResponse(Command command, Class<T> responseType,
+                                              CeciNestPasUnSocketFactory socketFactory)
             throws IOException {
-        return sendAndMaybeReceive(command, responseType);
+        return sendAndMaybeReceive(command, responseType, socketFactory);
     }
 
 
-    private <T> T sendAndMaybeReceive(Command command, Class<T> responseType) throws IOException {
+    private <T> T sendAndMaybeReceive(Command command, Class<T> responseType,
+                                      CeciNestPasUnSocketFactory socketFactory) throws IOException {
         log.i("Preparing to send command '" + command.getCommandName() + "'");
         String commandData = buildCommandData(command);
 
         BufferedSink buffer = null;
         try {
             // send command
-            Socket socket = new Socket();
-            socket.setSoTimeout(DEFAULT_TIMEOUT_SECONDS * 1000);
-            buffer = connect(socket, DEFAULT_TIMEOUT_SECONDS);
+            int timeoutMillis = DEFAULT_TIMEOUT_SECONDS * 1000;
+            Socket socket = socketFactory.buildSocket(timeoutMillis);
+            socket.connect(deviceAddress, timeoutMillis);
+            buffer = wrapSocket(socket, DEFAULT_TIMEOUT_SECONDS);
             log.d("Writing command data");
             buffer.writeUtf8(commandData);
             buffer.flush();
@@ -82,8 +87,7 @@ public class CommandClient {
         }
     }
 
-    private BufferedSink connect(Socket socket, int timeoutValueInSeconds) throws IOException {
-        socket.connect(deviceAddress, timeoutValueInSeconds * 1000);
+    private BufferedSink wrapSocket(Socket socket, int timeoutValueInSeconds) throws IOException {
         BufferedSink sink = Okio.buffer(Okio.sink(socket));
         sink.timeout().timeout(timeoutValueInSeconds, TimeUnit.SECONDS);
         return sink;

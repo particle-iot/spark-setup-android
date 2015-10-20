@@ -6,23 +6,23 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.support.v4.content.AsyncTaskLoader;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
+import io.particle.android.sdk.utils.BetterAsyncTaskLoader;
 import io.particle.android.sdk.utils.TLog;
 
-import io.particle.android.sdk.devicesetup.R;
 
-
-public class WifiScanResultLoader extends AsyncTaskLoader<Set<ScanResultNetwork>> {
+public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNetwork>> {
 
     private static final TLog log = TLog.get(WifiScanResultLoader.class);
 
@@ -30,11 +30,22 @@ public class WifiScanResultLoader extends AsyncTaskLoader<Set<ScanResultNetwork>
     private final WifiManager wifiManager;
     private final WifiScannedBroadcastReceiver receiver = new WifiScannedBroadcastReceiver();
 
+    private volatile ImmutableSet<ScanResultNetwork> mostRecentResult;
     private volatile int loadCount = 0;
 
     public WifiScanResultLoader(Context context) {
         super(context);
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    }
+
+    @Override
+    public boolean hasContent() {
+        return mostRecentResult != null;
+    }
+
+    @Override
+    public Set<ScanResultNetwork> getLoadedContent() {
+        return mostRecentResult;
     }
 
     @Override
@@ -65,10 +76,18 @@ public class WifiScanResultLoader extends AsyncTaskLoader<Set<ScanResultNetwork>
         }
 
         loadCount++;
-        return FluentIterable.from(scanResults)
+
+        mostRecentResult = FluentIterable.from(scanResults)
                 .filter(ssidStartsWithProductName)
                 .transform(toWifiNetwork)
                 .toSet();
+
+        if (mostRecentResult.isEmpty()) {
+            log.i("No SSID scan results returned after filtering by product name.  " +
+                    "Do you need to change the 'network_name_prefix' resource?");
+        }
+
+        return mostRecentResult;
     }
 
 

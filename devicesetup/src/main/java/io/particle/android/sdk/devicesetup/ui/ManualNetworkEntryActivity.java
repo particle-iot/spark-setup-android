@@ -11,6 +11,7 @@ import java.util.Set;
 
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
+import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
@@ -53,7 +54,9 @@ public class ManualNetworkEntryActivity extends ActionBarActivity
     public Loader<Set<ScanAPCommandResult>> onCreateLoader(int id, Bundle args) {
         // FIXME: make the address below use resources instead of hardcoding
         CommandClient client = CommandClient.newClientUsingDefaultSocketAddress();
-        return new ScanApCommandLoader(getApplicationContext(), client);
+        String softApSSID = WiFi.getCurrentlyConnectedSSID(this);
+        InterfaceBindingSocketFactory socketFactory = new InterfaceBindingSocketFactory(this, softApSSID);
+        return new ScanApCommandLoader(this, client, socketFactory);
     }
 
     @Override

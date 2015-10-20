@@ -7,15 +7,15 @@ import android.view.View;
 
 import java.util.Set;
 
-import io.particle.android.sdk.devicesetup.WifiListFragment;
+import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.commands.CommandClient;
+import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
-import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.WiFi;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
-import io.particle.android.sdk.devicesetup.R;
 
 
 public class SelectNetworkActivity extends BaseActivity
@@ -60,12 +60,13 @@ public class SelectNetworkActivity extends BaseActivity
     public Loader<Set<ScanAPCommandResult>> createLoader(int id, Bundle args) {
         // FIXME: make the address below use resources instead of hardcoding
         CommandClient client = CommandClient.newClientUsingDefaultSocketAddress();
-        return new ScanApCommandLoader(getApplicationContext(), client);
+        return new ScanApCommandLoader(getApplicationContext(), client,
+                new InterfaceBindingSocketFactory(this));
     }
 
     @Override
     public void onLoadFinished() {
-        ParticleUi.showParticleButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, false);
+        ParticleUi.showParticleButtonProgress(this, R.id.action_rescan, false);
     }
 
     @Override

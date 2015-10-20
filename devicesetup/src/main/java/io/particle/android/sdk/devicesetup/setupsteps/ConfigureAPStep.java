@@ -1,11 +1,14 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.security.PublicKey;
 
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.ConfigureApCommand;
+import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.utils.Crypto;
@@ -17,17 +20,19 @@ public class ConfigureAPStep extends SetupStep {
     private final ScanApCommand.Scan networkToConnectTo;
     private final String networkSecretPlaintext;
     private final PublicKey publicKey;
+    private final Context ctx;
 
     private volatile boolean commandSent = false;
 
     public ConfigureAPStep(StepConfig stepConfig, CommandClient commandClient,
                            ScanApCommand.Scan networkToConnectTo, String networkSecretPlaintext,
-                           PublicKey publicKey) {
+                           PublicKey publicKey, Context ctx) {
         super(stepConfig);
         this.commandClient = commandClient;
         this.networkToConnectTo = networkToConnectTo;
         this.networkSecretPlaintext = networkSecretPlaintext;
         this.publicKey = publicKey;
+        this.ctx = ctx;
     }
 
     protected void onRunStep() throws SetupStepException {
@@ -56,7 +61,7 @@ public class ConfigureAPStep extends SetupStep {
 
         try {
             ConfigureApCommand.Response response = commandClient.sendCommandAndReturnResponse(
-                    command, ConfigureApCommand.Response.class);
+                    command, ConfigureApCommand.Response.class, new InterfaceBindingSocketFactory(ctx));
             if (!response.isOk()) {
                 throw new SetupStepException("Error response code " + response.responseCode +
                         " while configuring device");

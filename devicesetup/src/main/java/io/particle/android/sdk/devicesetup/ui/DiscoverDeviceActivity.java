@@ -38,6 +38,7 @@ import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.WiFi;
+import io.particle.android.sdk.utils.ui.Toaster;
 import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
@@ -67,6 +68,9 @@ public class DiscoverDeviceActivity extends BaseActivity
 
     private int discoverProcessAttempts = 0;
 
+    // FIXME: UGH. Figure out a way to pass this info along without making it
+    // into class-wide mutable state.
+    private String currentSSID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,6 +196,7 @@ public class DiscoverDeviceActivity extends BaseActivity
     public void onNetworkSelected(ScanResultNetwork selectedNetwork) {
         WifiConfiguration wifiConfig = ConnectToApFragment.buildUnsecuredConfig(
                 selectedNetwork.getSsid(), false);
+        currentSSID = selectedNetwork.getSsid();
         connectToSoftAp(wifiConfig);
     }
 
@@ -290,7 +295,8 @@ public class DiscoverDeviceActivity extends BaseActivity
                     log.d("Waiting a couple seconds before trying the socket connection...");
                     EZ.threadSleep(2000);
 
-                    discoverProcessWorker.doTheThing();
+                    discoverProcessWorker.doTheThing(
+                            new InterfaceBindingSocketFactory(DiscoverDeviceActivity.this, currentSSID));
                     return null;
 
                 } catch (SetupStepException e) {
@@ -409,14 +415,15 @@ public class DiscoverDeviceActivity extends BaseActivity
         // FIXME: all this should probably become a list of commands to run in a queue,
         // each with shortcut conditions for when they've already been fulfilled, instead of
         // this if-else/try-catch ladder.
-        public void doTheThing() throws SetupStepException {
+        public void doTheThing(InterfaceBindingSocketFactory socketFactory) throws SetupStepException {
             // 1. get device ID
             if (!truthy(detectedDeviceID)) {
                 try {
                     log.i("Waiting a couple seconds before trying the socket connection");
                     EZ.threadSleep(2000);
+
                     DeviceIdCommand.Response response = client.sendCommandAndReturnResponse(
-                            new DeviceIdCommand(), DeviceIdCommand.Response.class);
+                            new DeviceIdCommand(), DeviceIdCommand.Response.class, socketFactory);
                     detectedDeviceID = response.deviceIdHex.toLowerCase();
                     DeviceSetupState.deviceToBeSetUpId = detectedDeviceID;
                     isDetectedDeviceClaimed = truthy(response.isClaimed);
@@ -428,7 +435,7 @@ public class DiscoverDeviceActivity extends BaseActivity
             // 2. Get public key
             if (DeviceSetupState.publicKey == null) {
                 try {
-                    DeviceSetupState.publicKey = getPublicKey();
+                    DeviceSetupState.publicKey = getPublicKey(socketFactory);
                 } catch (Crypto.CryptoException e) {
                     throw new SetupStepException("Unable to get public key: ", e);
 
@@ -451,7 +458,7 @@ public class DiscoverDeviceActivity extends BaseActivity
 
                 // device was never claimed before - so we need to claim it anyways
                 if (!isDetectedDeviceClaimed) {
-                    setClaimCode();
+                    setClaimCode(socketFactory);
                     needToClaimDevice = true;
 
                 } else {
@@ -479,7 +486,7 @@ public class DiscoverDeviceActivity extends BaseActivity
 
             } else {
                 if (needToClaimDevice) {
-                    setClaimCode();
+                    setClaimCode(socketFactory);
                 }
                 // Success: no exception thrown, the part of the process is complete.  Let the caller
                 // continue on with the setup process.
@@ -487,13 +494,14 @@ public class DiscoverDeviceActivity extends BaseActivity
             }
         }
 
-        private void setClaimCode() throws SetupStepException {
+        private void setClaimCode(InterfaceBindingSocketFactory socketFactory)
+                throws SetupStepException {
             try {
                 log.d("Setting claim code using code: " + DeviceSetupState.claimCode);
 
                 SetCommand.Response response = client.sendCommandAndReturnResponse(
                         new SetCommand("cc", StringUtils.remove(DeviceSetupState.claimCode, "\\")),
-                        SetCommand.Response.class);
+                        SetCommand.Response.class, socketFactory);
 
                 if (truthy(response.responseCode)) {
                     // a non-zero response indicates an error, ala UNIX return codes
@@ -508,9 +516,10 @@ public class DiscoverDeviceActivity extends BaseActivity
             }
         }
 
-        private PublicKey getPublicKey() throws Crypto.CryptoException, IOException {
+        private PublicKey getPublicKey(InterfaceBindingSocketFactory socketFactory)
+                throws Crypto.CryptoException, IOException {
             PublicKeyCommand.Response response = this.client.sendCommandAndReturnResponse(
-                    new PublicKeyCommand(), PublicKeyCommand.Response.class);
+                    new PublicKeyCommand(), PublicKeyCommand.Response.class, socketFactory);
 
             return Crypto.readPublicKeyFromHexEncodedDerString(response.publicKey);
         }
