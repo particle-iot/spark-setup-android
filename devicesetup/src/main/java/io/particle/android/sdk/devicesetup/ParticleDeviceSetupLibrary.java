@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.common.base.Preconditions;
@@ -48,7 +49,7 @@ public class ParticleDeviceSetupLibrary {
      */
     public static abstract class DeviceSetupCompleteReceiver extends BroadcastReceiver {
 
-        public abstract void onSetupSuccess(long configuredDeviceId);
+        public abstract void onSetupSuccess(@NonNull String configuredDeviceId);
 
         // FIXME: add some extra error information in onSetupFailed()
         public abstract void onSetupFailure();
@@ -68,11 +69,8 @@ public class ParticleDeviceSetupLibrary {
         public void onReceive(Context context, Intent intent) {
             boolean success = intent.getBooleanExtra(
                     DeviceSetupCompleteContract.EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL, false);
-            long errorValue = 0;
-            long deviceId = intent.getLongExtra(
-                    DeviceSetupCompleteContract.EXTRA_CONFIGURED_DEVICE_ID, errorValue);
-
-            if (success && deviceId != errorValue) {
+            String deviceId = intent.getStringExtra(DeviceSetupCompleteContract.EXTRA_CONFIGURED_DEVICE_ID);
+            if (success && deviceId != null) {
                 onSetupSuccess(deviceId);
             } else {
                 onSetupFailure();
