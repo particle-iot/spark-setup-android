@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 
@@ -14,6 +13,7 @@ import com.afollestad.materialdialogs.Theme;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
@@ -22,7 +22,7 @@ import io.particle.android.sdk.utils.ui.Ui;
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
-public class PasswordResetActivity extends AppCompatActivity {
+public class PasswordResetActivity extends BaseActivity {
 
     private static final TLog log = TLog.get(PasswordResetActivity.class);
 
