@@ -18,7 +18,7 @@ public class WorkerFragment extends Fragment {
     // produce a standardized, unique tag
     public static String buildFragmentTag(Class<? extends Fragment> fragClass) {
         // return a unique name
-        return "FRAGMENT_TAG_" + fragClass.getCanonicalName();
+        return "FRAG_" + fragClass.getCanonicalName();
     }
 
     // Syntactic sugar for simply adding a WorkerFragment
