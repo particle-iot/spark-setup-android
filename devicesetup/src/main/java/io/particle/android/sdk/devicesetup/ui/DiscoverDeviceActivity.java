@@ -1,22 +1,16 @@
 package io.particle.android.sdk.devicesetup.ui;
 
-import android.Manifest.permission;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.MaterialDialog.Builder;
-import com.afollestad.materialdialogs.MaterialDialog.ButtonCallback;
 import com.afollestad.materialdialogs.Theme;
 import com.squareup.phrase.Phrase;
 
@@ -148,64 +142,9 @@ public class DiscoverDeviceActivity extends BaseActivity
     @Override
     protected void onStart() {
         super.onStart();
-
-        if (!wifiManager.isWifiEnabled()) {
-            onWifiDisabled();
-        }
-
-        checkPermissions();
+        checkPrerequisites();
     }
 
-    // FIXME: wrap all of this up into a delegate, this is ugly.
-    private void checkPermissions() {
-        int result = ContextCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION);
-        if (result == PackageManager.PERMISSION_GRANTED) {
-            // permission granted, we're all good
-            return;
-        }
-
-        Builder dialogBuilder = new Builder(this)
-                .theme(Theme.LIGHT)
-                .autoDismiss(true);
-
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission.ACCESS_COARSE_LOCATION)) {
-            dialogBuilder.title(R.string.location_permission_dialog_title)
-                    .content(R.string.location_permission_dialog_text)
-                    .positiveText(R.string.got_it)
-                    .callback(new ButtonCallback() {
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            ActivityCompat.requestPermissions(DiscoverDeviceActivity.this,
-                                    new String[] { permission.ACCESS_COARSE_LOCATION }, 1);
-                        }
-                    });
-        } else {
-            // user has explicitly denied this permission to setup.
-            // show a simple dialog and bail out.
-            dialogBuilder.title(R.string.location_permission_denied_dialog_title)
-                    .content(R.string.location_permission_denied_dialog_text)
-                    .positiveText("Settings")
-                    .negativeText("Exit setup")
-                    .callback(new ButtonCallback() {
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            intent.setData(Uri.parse("package:" + getApplicationInfo().packageName));
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onNegative(MaterialDialog dialog) {
-                            // FIXME: this is suboptimal.  Most users won't see it, but still.
-                            Toaster.s(DiscoverDeviceActivity.this,
-                                    "Location permission denied, exiting setup");
-                            finish();
-                        }
-                    });
-        }
-
-        dialogBuilder.show();
-    }
 
     @Override
     protected void onResume() {
