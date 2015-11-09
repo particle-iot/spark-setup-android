@@ -1,11 +1,13 @@
 package io.particle.android.sdk.devicesetup.ui;
 
+import android.Manifest.permission;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -25,13 +27,14 @@ import io.particle.android.sdk.utils.Async.AsyncApiWorker;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
+import io.particle.android.sdk.utils.ui.Toaster;
 import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
-public class GetReadyActivity extends BaseActivity {
+public class GetReadyActivity extends BaseActivity implements PermissionsFragment.Client {
 
     private static final TLog log = TLog.get(GetReadyActivity.class);
 
@@ -50,6 +53,8 @@ public class GetReadyActivity extends BaseActivity {
         softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
+
+        PermissionsFragment.ensureAttached(this);
 
         Ui.findView(this, R.id.action_im_ready).setOnClickListener(
                 new View.OnClickListener() {
@@ -129,9 +134,11 @@ public class GetReadyActivity extends BaseActivity {
                     DeviceSetupState.claimedDeviceIds.addAll(Arrays.asList(result.deviceIds));
                 }
 
-                if (!isFinishing()) {
-                    startActivity(new Intent(GetReadyActivity.this, DiscoverDeviceActivity.class));
+                if (isFinishing()) {
+                    return;
                 }
+
+                moveToDeviceDiscovery();
             }
 
             @Override
@@ -193,6 +200,30 @@ public class GetReadyActivity extends BaseActivity {
 
     private void showProgress(boolean show) {
         ParticleUi.showParticleButtonProgress(this, R.id.action_im_ready, show);
+    }
+
+    private void moveToDeviceDiscovery() {
+        if (PermissionsFragment.hasPermission(this, permission.ACCESS_COARSE_LOCATION)) {
+            startActivity(new Intent(GetReadyActivity.this, DiscoverDeviceActivity.class));
+        } else {
+            PermissionsFragment.get(this).ensurePermission(permission.ACCESS_COARSE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onUserAllowedPermission(String permission) {
+        moveToDeviceDiscovery();
+    }
+
+    @Override
+    public void onUserDeniedPermission(String permission) {
+        Toaster.s(this, "Location permission denied, cannot start setup");
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionsFragment.get(this).onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 }
