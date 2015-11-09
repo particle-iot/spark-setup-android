@@ -80,7 +80,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'io.particle:cloudsdk:0.2.0'
+    compile 'io.particle:cloudsdk:0.2.1'
 
     compile 'com.afollestad:material-dialogs:0.7.9.1'
     compile 'org.apache.commons:commons-lang3:3.3.2'
