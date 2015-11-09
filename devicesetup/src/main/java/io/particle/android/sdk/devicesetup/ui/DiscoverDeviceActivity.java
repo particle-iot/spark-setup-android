@@ -141,7 +141,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     @Override
     protected void onStart() {
         super.onStart();
-        checkPrerequisites();
+        if (!wifiManager.isWifiEnabled()) {
+            onWifiDisabled();
+        }
     }
 
 
@@ -171,6 +173,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 .content(getString(R.string.setup_requires_wifi))
                 .positiveText(getString(R.string.enable_wifi))
                 .negativeText(getString(R.string.exit_setup))
+                .cancelable(false)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
