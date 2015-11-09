@@ -12,13 +12,12 @@ import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
-import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.WiFi;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
 
 
-public class SelectNetworkActivity extends BaseActivity
+public class SelectNetworkActivity extends RequiresWifiScansActivity
         implements WifiListFragment.Client<ScanAPCommandResult> {
 
     private WifiListFragment wifiListFragment;

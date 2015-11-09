@@ -32,21 +32,20 @@ import io.particle.android.sdk.devicesetup.commands.SetCommand;
 import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
-import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.WiFi;
-import io.particle.android.sdk.utils.ui.Toaster;
 import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
-public class DiscoverDeviceActivity extends BaseActivity
-        implements WifiListFragment.Client<ScanResultNetwork>, ConnectToApFragment.Client {
+public class DiscoverDeviceActivity extends RequiresWifiScansActivity
+        implements WifiListFragment.Client<ScanResultNetwork>,
+        ConnectToApFragment.Client {
 
 
     private static final int MAX_NUM_DISCOVER_PROCESS_ATTEMPTS = 5;

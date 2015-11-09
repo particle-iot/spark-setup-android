@@ -34,7 +34,6 @@ import io.particle.android.sdk.devicesetup.setupsteps.StepConfig;
 import io.particle.android.sdk.devicesetup.setupsteps.StepProgress;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForCloudConnectivityStep;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForDisconnectionFromDeviceStep;
-import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.CoreNameGenerator;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
@@ -46,7 +45,7 @@ import static io.particle.android.sdk.utils.Py.set;
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
-public class ConnectingActivity extends BaseActivity {
+public class ConnectingActivity extends RequiresWifiScansActivity {
 
     public static final String EXTRA_NETWORK_TO_CONFIGURE = "EXTRA_NETWORK_TO_CONFIGURE";
     public static final String EXTRA_NETWORK_SECRET = "EXTRA_NETWORK_SECRET";
