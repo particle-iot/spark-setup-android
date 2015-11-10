@@ -1,0 +1,7 @@
+0.3.1
+======
+* Fix problem on Marshmallow with requesting permissions/stop sending users directly to settings to enable the permission
+* Don't allow user to exit the permission or "enable wifi" dialogs by tapping outside of them/tapping the back button
+* Update to latest cloud SDK and Android gradle plugin
+
+
