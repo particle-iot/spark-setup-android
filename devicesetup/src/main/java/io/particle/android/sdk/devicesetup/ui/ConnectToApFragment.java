@@ -16,8 +16,8 @@ import android.support.v4.app.FragmentActivity;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.EZ;
+import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.WiFi;
 import io.particle.android.sdk.utils.WorkerFragment;
@@ -337,18 +337,18 @@ public class ConnectToApFragment extends WorkerFragment {
 
         @Override
         public void onApConnectionSuccessful(WifiConfiguration config) {
+            clearState();
             if (decoratedClient != null) {
                 decoratedClient.onApConnectionSuccessful(config);
             }
-            clearState();
         }
 
         @Override
         public void onApConnectionFailed(WifiConfiguration config) {
+            clearState();
             if (decoratedClient != null) {
                 decoratedClient.onApConnectionFailed(config);
             }
-            clearState();
         }
 
         void setDecoratedClient(Client decoratedClient) {

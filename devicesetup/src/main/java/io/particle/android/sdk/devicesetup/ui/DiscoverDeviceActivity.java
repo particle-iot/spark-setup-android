@@ -63,6 +63,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     private WifiListFragment wifiListFragment;
     private MaterialDialog connectToApSpinnerDialog;
 
+    private AsyncTask<Void, Void, SetupStepException> connectToApTask;
     private boolean isResumed = false;
 
     private int discoverProcessAttempts = 0;
@@ -272,8 +273,14 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     }
 
     private void startConnectWorker() {
+        // first, make sure we haven't actually been called twice...
+        if (connectToApTask != null) {
+            log.d("Already running connect worker " + connectToApTask + ", refusing to start another");
+            return;
+        }
+
         wifiListFragment.stopAggroLoading();
-        // FIXME: first, verify that we're still connected to the intended network
+        // FIXME: verify first that we're still connected to the intended network
         if (!canStartProcessAgain()) {
             hideProgressDialog();
             onMaxAttemptsReached();
@@ -284,7 +291,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
         // Kind of lame; this just has doInBackground() return null on success, or if an
         // exception was thrown, it passes that along instead to indicate failure.
-        new AsyncTask<Void, Void, SetupStepException>() {
+        connectToApTask = new AsyncTask<Void, Void, SetupStepException>() {
 
             @Override
             protected SetupStepException doInBackground(Void... voids) {
@@ -300,7 +307,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                     return null;
 
                 } catch (SetupStepException e) {
-                    log.w("Setup exception thrown: ", e);
+                    log.d("Setup exception thrown: ", e);
                     return e;
 
                 }
@@ -308,6 +315,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
             @Override
             protected void onPostExecute(SetupStepException error) {
+                connectToApTask = null;
                 if (error == null) {
                     // no exceptions thrown, huzzah
                     hideProgressDialog();
