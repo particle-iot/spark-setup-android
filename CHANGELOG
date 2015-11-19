@@ -1,3 +1,10 @@
+0.3.2
+======
+* Fix #6 , the "connect to AP" dialog dismissing too early
+* Do full debug logging by default in the example app
+* Dependency updates
+
+
 0.3.1
 ======
 * Fix problem on Marshmallow with requesting permissions/stop sending users directly to settings to enable the permission
