@@ -9,6 +9,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 
@@ -83,12 +84,17 @@ public class ConnectToApFragment extends WorkerFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
-        softAPConfigRemover = new SoftAPConfigRemover(activity.getApplicationContext());
-        mainThreadHandler = new Handler();
         client = new ClientDecorator();
         client.setDecoratedClient(EZ.getCallbacksOrThrow(this, Client.class));
-        appContext = activity.getApplicationContext();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        appContext = getActivity().getApplicationContext();
+        wifiManager = (WifiManager) appContext.getSystemService(Context.WIFI_SERVICE);
+        softAPConfigRemover = new SoftAPConfigRemover(appContext);
+        mainThreadHandler = new Handler();
         wifiStateChangeLogger = new WifiStateChangeLogger();
     }
 
