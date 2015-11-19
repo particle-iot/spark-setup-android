@@ -3,4 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Enable full logging in the cloud SDK -->
+    <string name="http_log_level">FULL</string>
 </resources>
