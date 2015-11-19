@@ -308,13 +308,14 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
             @Override
             protected void onPostExecute(SetupStepException error) {
-                hideProgressDialog();
                 if (error == null) {
                     // no exceptions thrown, huzzah
+                    hideProgressDialog();
                     startActivity(new Intent(DiscoverDeviceActivity.this, SelectNetworkActivity.class));
                     finish();
 
                 } else if (error instanceof DeviceAlreadyClaimed) {
+                    hideProgressDialog();
                     onDeviceClaimedByOtherUser();
 
                 } else {
