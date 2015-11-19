@@ -419,9 +419,6 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             // 1. get device ID
             if (!truthy(detectedDeviceID)) {
                 try {
-                    log.i("Waiting a couple seconds before trying the socket connection");
-                    EZ.threadSleep(2000);
-
                     DeviceIdCommand.Response response = client.sendCommandAndReturnResponse(
                             new DeviceIdCommand(), DeviceIdCommand.Response.class, socketFactory);
                     detectedDeviceID = response.deviceIdHex.toLowerCase();
