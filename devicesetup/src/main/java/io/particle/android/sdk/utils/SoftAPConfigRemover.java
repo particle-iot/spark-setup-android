@@ -45,14 +45,14 @@ public class SoftAPConfigRemover {
     }
 
     public void onWifiNetworkDisabled(String ssid) {
-        log.d("onWifiNetworkDisabled() " + ssid);
+        log.v("onWifiNetworkDisabled() " + ssid);
         Set<String> ssids = set(loadSSIDStringSetWithKey(KEY_DISABLED_WIFI_SSIDS));
         ssids.add(ssid);
         saveSSIDsWithKey(KEY_DISABLED_WIFI_SSIDS, ssids);
     }
 
     public void reenableWifiNetworks() {
-        log.d("reenableWifiNetworks()");
+        log.v("reenableWifiNetworks()");
         for (String ssid : loadSSIDStringSetWithKey(KEY_DISABLED_WIFI_SSIDS)) {
             WiFi.reenableNetwork(ssid, ctx);
         }
@@ -61,11 +61,11 @@ public class SoftAPConfigRemover {
 
 
     private Set<String> loadSSIDStringSetWithKey(String key) {
-        log.d("loadSSIDStringSetWithKey(" + key + ")");
+        log.v("loadSSIDStringSetWithKey(" + key + ")");
 
         Set<String> ssids = set();
         ssids = prefs.getStringSet(key, ssids);
-        log.d("Loaded saved SSIDS: " + ssids);
+        log.v("Loaded saved SSIDS: " + ssids);
 
         Set<String> diffQuotes = set();
         for (String ssid : ssids) {
@@ -74,13 +74,13 @@ public class SoftAPConfigRemover {
         }
         ssids.addAll(diffQuotes);
 
-        log.d("Returning SSIDS: " + ssids);
+        log.v("Returning SSIDS: " + ssids);
         return ssids;
     }
 
     @SuppressLint("CommitPrefEdits")
     private void saveSSIDsWithKey(String key, Set<String> ssids) {
-        log.d("saveSSIDsWithKey() " + key + ", " + ssids);
+        log.v("saveSSIDsWithKey() " + key + ", " + ssids);
         prefs.edit()
                 .putStringSet(key, ssids)
                 .commit();
