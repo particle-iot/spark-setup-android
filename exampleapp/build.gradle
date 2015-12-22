@@ -27,6 +27,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
 
     // BY DEFAULT, BUILD APP AGAINST THE LOCAL SETUP LIB SOURCE REPO
     // (i.e.: you can make modifications to the device setup lib source in the local repo, and
