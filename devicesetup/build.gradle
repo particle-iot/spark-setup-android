@@ -82,7 +82,6 @@ dependencies {
 
     compile 'io.particle:cloudsdk:0.3.0'
 
-    compile 'com.afollestad:material-dialogs:0.7.9.1'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.google.guava:guava:18.0'

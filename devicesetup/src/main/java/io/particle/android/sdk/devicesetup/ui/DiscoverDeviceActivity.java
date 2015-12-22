@@ -1,6 +1,9 @@
 package io.particle.android.sdk.devicesetup.ui;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -8,10 +11,9 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.squareup.phrase.Phrase;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +63,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     private SoftAPConfigRemover softAPConfigRemover;
 
     private WifiListFragment wifiListFragment;
-    private MaterialDialog connectToApSpinnerDialog;
+    private ProgressDialog connectToApSpinnerDialog;
 
     private AsyncTask<Void, Void, SetupStepException> connectToApTask;
     private boolean isResumed = false;
@@ -168,28 +170,24 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     // FIXME: do we even want to do this...?
     private void onWifiDisabled() {
         log.d("Wi-Fi disabled; prompting user");
-        new MaterialDialog.Builder(this)
-                .theme(Theme.LIGHT)
-                .title(getString(R.string.wifi_required))
-                .content(getString(R.string.setup_requires_wifi))
-                .positiveText(getString(R.string.enable_wifi))
-                .negativeText(getString(R.string.exit_setup))
-                .cancelable(false)
-                .callback(new MaterialDialog.ButtonCallback() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.wifi_required)
+                .setPositiveButton(R.string.enable_wifi, new OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
                         log.i("Enabling Wi-Fi at the user's request.");
                         wifiManager.setWifiEnabled(true);
                         wifiListFragment.scanAsync();
                     }
-
+                })
+                .setNegativeButton(R.string.exit_setup, new OnClickListener() {
                     @Override
-                    public void onNegative(MaterialDialog dialog) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
                         finish();
                     }
                 })
-                .autoDismiss(true)
                 .show();
     }
 
@@ -254,12 +252,12 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 .format().toString();
 
 
-        connectToApSpinnerDialog = new MaterialDialog.Builder(this)
-                .content(msg)
-                .theme(Theme.LIGHT)
-                .cancelable(false)
-                .progress(true, 0)
-                .show();
+
+        connectToApSpinnerDialog = new ProgressDialog(this);
+        connectToApSpinnerDialog.setMessage(msg);
+        connectToApSpinnerDialog.setCancelable(false);
+        connectToApSpinnerDialog.setIndeterminate(true);
+        connectToApSpinnerDialog.show();
     }
 
     private void hideProgressDialog() {
@@ -348,20 +346,18 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         String errorMsg = Phrase.from(this, R.string.unable_to_connect_to_soft_ap)
                 .put("device_name", getString(R.string.device_name))
                 .format().toString();
-        new MaterialDialog.Builder(this)
-                .theme(Theme.LIGHT)
-                .title(R.string.error)
-                .content(errorMsg)
-                .positiveText(R.string.ok)
-                .callback(new MaterialDialog.ButtonCallback() {
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.error)
+                .setMessage(errorMsg)
+                .setPositiveButton(R.string.ok, new OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
                         startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
                         finish();
                     }
                 })
-                .autoDismiss(true)
                 .show();
     }
 
@@ -369,19 +365,16 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         String dialogMsg = String.format("This %s is owned by another user.  Change owner to %s?",
                 getString(R.string.device_name), sparkCloud.getLoggedInUsername());
 
-        new MaterialDialog.Builder(this)
-                .theme(Theme.LIGHT)
-                .title("Change owner?")
-                .content(dialogMsg)
-                .positiveText("Change owner")
-                .negativeText("Cancel")
-                .callback(new MaterialDialog.ButtonCallback() {
+        new AlertDialog.Builder(this)
+                .setTitle("Change owner?")
+                .setMessage(dialogMsg)
+                .setPositiveButton("Change owner", new OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
                         log.i("Changing owner to " + sparkCloud.getLoggedInUsername());
-                        // FIXME: state mutation from another class.  Not pretty.
-                        // Fix this by breaking DiscoverProcessWorker down into Steps
+//                        // FIXME: state mutation from another class.  Not pretty.
+//                        // Fix this by breaking DiscoverProcessWorker down into Steps
                         resetWorker();
                         discoverProcessWorker.needToClaimDevice = true;
                         discoverProcessWorker.gotOwnershipInfo = true;
@@ -391,16 +384,18 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                         showProgressDialog();
                         startConnectWorker();
                     }
-
+                })
+                .setNegativeButton("Cancel", new OnClickListener() {
                     @Override
-                    public void onNegative(MaterialDialog dialog) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
                         startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
                         finish();
                     }
                 })
-                .autoDismiss(true)
                 .show();
     }
+
 
     // FIXME: Even before it's done, I am pretty sure this will need
     // to go through a round of "solve et coagula" before it's

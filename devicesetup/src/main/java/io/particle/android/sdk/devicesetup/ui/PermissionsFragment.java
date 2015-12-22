@@ -1,6 +1,8 @@
 package io.particle.android.sdk.devicesetup.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -11,12 +13,9 @@ import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.util.Log;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.MaterialDialog.Builder;
-import com.afollestad.materialdialogs.MaterialDialog.ButtonCallback;
-import com.afollestad.materialdialogs.Theme;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -68,41 +67,39 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
             return;
         }
 
-        Builder dialogBuilder = new Builder(getActivity())
-                .theme(Theme.LIGHT)
-                .cancelable(false)
-                .autoDismiss(true);
+        Builder dialogBuilder = new AlertDialog.Builder(getActivity())
+                .setCancelable(false);
 
         // FIXME: stop referring to these location permission-specific strings here,
         // try to retrieve them from the client
         if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permission)) {
-            dialogBuilder.title(R.string.location_permission_dialog_title)
-                    .content(R.string.location_permission_dialog_text)
-                    .positiveText(R.string.got_it)
-                    .callback(new ButtonCallback() {
+            dialogBuilder.setTitle(R.string.location_permission_dialog_title)
+                    .setMessage(R.string.location_permission_dialog_text)
+                    .setPositiveButton(R.string.got_it, new OnClickListener() {
                         @Override
-                        public void onPositive(MaterialDialog dialog) {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
                             requestPermission(permission);
                         }
                     });
         } else {
             // user has explicitly denied this permission to setup.
             // show a simple dialog and bail out.
-            dialogBuilder.title(R.string.location_permission_denied_dialog_title)
-                    .content(R.string.location_permission_denied_dialog_text)
-                    .positiveText("Settings")
-                    .negativeText("Exit setup")
-                    .callback(new ButtonCallback() {
+            dialogBuilder.setTitle(R.string.location_permission_denied_dialog_title)
+                    .setMessage(R.string.location_permission_denied_dialog_text)
+                    .setPositiveButton("Settings", new OnClickListener() {
                         @Override
-                        public void onPositive(MaterialDialog dialog) {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
                             Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             String pkgName = getActivity().getApplicationInfo().packageName;
                             intent.setData(Uri.parse("package:" + pkgName));
                             startActivity(intent);
                         }
-
+                    })
+                    .setNegativeButton("Exit Setup", new OnClickListener() {
                         @Override
-                        public void onNegative(MaterialDialog dialog) {
+                        public void onClick(DialogInterface dialog, int which) {
                             Client client = (Client) getActivity();
                             client.onUserDeniedPermission(permission);
                         }

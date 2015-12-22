@@ -3,15 +3,15 @@ package io.particle.android.sdk.devicesetup.ui;
 import android.Manifest.permission;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.squareup.phrase.Phrase;
 
 import java.util.Arrays;
@@ -155,21 +155,19 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
                     String errorMsg = String.format("Sorry, you must be logged in as a %s customer.",
                             getString(R.string.brand_name));
-                    new MaterialDialog.Builder(GetReadyActivity.this)
-                            .theme(Theme.LIGHT)
-                            .title(getString(R.string.access_denied))
-                            .content(errorMsg)
-                            .positiveText(getString(R.string.ok))
-                            .dismissListener(new DialogInterface.OnDismissListener() {
+                    new AlertDialog.Builder(GetReadyActivity.this)
+                            .setTitle(R.string.access_denied)
+                            .setMessage(errorMsg)
+                            .setPositiveButton(R.string.ok, new OnClickListener() {
                                 @Override
-                                public void onDismiss(DialogInterface dialog) {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
                                     log.i("Logging out user");
                                     sparkCloud.logOut();
                                     startLoginActivity();
                                     finish();
                                 }
                             })
-                            .autoDismiss(true)
                             .show();
 
                 } else {
@@ -182,12 +180,15 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                     if (error.getMessage() != null) {
                         errorMsg = errorMsg + "\n\n" + error.getMessage();
                     }
-                    new MaterialDialog.Builder(GetReadyActivity.this)
-                            .theme(Theme.LIGHT)
-                            .title(getString(R.string.error))
-                            .content(errorMsg)
-                            .positiveText(getString(R.string.ok))
-                            .autoDismiss(true)
+                    new AlertDialog.Builder(GetReadyActivity.this)
+                            .setTitle(R.string.error)
+                            .setMessage(errorMsg)
+                            .setPositiveButton(R.string.ok, new OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
                             .show();
                 }
             }

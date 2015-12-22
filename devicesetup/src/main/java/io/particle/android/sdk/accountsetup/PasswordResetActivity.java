@@ -2,13 +2,13 @@ package io.particle.android.sdk.accountsetup;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
@@ -69,15 +69,13 @@ public class PasswordResetActivity extends BaseActivity {
             performReset();
 
         } else {
-            new MaterialDialog.Builder(this)
-                    .theme(Theme.LIGHT)
-                    .positiveText("OK")
-                    .autoDismiss(true)
-                    .title("Reset password")
-                    .content("Please enter a valid email address.")
-                    .dismissListener(new DialogInterface.OnDismissListener() {
+            new AlertDialog.Builder(this)
+                    .setTitle("Reset password")
+                    .setMessage("Please enter a valid email address.")
+                    .setPositiveButton(R.string.ok, new OnClickListener() {
                         @Override
-                        public void onDismiss(DialogInterface dialogInterface) {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
                             emailView.requestFocus();
                         }
                     })
@@ -90,7 +88,7 @@ public class PasswordResetActivity extends BaseActivity {
 
         resetTask = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
-            public Void callApi(ParticleCloud sparkCloud) throws ParticleCloudException {
+            public Void callApi(@NonNull ParticleCloud sparkCloud) throws ParticleCloudException {
                 sparkCloud.requestPasswordReset(emailView.getText().toString());
                 return null;
             }
@@ -118,14 +116,12 @@ public class PasswordResetActivity extends BaseActivity {
     }
 
     private void onResetAttemptFinished(String content) {
-        new MaterialDialog.Builder(this)
-                .theme(Theme.LIGHT)
-                .positiveText("OK")
-                .autoDismiss(true)
-                .content(content)
-                .dismissListener(new DialogInterface.OnDismissListener() {
+        new AlertDialog.Builder(this)
+                .setMessage(content)
+                .setPositiveButton(R.string.ok, new OnClickListener() {
                     @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
                         finish();
                     }
                 })
