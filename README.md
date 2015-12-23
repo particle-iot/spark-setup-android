@@ -44,7 +44,7 @@ to leaving beta.
 ## Getting Started
 
 The library is available as a Gradle dependency via [JCenter](https://bintray.com/particle/android/devicesetup/).  See the Installation section below for more details.
-**TL;DR**: just add `compile 'io.particle:devicesetup:0.3.2'` to your `build.gradle`. Sync, build, installed!
+**TL;DR**: just add `compile 'io.particle:devicesetup:0.3.3'` to your `build.gradle`. Sync, build, installed!
 
 You can also [download the Library as a zip](https://github.com/spark/spark-setup-android/archive/master.zip).
 
@@ -269,7 +269,7 @@ project, add this to the `dependencies` section of your app module's `build.grad
 
 ```gradle
 dependencies {
-    compile 'io.particle:devicesetup:0.3.2'
+    compile 'io.particle:devicesetup:0.3.3'
 }
 ```
 

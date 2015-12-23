@@ -1,3 +1,10 @@
+0.3.3
+======
+* Update to latest cloud SDK to fix really lame 3rd party packaging problem
+* ditch Material Dialogs library, which was causing a different build problem
+* update GSON dependency
+
+
 0.3.2
 ======
 * Fix #6 , the "connect to AP" dialog dismissing too early
