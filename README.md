@@ -35,7 +35,7 @@ the Particle device with the credentials it needs for the Wi-Fi network
 you want the to Photon to use.
 
 
-## Getting atarted, getting help, and everything else
+## Getting started, getting help, and everything else
 
 Full documentation, including a getting started guide, lots of API examples, support & feedback links, and more are all available from our documentation page: https://docs.particle.io/reference/android/
 
