@@ -200,8 +200,7 @@ public class LoginActivity extends BaseActivity {
                     startActivity(NextActivitySelector.getNextActivityIntent(
                             LoginActivity.this,
                             sparkCloud,
-                            SDKGlobals.getSensitiveDataStorage(),
-                            SDKGlobals.getAppDataStorage()));
+                            SDKGlobals.getSensitiveDataStorage()));
                     finish();
                 }
 
@@ -211,7 +210,8 @@ public class LoginActivity extends BaseActivity {
                     ParticleUi.showParticleButtonProgress(LoginActivity.this,
                             R.id.action_log_in, false);
                     // FIXME: check specifically for 401 errors
-                    // and set a better error message
+                    // and set a better error message?  (Seems like
+                    // this works fine already...)
                     passwordView.setError(error.getBestMessage());
                     passwordView.requestFocus();
                 }

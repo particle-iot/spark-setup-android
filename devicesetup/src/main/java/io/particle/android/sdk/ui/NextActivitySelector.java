@@ -8,8 +8,6 @@ import io.particle.android.sdk.accountsetup.CreateAccountActivity;
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
-import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
-import io.particle.android.sdk.persistance.AppDataStorage;
 import io.particle.android.sdk.persistance.SensitiveDataStorage;
 import io.particle.android.sdk.utils.TLog;
 
@@ -22,30 +20,29 @@ public class NextActivitySelector {
 
     private static final TLog log = TLog.get(NextActivitySelector.class);
 
-    private final ParticleCloud cloud;
-    private final SensitiveDataStorage credStorage;
-    private final AppDataStorage appData;
-    private final Class<? extends Activity> mainActivityClass;
-
-    private NextActivitySelector(ParticleCloud cloud,
-                                 SensitiveDataStorage credStorage,
-                                 AppDataStorage appData,
-                                 Class<? extends Activity> mainActivityClass) {
-        this.cloud = cloud;
-        this.credStorage = credStorage;
-        this.appData = appData;
-        this.mainActivityClass = mainActivityClass;
-    }
 
     public static Intent getNextActivityIntent(Context ctx, ParticleCloud particleCloud,
-                                               SensitiveDataStorage credStorage,
-                                               AppDataStorage appDataStorage) {
+                                               SensitiveDataStorage credStorage) {
         NextActivitySelector selector = new NextActivitySelector(particleCloud, credStorage,
-                appDataStorage, ParticleDeviceSetupLibrary.getInstance().getMainActivityClass());
+                ParticleDeviceSetupLibrary.getInstance().getMainActivityClass());
 
         Class <? extends Activity> nextActivity = selector.buildIntentForNextActivity();
         return new Intent(ctx, nextActivity);
     }
+
+
+    private final ParticleCloud cloud;
+    private final SensitiveDataStorage credStorage;
+    private final Class<? extends Activity> mainActivityClass;
+
+    private NextActivitySelector(ParticleCloud cloud,
+                                 SensitiveDataStorage credStorage,
+                                 Class<? extends Activity> mainActivityClass) {
+        this.cloud = cloud;
+        this.credStorage = credStorage;
+        this.mainActivityClass = mainActivityClass;
+    }
+
 
     Class<? extends Activity> buildIntentForNextActivity() {
         if (!hasUserBeenLoggedInBefore()) {
@@ -58,15 +55,8 @@ public class NextActivitySelector {
             return LoginActivity.class;
         }
 
-        if (!userAccountHasDevicesClaimed()) {
-            log.d("User has no devices claimed");
-            // FIXME: make customizable/generic somehow?
-            return GetReadyActivity.class;
-
-        } else {
-            log.d("Returning default activity");
-            return mainActivityClass;
-        }
+        log.d("Returning default activity");
+        return mainActivityClass;
     }
 
     boolean hasUserBeenLoggedInBefore() {
@@ -75,10 +65,6 @@ public class NextActivitySelector {
 
     boolean isOAuthTokenPresent() {
         return truthy(cloud.getAccessToken());
-    }
-
-    boolean userAccountHasDevicesClaimed() {
-        return this.appData.getUserHasClaimedDevices();
     }
 
 }

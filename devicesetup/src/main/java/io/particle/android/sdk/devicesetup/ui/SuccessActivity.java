@@ -97,8 +97,7 @@ public class SuccessActivity extends BaseActivity {
                 Intent intent = NextActivitySelector.getNextActivityIntent(
                         v.getContext(),
                         particleCloud,
-                        SDKGlobals.getSensitiveDataStorage(),
-                        SDKGlobals.getAppDataStorage());
+                        SDKGlobals.getSensitiveDataStorage());
 
                 // FIXME: we shouldn't do this in the lib.  looks like another argument for Fragments.
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
