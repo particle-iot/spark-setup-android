@@ -183,10 +183,6 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public Void callApi(ParticleCloud sparkCloud) throws ParticleCloudException {
                     sparkCloud.logIn(email, password);
-                    // Get all devices too, in case this user already has configured
-                    // devices and is just logging in to this device for the first time,
-                    // or has re-installed the app (etc)
-                    sparkCloud.getDevices();
                     return null;
                 }
 
