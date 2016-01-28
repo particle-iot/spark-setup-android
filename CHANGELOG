@@ -1,3 +1,9 @@
+0.3.4
+=====
+* Don't skip straight to Photon setup when the logged in user has no devices
+* Related to the above, don't immediately pull devices after login
+
+
 0.3.3
 ======
 * Update to latest cloud SDK to fix really lame 3rd party packaging problem
