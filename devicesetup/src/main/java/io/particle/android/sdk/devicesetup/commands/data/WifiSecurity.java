@@ -33,8 +33,15 @@ public enum WifiSecurity {
 
     private final int intValue;
 
-    private WifiSecurity(int intValue) {
+    WifiSecurity(int intValue) {
         this.intValue = intValue;
+    }
+
+    private static final int ENTERPRISE_ENABLED_MASK = 0x02000000;
+
+    // FIXME: accommodate this better
+    public static boolean isEnterpriseNetwork(int value) {
+        return (ENTERPRISE_ENABLED_MASK & value) != 0;
     }
 
     public static WifiSecurity fromInteger(Integer value) {

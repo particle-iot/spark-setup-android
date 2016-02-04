@@ -1,8 +1,11 @@
 package io.particle.android.sdk.devicesetup.ui;
 
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import java.util.Set;
@@ -10,6 +13,7 @@ import java.util.Set;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
+import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
 import io.particle.android.sdk.utils.WiFi;
@@ -19,6 +23,7 @@ import io.particle.android.sdk.utils.ui.Ui;
 
 public class SelectNetworkActivity extends RequiresWifiScansActivity
         implements WifiListFragment.Client<ScanAPCommandResult> {
+
 
     private WifiListFragment wifiListFragment;
 
@@ -44,6 +49,19 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
 
     @Override
     public void onNetworkSelected(ScanAPCommandResult selectedNetwork) {
+        if (WifiSecurity.isEnterpriseNetwork(selectedNetwork.scan.wifiSecurityType)) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Enterprise Wi-Fi networks not supported for mobile setup.")
+                    .setPositiveButton("OK", new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+            return;
+        }
+
         wifiListFragment.stopAggroLoading();
 
         String softApSSID = WiFi.getCurrentlyConnectedSSID(this);
