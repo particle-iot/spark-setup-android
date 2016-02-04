@@ -39,13 +39,17 @@ public class InterfaceBindingSocketFactory implements CeciNestPasUnSocketFactory
         Socket socket = new Socket();
         socket.setSoTimeout(readTimeoutMillis);
         if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-            bindSocketToSoftAp(socket);
+            try {
+                bindSocketToSoftAp(socket);
+            } catch (SocketBindingException e) {
+                log.i("Unable to bind to the socket; connection is probably going to fail...");
+            }
         }
         return socket;
     }
 
     @TargetApi(VERSION_CODES.LOLLIPOP)
-    private void bindSocketToSoftAp(Socket socket) throws IllegalArgumentException, IOException {
+    private void bindSocketToSoftAp(Socket socket) throws SocketBindingException, IOException {
         ConnectivityManager connMan = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         Network softAp = null;
         for (Network network : connMan.getAllNetworks()) {
@@ -68,12 +72,18 @@ public class InterfaceBindingSocketFactory implements CeciNestPasUnSocketFactory
 
         if (softAp == null) {
             // If this ever fails, fail VERY LOUDLY to make sure we hear about it...
-            // FIXME: report the error via analytics instead of/in addition to crashing
-            throw new IllegalArgumentException(
-                    "Could not find Network for SSID " + softAPSSID);
+            // FIXME: report this error via analytics
+            throw new SocketBindingException("Could not find Network for SSID " + softAPSSID);
         }
 
         softAp.bindSocket(socket);
+    }
+
+    private static class SocketBindingException extends Exception {
+
+        SocketBindingException(String msg) {
+            super(msg);
+        }
     }
 
 }
