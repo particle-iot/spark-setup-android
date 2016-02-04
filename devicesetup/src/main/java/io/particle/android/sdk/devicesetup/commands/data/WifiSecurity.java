@@ -10,6 +10,7 @@ public enum WifiSecurity {
     WEP_SHARED(0x8001), // WEP Security with shared authentication
     WPA_TKIP_PSK(0x00200002), // WPA Security with TKIP
     WPA_AES_PSK(0x00200004), // WPA Security with AES
+    WPA_MIXED_PSK(0x00200006), // WPA Security with AES & TKIP
     WPA2_AES_PSK(0x00400004), // WPA2 Security with AES
     WPA2_TKIP_PSK(0x00400002), // WPA2 Security with TKIP
     WPA2_MIXED_PSK(0x00400006); // WPA2 Security with AES & TKIP
@@ -24,6 +25,7 @@ public enum WifiSecurity {
                 .put(WEP_PSK.asInt(), WEP_PSK)
                 .put(WEP_SHARED.asInt(), WEP_SHARED)
                 .put(WPA_TKIP_PSK.asInt(), WPA_TKIP_PSK)
+                .put(WPA_MIXED_PSK.asInt(), WPA_MIXED_PSK)
                 .put(WPA_AES_PSK.asInt(), WPA_AES_PSK)
                 .put(WPA2_AES_PSK.asInt(), WPA2_AES_PSK)
                 .put(WPA2_TKIP_PSK.asInt(), WPA2_TKIP_PSK)

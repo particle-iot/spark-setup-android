@@ -92,6 +92,7 @@ public class PasswordEntryActivity extends BaseActivity {
                 return "Secured with WEP";
             case WPA_AES_PSK:
             case WPA_TKIP_PSK:
+            case WPA_MIXED_PSK:
                 return "Secured with WPA";
             case WPA2_AES_PSK:
             case WPA2_MIXED_PSK:
