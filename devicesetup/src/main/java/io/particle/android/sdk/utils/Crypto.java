@@ -6,7 +6,7 @@ import com.google.common.io.BaseEncoding;
 
 import org.apache.commons.lang3.CharEncoding;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -14,12 +14,14 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 
+@ParametersAreNonnullByDefault
 public class Crypto {
 
 
@@ -43,11 +45,8 @@ public class Crypto {
     public static String encryptAndEncodeToHex(String inputString, PublicKey publicKey)
             throws CryptoException {
         byte[] asBytes = null;
-        try {
-            asBytes = inputString.getBytes(CharEncoding.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            log.wtf("This runtime doesn't support... UTF-8?");
-        }
+        Charset utf8 = Charset.forName(CharEncoding.UTF_8);
+        asBytes = inputString.getBytes(utf8);
         byte[] encryptedBytes = encryptWithKey(asBytes, publicKey);
         String hex = BaseEncoding.base16().encode(encryptedBytes);
         // forcing lowercase here because of a bug in the early firmware that didn't accept
