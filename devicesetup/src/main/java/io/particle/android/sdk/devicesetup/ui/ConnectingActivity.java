@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 
 import io.particle.android.sdk.cloud.ParticleCloud;
-import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.ParticleDevice;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.SetupProcessException;
@@ -245,7 +244,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
         protected void onPostExecute(SetupProcessException error) {
             int resultCode;
             if (error == null) {
-                log.i("HUZZAH, VICTORY!");
+                log.d("HUZZAH, VICTORY!");
                 // FIXME: handle "success, no ownership" case
                 resultCode = SuccessActivity.RESULT_SUCCESS;
 
@@ -263,11 +262,9 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                             if (device != null && !truthy(device.getName())) {
                                 device.setName(CoreNameGenerator.generateUniqueName(names));
                             }
-                        } catch (ParticleCloudException e) {
-                            // FIXME: do real error handling here
-                            e.printStackTrace();
                         } catch (Exception e) {
-                            // FIXME: remove.
+                            // FIXME: do real error handling here, and only
+                            // handle ParticleCloudException instead of swallowing everything
                             e.printStackTrace();
                         }
                     }

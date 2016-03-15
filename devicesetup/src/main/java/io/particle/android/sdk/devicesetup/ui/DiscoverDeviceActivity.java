@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 
 import com.squareup.phrase.Phrase;
@@ -333,6 +334,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean canStartProcessAgain() {
         return discoverProcessAttempts < MAX_NUM_DISCOVER_PROCESS_ATTEMPTS;
     }
@@ -362,13 +364,13 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     }
 
     private void onDeviceClaimedByOtherUser() {
-        String dialogMsg = String.format("This %s is owned by another user.  Change owner to %s?",
+        String dialogMsg = getString(R.string.dialog_title_owned_by_another_user,
                 getString(R.string.device_name), sparkCloud.getLoggedInUsername());
 
-        new AlertDialog.Builder(this)
-                .setTitle("Change owner?")
+        new Builder(this)
+                .setTitle(getString(R.string.change_owner_question))
                 .setMessage(dialogMsg)
-                .setPositiveButton("Change owner", new OnClickListener() {
+                .setPositiveButton(getString(R.string.change_owner), new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -385,7 +387,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                         startConnectWorker();
                     }
                 })
-                .setNegativeButton("Cancel", new OnClickListener() {
+                .setNegativeButton(R.string.cancel, new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

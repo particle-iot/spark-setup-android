@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 import android.widget.EditText;
 
@@ -69,9 +70,9 @@ public class PasswordResetActivity extends BaseActivity {
             performReset();
 
         } else {
-            new AlertDialog.Builder(this)
-                    .setTitle("Reset password")
-                    .setMessage("Please enter a valid email address.")
+            new Builder(this)
+                    .setTitle(getString(R.string.reset_password_dialog_title))
+                    .setMessage(getString(R.string.reset_paassword_dialog_please_enter_a_valid_email))
                     .setPositiveButton(R.string.ok, new OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

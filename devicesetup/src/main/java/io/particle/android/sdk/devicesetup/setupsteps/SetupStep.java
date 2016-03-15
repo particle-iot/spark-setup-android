@@ -1,5 +1,7 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
+import android.annotation.SuppressLint;
+
 import io.particle.android.sdk.devicesetup.SetupProcessException;
 import io.particle.android.sdk.utils.TLog;
 
@@ -26,9 +28,10 @@ public abstract class SetupStep {
             return;
         }
         if (numAttempts > stepConfig.maxAttempts) {
-            throw new SetupProcessException(
-                    String.format("Exceeded limit of %d retries for step %s",
-                            stepConfig.maxAttempts, getStepName()), this);
+            @SuppressLint("DefaultLocale")
+            String msg = String.format("Exceeded limit of %d retries for step %s",
+                    stepConfig.maxAttempts, getStepName());
+            throw new SetupProcessException(msg, this);
         } else {
             log.i("Running step " + getStepName());
             numAttempts++;

@@ -153,7 +153,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                         return;
                     }
 
-                    String errorMsg = String.format("Sorry, you must be logged in as a %s customer.",
+                    String errorMsg = getString(R.string.get_ready_must_be_logged_in_as_customer,
                             getString(R.string.brand_name));
                     new AlertDialog.Builder(GetReadyActivity.this)
                             .setTitle(R.string.access_denied)
@@ -218,7 +218,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
     @Override
     public void onUserDeniedPermission(String permission) {
-        Toaster.s(this, "Location permission denied, cannot start setup");
+        Toaster.s(this, getString(R.string.location_permission_denied_cannot_start_setup));
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,

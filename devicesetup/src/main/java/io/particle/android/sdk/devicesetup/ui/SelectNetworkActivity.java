@@ -5,7 +5,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 
 import java.util.Set;
@@ -50,9 +50,9 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
     @Override
     public void onNetworkSelected(ScanAPCommandResult selectedNetwork) {
         if (WifiSecurity.isEnterpriseNetwork(selectedNetwork.scan.wifiSecurityType)) {
-            new AlertDialog.Builder(this)
-                    .setMessage("Enterprise Wi-Fi networks not supported for mobile setup.")
-                    .setPositiveButton("OK", new OnClickListener() {
+            new Builder(this)
+                    .setMessage(getString(R.string.enterprise_networks_not_supported))
+                    .setPositiveButton(R.string.ok, new OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();

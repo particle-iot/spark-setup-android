@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
@@ -87,17 +88,17 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
             // show a simple dialog and bail out.
             dialogBuilder.setTitle(R.string.location_permission_denied_dialog_title)
                     .setMessage(R.string.location_permission_denied_dialog_text)
-                    .setPositiveButton("Settings", new OnClickListener() {
+                    .setPositiveButton(R.string.settings, new OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             String pkgName = getActivity().getApplicationInfo().packageName;
                             intent.setData(Uri.parse("package:" + pkgName));
                             startActivity(intent);
                         }
                     })
-                    .setNegativeButton("Exit Setup", new OnClickListener() {
+                    .setNegativeButton(R.string.exit_setup, new OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Client client = (Client) getActivity();

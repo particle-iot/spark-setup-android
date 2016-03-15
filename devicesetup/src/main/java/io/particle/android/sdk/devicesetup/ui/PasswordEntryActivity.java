@@ -89,15 +89,15 @@ public class PasswordEntryActivity extends BaseActivity {
         switch (securityType) {
             case WEP_SHARED:
             case WEP_PSK:
-                return "Secured with WEP";
+                return getString(R.string.secured_with_wep);
             case WPA_AES_PSK:
             case WPA_TKIP_PSK:
             case WPA_MIXED_PSK:
-                return "Secured with WPA";
+                return getString(R.string.secured_with_wpa);
             case WPA2_AES_PSK:
             case WPA2_MIXED_PSK:
             case WPA2_TKIP_PSK:
-                return "Secured with WPA2";
+                return getString(R.string.secured_with_wpa2);
         }
 
         log.e("No security string found for " + securityType + "!");

@@ -139,8 +139,8 @@ public class CreateAccountActivity extends BaseActivity {
             focusView = passwordView;
             cancel = true;
         } else if (!password.equals(verifyPasswordView.getText().toString())) {
-            passwordView.setError("Passwords do not match.");
-            verifyPasswordView.setError("Passwords do not match.");
+            passwordView.setError(getString(R.string.create_account_passswords_do_not_match));
+            verifyPasswordView.setError(getString(R.string.create_account_passswords_do_not_match));
             focusView = passwordView;
             cancel = true;
         }
@@ -193,15 +193,15 @@ public class CreateAccountActivity extends BaseActivity {
                     ParticleUi.showParticleButtonProgress(CreateAccountActivity.this,
                             R.id.action_create_account, false);
 
-                    String msg = "Unknown error";
+                    String msg = getString(R.string.create_account_unknown_error);
                     if (error.getKind() == ParticleCloudException.Kind.NETWORK) {
-                        msg = "Error communicating with server";
+                        msg = getString(R.string.create_account_error_communicating_with_server);
 
                     } else if (error.getResponseData() != null) {
 
                         if (error.getResponseData().getHttpStatusCode() == 401
                                 && getResources().getBoolean(R.bool.organization)) {
-                            msg = "An account with this email address may already exist.";
+                            msg = getString(R.string.create_account_account_already_exists_for_email_address);
                         } else {
                             msg = error.getServerErrorMsg();
                         }
