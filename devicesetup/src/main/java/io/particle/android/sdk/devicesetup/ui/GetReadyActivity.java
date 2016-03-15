@@ -90,11 +90,10 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
     @Override
     protected void onStart() {
         super.onStart();
-        log.i(this.getClass().getSimpleName() + ".onStart()");
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
 
-        if (sparkCloud.getLoggedInUsername() == null) {
+        if (sparkCloud.getAccessToken() == null) {
             startLoginActivity();
             finish();
         }
