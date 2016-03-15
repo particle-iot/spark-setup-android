@@ -105,7 +105,7 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
     }
 
 
-    private Predicate<ScanResult> ssidStartsWithProductName = new Predicate<ScanResult>() {
+    private final Predicate<ScanResult> ssidStartsWithProductName = new Predicate<ScanResult>() {
 
         final String softApPrefix = getPrefix();
 
@@ -121,8 +121,8 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
     };
 
 
-    private static Function<ScanResult, ScanResultNetwork> toWifiNetwork = new Function<ScanResult, ScanResultNetwork>() {
-
+    private static final Function<ScanResult, ScanResultNetwork> toWifiNetwork =
+            new Function<ScanResult, ScanResultNetwork>() {
         @Override
         public ScanResultNetwork apply(ScanResult input) {
             return new ScanResultNetwork(input);

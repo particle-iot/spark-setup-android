@@ -97,7 +97,7 @@ public class EnsureSoftApNotVisible extends SetupStep {
     }
 
 
-    private static Function<ScanResult, String> toSSID = new Function<ScanResult, String>() {
+    private static final Function<ScanResult, String> toSSID = new Function<ScanResult, String>() {
         @Override
         public String apply(ScanResult input) {
             return (input == null) ? null : input.SSID;

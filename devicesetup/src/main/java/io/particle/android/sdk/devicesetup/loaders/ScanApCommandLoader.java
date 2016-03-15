@@ -77,7 +77,7 @@ public class ScanApCommandLoader extends BetterAsyncTaskLoader<Set<ScanAPCommand
         }
     }
 
-    private static Function<ScanApCommand.Scan, ScanAPCommandResult> toWifiNetwork =
+    private static final Function<ScanApCommand.Scan, ScanAPCommandResult> toWifiNetwork =
             new Function<ScanApCommand.Scan, ScanAPCommandResult>() {
 
         @Override

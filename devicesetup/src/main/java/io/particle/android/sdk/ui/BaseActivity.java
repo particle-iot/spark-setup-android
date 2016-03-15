@@ -15,7 +15,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * we can at least be sure that the custom fonts in the device setup screens
  * work correctly without any special instructions.
  */
-@SuppressLint("Registered")  // this is a base activity, it shouldn't be registered.
+// this is a base activity, it shouldn't be registered.
+@SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
 
     private static boolean customFontInitDone = false;

@@ -78,7 +78,7 @@ public class Crypto {
         }
     }
 
-    static KeyFactory getRSAKeyFactory() throws CryptoException {
+    static KeyFactory getRSAKeyFactory() {
         try {
             return KeyFactory.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {

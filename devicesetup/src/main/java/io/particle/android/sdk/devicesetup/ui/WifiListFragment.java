@@ -54,7 +54,7 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
     private static final TLog log = TLog.get(WifiListFragment.class);
 
 
-    private static Comparator<WifiNetwork> wifiNetworkComparator = new Comparator<WifiNetwork>() {
+    private static final Comparator<WifiNetwork> wifiNetworkComparator = new Comparator<WifiNetwork>() {
         @Override
         public int compare(WifiNetwork lhs, WifiNetwork rhs) {
             return lhs.getSsid().compareTo(rhs.getSsid());

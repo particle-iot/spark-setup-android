@@ -79,7 +79,7 @@ public class ConnectToApFragment extends WorkerFragment {
     // for handling through the runloop
     private Handler mainThreadHandler;
     private Runnable onTimeoutRunnable;
-    private List<Runnable> setupRunnables = list();
+    private final List<Runnable> setupRunnables = list();
 
     @Override
     public void onAttach(Activity activity) {

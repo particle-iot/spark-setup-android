@@ -1,12 +1,14 @@
 package io.particle.android.sdk.devicesetup.ui;
 
 import android.Manifest.permission;
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import io.particle.android.sdk.ui.BaseActivity;
 
 // FIXME: doing this via Activities is very sketchy.  Find a better way
 // when refactoring to use fragments
+@SuppressLint("Registered")
 public class RequiresWifiScansActivity extends BaseActivity {
 
     @Override
