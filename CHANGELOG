@@ -1,3 +1,9 @@
+0.3.6
+=====
+* Fix a few hard-coded user-facing strings
+* Don't require two-legged auth to have a username set
+
+
 0.3.5
 =====
 * Crash fixes
