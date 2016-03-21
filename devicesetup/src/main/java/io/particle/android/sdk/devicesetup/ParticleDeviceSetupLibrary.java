@@ -14,7 +14,7 @@ import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 
 
-public class ParticleDeviceSetupLibrary {
+public final class ParticleDeviceSetupLibrary {
 
     /**
      * The contract for the broadcast sent upon device setup completion.

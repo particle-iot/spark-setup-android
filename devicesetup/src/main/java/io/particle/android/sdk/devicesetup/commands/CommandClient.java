@@ -20,7 +20,7 @@ import okio.Okio;
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
-public class CommandClient {
+public final class CommandClient {
 
     public static final int DEFAULT_TIMEOUT_SECONDS = 10;
 

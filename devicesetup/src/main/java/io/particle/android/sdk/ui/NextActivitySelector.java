@@ -17,7 +17,7 @@ import static io.particle.android.sdk.utils.Py.truthy;
 /**
  * Selects the next Activity in the workflow, up to the "GetReady" screen or main UI.
  */
-public class NextActivitySelector {
+public final class NextActivitySelector {
 
     private static final TLog log = TLog.get(NextActivitySelector.class);
 
