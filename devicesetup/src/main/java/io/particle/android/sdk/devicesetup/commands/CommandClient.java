@@ -25,6 +25,17 @@ public class CommandClient {
     public static final int DEFAULT_TIMEOUT_SECONDS = 10;
 
 
+    private static final TLog log = TLog.get(CommandClient.class);
+    private static final Gson gson = new Gson();
+
+
+    private final InetSocketAddress deviceAddress;
+    
+    // no public constructor; use the factory methods above
+    private CommandClient(InetSocketAddress deviceAddress) {
+        this.deviceAddress = deviceAddress;
+    }
+
     public static CommandClient newClient(@NonNull InetSocketAddress socketAddress) {
         return new CommandClient(socketAddress);
     }
@@ -32,19 +43,6 @@ public class CommandClient {
     // FIXME: set these defaults in a resource file
     public static CommandClient newClientUsingDefaultSocketAddress() {
         return newClient(new InetSocketAddress("192.168.0.1", 5609));
-    }
-
-
-    private static final TLog log = TLog.get(CommandClient.class);
-    private static final Gson gson = new Gson();
-
-
-    private final InetSocketAddress deviceAddress;
-
-
-    // no public constructor; use the factory methods above
-    private CommandClient(InetSocketAddress deviceAddress) {
-        this.deviceAddress = deviceAddress;
     }
 
     public void sendCommand(Command command, CeciNestPasUnSocketFactory socketFactory) throws IOException {

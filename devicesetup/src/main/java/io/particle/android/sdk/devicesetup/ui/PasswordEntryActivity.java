@@ -24,6 +24,12 @@ import io.particle.android.sdk.utils.ui.Ui;
 // FIXME: password validation -- check for correct length based on security type?
 // at least check for minimum.
 public class PasswordEntryActivity extends BaseActivity {
+    private static final TLog log = TLog.get(PasswordEntryActivity.class);
+    private static final Gson gson = new Gson();
+
+    private CheckBox showPwdBox;
+    private EditText passwordBox;
+    private ScanApCommand.Scan networkToConnectTo;
 
     public static final String EXTRA_NETWORK_TO_CONFIGURE = "EXTRA_NETWORK_TO_CONFIGURE";
 
@@ -31,14 +37,6 @@ public class PasswordEntryActivity extends BaseActivity {
         return new Intent(ctx, PasswordEntryActivity.class)
                 .putExtra(EXTRA_NETWORK_TO_CONFIGURE, gson.toJson(networkToConnectTo));
     }
-
-
-    private static final TLog log = TLog.get(PasswordEntryActivity.class);
-    private static final Gson gson = new Gson();
-
-    private CheckBox showPwdBox;
-    private EditText passwordBox;
-    private ScanApCommand.Scan networkToConnectTo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

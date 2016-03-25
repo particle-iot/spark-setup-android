@@ -21,17 +21,6 @@ public class NextActivitySelector {
 
     private static final TLog log = TLog.get(NextActivitySelector.class);
 
-
-    public static Intent getNextActivityIntent(Context ctx, ParticleCloud particleCloud,
-                                               SensitiveDataStorage credStorage) {
-        NextActivitySelector selector = new NextActivitySelector(particleCloud, credStorage,
-                ParticleDeviceSetupLibrary.getInstance().getMainActivityClass());
-
-        Class <? extends Activity> nextActivity = selector.buildIntentForNextActivity();
-        return new Intent(ctx, nextActivity);
-    }
-
-
     private final ParticleCloud cloud;
     private final SensitiveDataStorage credStorage;
     private final Class<? extends Activity> mainActivityClass;
@@ -44,6 +33,14 @@ public class NextActivitySelector {
         this.mainActivityClass = mainActivityClass;
     }
 
+    public static Intent getNextActivityIntent(Context ctx, ParticleCloud particleCloud,
+                                               SensitiveDataStorage credStorage) {
+        NextActivitySelector selector = new NextActivitySelector(particleCloud, credStorage,
+                ParticleDeviceSetupLibrary.getInstance().getMainActivityClass());
+
+        Class <? extends Activity> nextActivity = selector.buildIntentForNextActivity();
+        return new Intent(ctx, nextActivity);
+    }
 
     Class<? extends Activity> buildIntentForNextActivity() {
         if (!hasUserBeenLoggedInBefore()) {

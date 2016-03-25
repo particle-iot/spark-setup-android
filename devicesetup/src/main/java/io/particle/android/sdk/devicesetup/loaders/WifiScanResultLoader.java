@@ -6,20 +6,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.utils.BetterAsyncTaskLoader;
 import io.particle.android.sdk.utils.TLog;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 
 public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNetwork>> {
@@ -32,6 +30,29 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
 
     private volatile ImmutableSet<ScanResultNetwork> mostRecentResult;
     private volatile int loadCount = 0;
+
+    private final Predicate<ScanResult> ssidStartsWithProductName = new Predicate<ScanResult>() {
+
+        final String softApPrefix = getPrefix();
+
+        @Override
+        public boolean apply(ScanResult input) {
+            return input.SSID != null && input.SSID.toLowerCase().startsWith(softApPrefix);
+        }
+
+        String getPrefix() {
+            return (getContext().getString(R.string.network_name_prefix)+ "-").toLowerCase();
+        }
+
+    };
+
+    private static final Function<ScanResult, ScanResultNetwork> toWifiNetwork =
+            new Function<ScanResult, ScanResultNetwork>() {
+                @Override
+                public ScanResultNetwork apply(ScanResult input) {
+                    return new ScanResultNetwork(input);
+                }
+            };
 
     public WifiScanResultLoader(Context context) {
         super(context);
@@ -103,30 +124,5 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
             return new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         }
     }
-
-
-    private final Predicate<ScanResult> ssidStartsWithProductName = new Predicate<ScanResult>() {
-
-        final String softApPrefix = getPrefix();
-
-        @Override
-        public boolean apply(ScanResult input) {
-            return input.SSID != null && input.SSID.toLowerCase().startsWith(softApPrefix);
-        }
-
-        String getPrefix() {
-            return (getContext().getString(R.string.network_name_prefix)+ "-").toLowerCase();
-        }
-
-    };
-
-
-    private static final Function<ScanResult, ScanResultNetwork> toWifiNetwork =
-            new Function<ScanResult, ScanResultNetwork>() {
-        @Override
-        public ScanResultNetwork apply(ScanResult input) {
-            return new ScanResultNetwork(input);
-        }
-    };
 
 }

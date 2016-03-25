@@ -60,21 +60,6 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     private static final TLog log = TLog.get(ConnectingActivity.class);
     private static final Gson gson = new Gson();
 
-    public static Intent buildIntent(Context ctx, String deviceSoftApSsid,
-                                     ScanApCommand.Scan networkToConnectTo) {
-        return new Intent(ctx, ConnectingActivity.class)
-                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, gson.toJson(networkToConnectTo))
-                .putExtra(EXTRA_SOFT_AP_SSID, deviceSoftApSsid);
-    }
-
-
-    public static Intent buildIntent(Context ctx, String deviceSoftApSsid,
-                                     ScanApCommand.Scan networkToConnectTo, String secret) {
-        return buildIntent(ctx, deviceSoftApSsid, networkToConnectTo)
-                .putExtra(EXTRA_NETWORK_SECRET, secret);
-    }
-
-
     // FIXME: all this state needs to be configured and encapsulated better
     private CommandClient client;
     private ConnectingProcessWorkerTask connectingProcessWorkerTask;
@@ -91,6 +76,19 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     private Drawable tintedSpinner;
     private Drawable tintedCheckmark;
 
+    public static Intent buildIntent(Context ctx, String deviceSoftApSsid,
+                                     ScanApCommand.Scan networkToConnectTo) {
+        return new Intent(ctx, ConnectingActivity.class)
+                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, gson.toJson(networkToConnectTo))
+                .putExtra(EXTRA_SOFT_AP_SSID, deviceSoftApSsid);
+    }
+
+
+    public static Intent buildIntent(Context ctx, String deviceSoftApSsid,
+                                     ScanApCommand.Scan networkToConnectTo, String secret) {
+        return buildIntent(ctx, deviceSoftApSsid, networkToConnectTo)
+                .putExtra(EXTRA_NETWORK_SECRET, secret);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

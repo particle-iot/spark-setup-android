@@ -15,6 +15,12 @@ import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 
 
 public class ParticleDeviceSetupLibrary {
+    private static ParticleDeviceSetupLibrary instance;
+    private final Class<? extends Activity> mainActivity;
+
+    private ParticleDeviceSetupLibrary(Class<? extends Activity> mainActivity) {
+        this.mainActivity = mainActivity;
+    }
 
     /**
      * The contract for the broadcast sent upon device setup completion.
@@ -118,17 +124,8 @@ public class ParticleDeviceSetupLibrary {
         return instance;
     }
 
-    private static ParticleDeviceSetupLibrary instance;
-
-
     public Class<? extends Activity> getMainActivityClass() {
         return mainActivity;
-    }
-
-    private final Class<? extends Activity> mainActivity;
-
-    private ParticleDeviceSetupLibrary(Class<? extends Activity> mainActivity) {
-        this.mainActivity = mainActivity;
     }
 
 }
