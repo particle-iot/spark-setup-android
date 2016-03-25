@@ -15,6 +15,7 @@ public enum WifiSecurity {
     WPA2_TKIP_PSK(0x00400002), // WPA2 Security with TKIP
     WPA2_MIXED_PSK(0x00400006); // WPA2 Security with AES & TKIP
 
+    private static final int ENTERPRISE_ENABLED_MASK = 0x02000000;
 
     static final ImmutableMap<Integer, WifiSecurity> fromIntMap;
 
@@ -38,8 +39,6 @@ public enum WifiSecurity {
     WifiSecurity(int intValue) {
         this.intValue = intValue;
     }
-
-    private static final int ENTERPRISE_ENABLED_MASK = 0x02000000;
 
     // FIXME: accommodate this better
     public static boolean isEnterpriseNetwork(int value) {

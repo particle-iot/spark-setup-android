@@ -30,6 +30,11 @@ import static io.particle.android.sdk.utils.Py.set;
 
 public class PermissionsFragment extends Fragment implements OnRequestPermissionsResultCallback {
 
+    private static final int REQUEST_CODE = 128;
+
+    private static final String PREF_BUCKET_NAME = "permissionsFragmentPrefs";
+    private static final String PREF_KEY_PERMISSION_DIALOGS_SHOWN = "permissionsDialogsShown";
+
     public interface Client {
         void onUserAllowedPermission(String permission);
 
@@ -136,11 +141,6 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
                 new String[]{permission},
                 REQUEST_CODE);
     }
-
-    private static final int REQUEST_CODE = 128;
-
-    private static final String PREF_BUCKET_NAME = "permissionsFragmentPrefs";
-    private static final String PREF_KEY_PERMISSION_DIALOGS_SHOWN = "permissionsDialogsShown";
 
     private static boolean haveShownPermissionDialog(Context ctx, String permission) {
         SharedPreferences prefs = ctx.getSharedPreferences(PREF_BUCKET_NAME, Context.MODE_PRIVATE);

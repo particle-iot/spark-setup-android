@@ -41,6 +41,20 @@ public class ConnectToApFragment extends WorkerFragment {
 
     public static final String TAG = WorkerFragment.buildFragmentTag(ConnectToApFragment.class);
 
+    private static final TLog log = TLog.get(ConnectToApFragment.class);
+
+
+    private WifiManager wifiManager;
+    private BroadcastReceiver wifiStateChangeListener;
+    private WifiStateChangeLogger wifiStateChangeLogger;
+    private Context appContext;
+    private ClientDecorator client;
+    private SoftAPConfigRemover softAPConfigRemover;
+
+    // for handling through the runloop
+    private Handler mainThreadHandler;
+    private Runnable onTimeoutRunnable;
+    private final List<Runnable> setupRunnables = list();
 
     public static ConnectToApFragment get(FragmentActivity activity) {
         return Ui.findFrag(activity, TAG);
@@ -64,22 +78,6 @@ public class ConnectToApFragment extends WorkerFragment {
         config.priority = 999999;
         return config;
     }
-
-
-    private static final TLog log = TLog.get(ConnectToApFragment.class);
-
-
-    private WifiManager wifiManager;
-    private BroadcastReceiver wifiStateChangeListener;
-    private WifiStateChangeLogger wifiStateChangeLogger;
-    private Context appContext;
-    private ClientDecorator client;
-    private SoftAPConfigRemover softAPConfigRemover;
-
-    // for handling through the runloop
-    private Handler mainThreadHandler;
-    private Runnable onTimeoutRunnable;
-    private final List<Runnable> setupRunnables = list();
 
     @Override
     public void onAttach(Activity activity) {

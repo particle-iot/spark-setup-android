@@ -23,6 +23,13 @@ public class EnsureSoftApNotVisible extends SetupStep {
 
     private boolean wasFulfilledOnce = false;
 
+    private static final Function<ScanResult, String> toSSID = new Function<ScanResult, String>() {
+        @Override
+        public String apply(ScanResult input) {
+            return (input == null) ? null : input.SSID;
+        }
+    };
+
     public EnsureSoftApNotVisible(StepConfig stepConfig, String softApSSID, Context ctx) {
         super(stepConfig);
 
@@ -96,11 +103,4 @@ public class EnsureSoftApNotVisible extends SetupStep {
         return matchingSSID.isPresent();
     }
 
-
-    private static final Function<ScanResult, String> toSSID = new Function<ScanResult, String>() {
-        @Override
-        public String apply(ScanResult input) {
-            return (input == null) ? null : input.SSID;
-        }
-    };
 }

@@ -35,13 +35,13 @@ public class SuccessActivity extends BaseActivity {
     public static final int RESULT_FAILURE_NO_DISCONNECT = 5;
     public static final int RESULT_FAILURE_LOST_CONNECTION_TO_DEVICE = 6;
 
+    private static final SparseArray<Pair<Integer, Integer>> resultCodesToStringIds;
+    private ParticleCloud particleCloud;
 
     public static Intent buildIntent(Context ctx, int resultCode) {
         return new Intent(ctx, SuccessActivity.class)
                 .putExtra(EXTRA_RESULT_CODE, resultCode);
     }
-
-    private static final SparseArray<Pair<Integer, Integer>> resultCodesToStringIds;
 
     static {
         resultCodesToStringIds = new SparseArray<>(6);
@@ -69,8 +69,6 @@ public class SuccessActivity extends BaseActivity {
                 R.string.setup_failure_configure_summary,
                 R.string.setup_failure_lost_connection_to_device));
     }
-
-    private ParticleCloud particleCloud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

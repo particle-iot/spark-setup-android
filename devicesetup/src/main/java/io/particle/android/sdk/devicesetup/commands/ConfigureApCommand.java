@@ -27,15 +27,6 @@ public class ConfigureApCommand extends Command {
     @SerializedName("ch")
     public final Integer channel;
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
-    @Override
-    public String getCommandName() {
-        return "configure-ap";
-    }
-
     // private constructor -- use .newBuilder() instead.
     private ConfigureApCommand(int idx, String ssid, String encryptedPasswordHex,
                                WifiSecurity wifiSecurityType, int channel) {
@@ -46,6 +37,14 @@ public class ConfigureApCommand extends Command {
         this.channel = channel;
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    @Override
+    public String getCommandName() {
+        return "configure-ap";
+    }
 
     public static class Response {
 
