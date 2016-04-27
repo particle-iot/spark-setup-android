@@ -112,7 +112,7 @@ public class LoginActivity extends BaseActivity {
 
         Ui.setText(this, R.id.log_in_header_text,
                 Phrase.from(this, R.string.log_in_header_text)
-                        .put("brand_name", customization.getBrandName())
+                        .put("brand_name", getString(customization.getBrandName()))
                         .format()
         );
 
