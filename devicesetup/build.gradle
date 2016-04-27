@@ -3,7 +3,7 @@ apply plugin: 'maven'
 group = 'com.github.Sushinn'
 
 // This is the library version used when deploying the artifact
-version = '0.3.7-beta'
+version = '0.3.7'
 
 
 ext {
