@@ -11,7 +11,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.google.common.base.Preconditions;
 
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
+import io.particle.android.sdk.utils.ParticleSetupConstants;
 
 
 public class ParticleDeviceSetupLibrary {
@@ -90,6 +92,14 @@ public class ParticleDeviceSetupLibrary {
         ctx.startActivity(new Intent(ctx, GetReadyActivity.class));
     }
 
+    /**
+     * Start the device setup process passing a device customization object
+     */
+    public static void startDeviceSetup(Context ctx, DeviceCustomization customization) {
+        Intent intent = new Intent(ctx, GetReadyActivity.class);
+        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+        ctx.startActivity(intent);
+    }
 
     // FIXME: allow the SDK consumer to optionally pass in some kind of dynamic intent builder here
     // instead of a static class

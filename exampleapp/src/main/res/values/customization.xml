@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="company_name">Test Inc.</string>
+    <string name="device">Testomator 2000</string>
+    <drawable name="device_pic">@drawable/ic_clear_black_24dp</drawable>
+    <drawable name="screen_background">@color/accent_color</drawable>
+</resources>

@@ -4,6 +4,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.ui.DiscoverDeviceActivity;
 
 
 public class ParticleUi {
@@ -21,6 +22,14 @@ public class ParticleUi {
         SoftKeyboardVisibilityDetectingLinearLayout detectingLayout;
         detectingLayout = Ui.findView(activity, R.id.keyboard_change_detector_layout);
         detectingLayout.setOnSoftKeyboardVisibilityChangeListener(new BrandImageHeaderHider(activity));
+    }
+
+    public static void setWindowBackground(FragmentActivity activity, int backgroundResID) {
+        activity.getWindow().setBackgroundDrawableResource(backgroundResID);
+    }
+
+    public static void setBrandImageHorizontal(FragmentActivity activity, int brandImageHorizontalID) {
+        Ui.setDrawable(activity, R.id.brand_image_header, brandImageHorizontalID);
     }
 
 
