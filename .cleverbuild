@@ -1,0 +1,5 @@
+#!/bin/sh -e
+ANDROID_HOME=/usr/local/Android/Sdk ./gradlew assemble
+mv devicesetup/build/outputs/aar/devicesetup-release.aar devicesetup/build/outputs/aar/devicesetup-release-${CLEVERBUILD_NUMBER?}.aar
+find . -name \*.aar
+nautilus devicesetup/build/outputs/aar || true
