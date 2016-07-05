@@ -14,7 +14,9 @@ import com.google.gson.Gson;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.ui.BaseActivity;
+import io.particle.android.sdk.utils.ParticleSetupConstants;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.WiFi;
 import io.particle.android.sdk.utils.ui.ParticleUi;
@@ -26,10 +28,12 @@ import io.particle.android.sdk.utils.ui.Ui;
 public class PasswordEntryActivity extends BaseActivity {
 
     public static final String EXTRA_NETWORK_TO_CONFIGURE = "EXTRA_NETWORK_TO_CONFIGURE";
+    private DeviceCustomization customization;
 
-    public static Intent buildIntent(Context ctx, ScanApCommand.Scan networkToConnectTo) {
+    public static Intent buildIntent(Context ctx, ScanApCommand.Scan networkToConnectTo, DeviceCustomization customization) {
         return new Intent(ctx, PasswordEntryActivity.class)
-                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, gson.toJson(networkToConnectTo));
+                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, gson.toJson(networkToConnectTo))
+                .putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
     }
 
 
@@ -46,6 +50,7 @@ public class PasswordEntryActivity extends BaseActivity {
         setContentView(R.layout.activity_password_entry);
 
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
+        customization = DeviceCustomization.fromIntent(getIntent());
 
         String asJson = getIntent().getStringExtra(EXTRA_NETWORK_TO_CONFIGURE);
         networkToConnectTo = gson.fromJson(asJson, ScanApCommand.Scan.class);
@@ -105,7 +110,9 @@ public class PasswordEntryActivity extends BaseActivity {
     }
 
     public void onCancelClicked(View view) {
-        startActivity(new Intent(this, SelectNetworkActivity.class));
+        Intent intent = new Intent(this, SelectNetworkActivity.class);
+        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+        startActivity(intent);
         finish();
     }
 
@@ -114,7 +121,7 @@ public class PasswordEntryActivity extends BaseActivity {
         startActivity(ConnectingActivity.buildIntent(this,
                 WiFi.getCurrentlyConnectedSSID(this),
                 networkToConnectTo,
-                secret));
+                secret, customization));
         finish();
     }
 }

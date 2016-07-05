@@ -23,6 +23,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.SetupProcessException;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.devicesetup.setupsteps.CheckIfDeviceClaimedStep;
 import io.particle.android.sdk.devicesetup.setupsteps.ConfigureAPStep;
 import io.particle.android.sdk.devicesetup.setupsteps.ConnectDeviceToNetworkStep;
@@ -35,6 +36,7 @@ import io.particle.android.sdk.devicesetup.setupsteps.WaitForCloudConnectivitySt
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForDisconnectionFromDeviceStep;
 import io.particle.android.sdk.utils.CoreNameGenerator;
 import io.particle.android.sdk.utils.EZ;
+import io.particle.android.sdk.utils.ParticleSetupConstants;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -59,18 +61,21 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
 
     private static final TLog log = TLog.get(ConnectingActivity.class);
     private static final Gson gson = new Gson();
+    private DeviceCustomization customization;
 
     public static Intent buildIntent(Context ctx, String deviceSoftApSsid,
-                                     ScanApCommand.Scan networkToConnectTo) {
+                                     ScanApCommand.Scan networkToConnectTo, DeviceCustomization customization) {
         return new Intent(ctx, ConnectingActivity.class)
                 .putExtra(EXTRA_NETWORK_TO_CONFIGURE, gson.toJson(networkToConnectTo))
+                .putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization)
                 .putExtra(EXTRA_SOFT_AP_SSID, deviceSoftApSsid);
     }
 
 
     public static Intent buildIntent(Context ctx, String deviceSoftApSsid,
-                                     ScanApCommand.Scan networkToConnectTo, String secret) {
-        return buildIntent(ctx, deviceSoftApSsid, networkToConnectTo)
+                                     ScanApCommand.Scan networkToConnectTo, String secret,
+                                     DeviceCustomization customization) {
+        return buildIntent(ctx, deviceSoftApSsid, networkToConnectTo, customization)
                 .putExtra(EXTRA_NETWORK_SECRET, secret);
     }
 
@@ -97,6 +102,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
 
+
         softAPConfigRemover = new SoftAPConfigRemover(this);
 
         publicKey = DeviceSetupState.publicKey;
@@ -105,6 +111,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
         needToClaimDevice = DeviceSetupState.deviceNeedsToBeClaimed;
 
         deviceSoftApSsid = getIntent().getStringExtra(EXTRA_SOFT_AP_SSID);
+        customization = DeviceCustomization.fromIntent(getIntent());
 
         String asJson = getIntent().getStringExtra(EXTRA_NETWORK_TO_CONFIGURE);
         networkToConnectTo = gson.fromJson(asJson, ScanApCommand.Scan.class);
@@ -127,7 +134,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
 
         Ui.setText(this, R.id.connecting_text,
                 Phrase.from(this, R.string.connecting_text)
-                        .put("device_name", getString(R.string.device_name))
+                        .put("device_name", getString(customization.getDeviceName()))
                         .format()
         );
         Ui.setText(this, R.id.network_name, networkToConnectTo.ssid);
@@ -221,7 +228,6 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                 checkIfDeviceClaimedStep
         );
     }
-
 
 
     class ConnectingProcessWorkerTask extends SetupStepsRunnerTask {

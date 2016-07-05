@@ -16,6 +16,7 @@ import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -34,6 +35,7 @@ public class SuccessActivity extends BaseActivity {
     public static final int RESULT_FAILURE_CONFIGURE = 4;
     public static final int RESULT_FAILURE_NO_DISCONNECT = 5;
     public static final int RESULT_FAILURE_LOST_CONNECTION_TO_DEVICE = 6;
+    private DeviceCustomization customization;
 
 
     public static Intent buildIntent(Context ctx, int resultCode) {
@@ -80,6 +82,7 @@ public class SuccessActivity extends BaseActivity {
         particleCloud = ParticleCloud.get(this);
 
         int resultCode = getIntent().getIntExtra(EXTRA_RESULT_CODE, -1);
+        customization = DeviceCustomization.fromIntent(getIntent());
 
         final boolean isSuccess = list(RESULT_SUCCESS, RESULT_SUCCESS_UNKNOWN_OWNERSHIP).contains(resultCode);
         if (!isSuccess) {
@@ -135,7 +138,7 @@ public class SuccessActivity extends BaseActivity {
         Pair<Integer, Integer> stringIds = resultCodesToStringIds.get(resultCode);
         return Pair.create(getString(stringIds.first),
                 Phrase.from(this, stringIds.second)
-                        .put("device_name", getString(R.string.device_name))
+                        .put("device_name", getString(customization.getDeviceName()))
                         .format());
     }
 

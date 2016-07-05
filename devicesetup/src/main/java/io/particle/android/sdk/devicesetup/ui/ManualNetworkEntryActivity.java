@@ -14,6 +14,7 @@ import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactor
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.WiFi;
@@ -24,10 +25,13 @@ import io.particle.android.sdk.utils.ui.Ui;
 public class ManualNetworkEntryActivity extends BaseActivity
         implements LoaderManager.LoaderCallbacks<Set<ScanAPCommandResult>> {
 
+    private DeviceCustomization customization;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual_network_entry);
+        customization = DeviceCustomization.fromIntent(getIntent());
 
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
     }
@@ -38,11 +42,11 @@ public class ManualNetworkEntryActivity extends BaseActivity
 
         CheckBox requiresPassword = Ui.findView(this, R.id.network_requires_password);
         if (requiresPassword.isChecked()) {
-            startActivity(PasswordEntryActivity.buildIntent(this, scan));
+            startActivity(PasswordEntryActivity.buildIntent(this, scan, customization));
 
         } else {
             String softApSSID = WiFi.getCurrentlyConnectedSSID(this);
-            startActivity(ConnectingActivity.buildIntent(this, softApSSID, scan));
+            startActivity(ConnectingActivity.buildIntent(this, softApSSID, scan, customization));
         }
     }
 

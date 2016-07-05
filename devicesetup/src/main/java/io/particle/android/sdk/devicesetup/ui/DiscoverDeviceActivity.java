@@ -145,7 +145,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             public void onClick(View view) {
                 sparkCloud.logOut();
                 log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
-                startActivity(new Intent(DiscoverDeviceActivity.this, LoginActivity.class));
+                Intent intent = new Intent(DiscoverDeviceActivity.this, LoginActivity.class);
+                intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+                startActivity(intent);
                 finish();
             }
         });
@@ -236,7 +238,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     @Override
     public Loader<Set<ScanResultNetwork>> createLoader(int id, Bundle args) {
-        return new WifiScanResultLoader(this);
+        return new WifiScanResultLoader(this, getString(customization.getNetworkNamePrefix()));
     }
 
     @Override
@@ -343,7 +345,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 if (error == null) {
                     // no exceptions thrown, huzzah
                     hideProgressDialog();
-                    startActivity(new Intent(DiscoverDeviceActivity.this, SelectNetworkActivity.class));
+                    Intent intent = new Intent(DiscoverDeviceActivity.this, SelectNetworkActivity.class);
+                    intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+                    startActivity(intent);
                     finish();
 
                 } else if (error instanceof DeviceAlreadyClaimed) {
@@ -381,13 +385,17 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        Intent intent = new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class);
-                        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
-                        startActivity(intent);
-                        finish();
+                        goToGetReadyActivity();
                     }
                 })
                 .show();
+    }
+
+    private void goToGetReadyActivity() {
+        Intent intent = new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class);
+        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+        startActivity(intent);
+        finish();
     }
 
     private void onDeviceClaimedByOtherUser() {
@@ -418,8 +426,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
-                        finish();
+                        goToGetReadyActivity();
                     }
                 })
                 .show();
