@@ -19,9 +19,11 @@ import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.ParticleSetupConstants;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -46,16 +48,25 @@ public class LoginActivity extends BaseActivity {
     private EditText passwordView;
 
     private ParticleCloud sparkCloud;
+    private DeviceCustomization customization;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        customization = DeviceCustomization.fromIntent(getIntent());
+
         setContentView(R.layout.particle_activity_login);
 
-        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
-
         sparkCloud = ParticleCloud.get(this);
+
+        setUpUI();
+    }
+
+    private void setUpUI() {
+        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
+        ParticleUi.setWindowBackground(this, customization.getScreenBackground());
+        ParticleUi.setBrandImageHorizontal(this, customization.getBrandImageHorizontal());
 
         // Set up the login form.
         emailView = Ui.findView(this, R.id.email);
@@ -101,7 +112,7 @@ public class LoginActivity extends BaseActivity {
 
         Ui.setText(this, R.id.log_in_header_text,
                 Phrase.from(this, R.string.log_in_header_text)
-                        .put("brand_name", getString(R.string.brand_name))
+                        .put("brand_name", getString(customization.getBrandName()))
                         .format()
         );
 
@@ -110,7 +121,9 @@ public class LoginActivity extends BaseActivity {
 
                     @Override
                     public void onClick(View v) {
-                        startActivity(new Intent(v.getContext(), CreateAccountActivity.class));
+                        Intent intent = new Intent(v.getContext(), CreateAccountActivity.class);
+                        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+                        startActivity(intent);
                         finish();
                     }
                 });
@@ -124,7 +137,7 @@ public class LoginActivity extends BaseActivity {
             intent = PasswordResetActivity.buildIntent(this, emailView.getText().toString());
         } else {
             intent = WebViewActivity.buildIntent(this,
-                    Uri.parse(getString(R.string.forgot_password_uri)));
+                    Uri.parse(getString(customization.getForgotPasswordUri())));
         }
         startActivity(intent);
     }

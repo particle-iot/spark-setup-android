@@ -10,10 +10,12 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
+import android.widget.TextView;
 
 import com.squareup.phrase.Phrase;
 
@@ -33,13 +35,16 @@ import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactor
 import io.particle.android.sdk.devicesetup.commands.PublicKeyCommand;
 import io.particle.android.sdk.devicesetup.commands.SetCommand;
 import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
+import io.particle.android.sdk.utils.ParticleSetupConstants;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.WiFi;
+import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
@@ -74,10 +79,13 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     // FIXME: UGH. Figure out a way to pass this info along without making it
     // into class-wide mutable state.
     private String currentSSID;
+    private DeviceCustomization customization;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        customization = DeviceCustomization.fromIntent(getIntent());
+
         setContentView(R.layout.activity_discover_device);
 
         softAPConfigRemover = new SoftAPConfigRemover(this);
@@ -94,17 +102,25 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
         resetWorker();
 
+        setUpUI();
+    }
+
+    private void setUpUI() {
+
+        ParticleUi.setWindowBackground(this, customization.getScreenBackground());
+        ParticleUi.setBrandImageHorizontal(this, customization.getBrandImageHorizontal());
+
         Ui.setText(this, R.id.wifi_list_header,
                 Phrase.from(this, R.string.wifi_list_header_text)
-                        .put("device_name", getString(R.string.device_name))
+                        .put("device_name", getString(customization.getDeviceName()))
                         .format()
         );
         Ui.setText(this, R.id.msg_device_not_listed,
                 Phrase.from(this, R.string.msg_device_not_listed)
-                        .put("device_name", getString(R.string.device_name))
-                        .put("setup_button_identifier", getString(R.string.mode_button_name))
-                        .put("indicator_light", getString(R.string.indicator_light))
-                        .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
+                        .put("device_name", getString(customization.getDeviceName()))
+                        .put("setup_button_identifier", getString(customization.getModeButtonName()))
+                        .put("indicator_light", getString(customization.getIndicatorLight()))
+                        .put("indicator_light_setup_color_name", getString(customization.getListenModeLedColorName()))
                         .format()
         );
 
@@ -112,7 +128,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
+                        Uri uri = Uri.parse(v.getContext().getString(customization.getTroubleshootingUri()));
                         startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
                     }
                 }
@@ -129,7 +145,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             public void onClick(View view) {
                 sparkCloud.logOut();
                 log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
-                startActivity(new Intent(DiscoverDeviceActivity.this, LoginActivity.class));
+                Intent intent = new Intent(DiscoverDeviceActivity.this, LoginActivity.class);
+                intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+                startActivity(intent);
                 finish();
             }
         });
@@ -140,6 +158,17 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 finish();
             }
         });
+
+        Ui.setDrawable(this, R.id.imageView, customization.getDeviceImageSmall());
+
+        ((TextView) Ui.findView(this, R.id.wifi_list_header))
+                .setTextColor(ContextCompat.getColor(this, customization.getNormalTextColor()));
+
+        ((TextView) Ui.findView(this, R.id.action_troubleshooting))
+                .setTextColor(ContextCompat.getColor(this, customization.getLinkTextColor()));
+
+        ((TextView) Ui.findView(this, R.id.logged_in_as))
+                .setTextColor(ContextCompat.getColor(this, customization.getNormalTextColor()));
     }
 
     @Override
@@ -209,7 +238,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     @Override
     public Loader<Set<ScanResultNetwork>> createLoader(int id, Bundle args) {
-        return new WifiScanResultLoader(this);
+        return new WifiScanResultLoader(this, getString(customization.getNetworkNamePrefix()));
     }
 
     @Override
@@ -220,7 +249,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     @Override
     public String getListEmptyText() {
         return Phrase.from(this, R.string.empty_soft_ap_list_text)
-                .put("device_name", getString(R.string.device_name))
+                .put("device_name", getString(customization.getDeviceName()))
                 .format().toString();
     }
 
@@ -249,10 +278,8 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         wifiListFragment.stopAggroLoading();
 
         String msg = Phrase.from(this, R.string.connecting_to_soft_ap)
-                .put("device_name", getString(R.string.device_name))
+                .put("device_name", getString(customization.getDeviceName()))
                 .format().toString();
-
-
 
         connectToApSpinnerDialog = new ProgressDialog(this);
         connectToApSpinnerDialog.setMessage(msg);
@@ -318,7 +345,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 if (error == null) {
                     // no exceptions thrown, huzzah
                     hideProgressDialog();
-                    startActivity(new Intent(DiscoverDeviceActivity.this, SelectNetworkActivity.class));
+                    Intent intent = new Intent(DiscoverDeviceActivity.this, SelectNetworkActivity.class);
+                    intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+                    startActivity(intent);
                     finish();
 
                 } else if (error instanceof DeviceAlreadyClaimed) {
@@ -346,7 +375,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         }
 
         String errorMsg = Phrase.from(this, R.string.unable_to_connect_to_soft_ap)
-                .put("device_name", getString(R.string.device_name))
+                .put("device_name", getString(customization.getDeviceName()))
                 .format().toString();
 
         new AlertDialog.Builder(this)
@@ -356,16 +385,22 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
-                        finish();
+                        goToGetReadyActivity();
                     }
                 })
                 .show();
     }
 
+    private void goToGetReadyActivity() {
+        Intent intent = new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class);
+        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+        startActivity(intent);
+        finish();
+    }
+
     private void onDeviceClaimedByOtherUser() {
         String dialogMsg = getString(R.string.dialog_title_owned_by_another_user,
-                getString(R.string.device_name), sparkCloud.getLoggedInUsername());
+                getString(customization.getDeviceName()), sparkCloud.getLoggedInUsername());
 
         new Builder(this)
                 .setTitle(getString(R.string.change_owner_question))
@@ -391,8 +426,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
-                        finish();
+                        goToGetReadyActivity();
                     }
                 })
                 .show();

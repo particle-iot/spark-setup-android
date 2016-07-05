@@ -16,9 +16,11 @@ import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.ParticleSetupConstants;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Toaster;
@@ -43,17 +45,28 @@ public class CreateAccountActivity extends BaseActivity {
     private EditText verifyPasswordView;
 
     private boolean useOrganizationSignup;
+    private DeviceCustomization customization;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        customization = DeviceCustomization.fromIntent(getIntent());
+
         setContentView(R.layout.activity_create_account);
 
+        setUpUI();
+    }
+
+    private void setUpUI() {
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
+
+        ParticleUi.setWindowBackground(this, customization.getScreenBackground());
+        ParticleUi.setBrandImageHorizontal(this, customization.getBrandImageHorizontal());
+
 
         Ui.setText(this, R.id.create_account_header_text,
                 Phrase.from(this, R.string.create_account_header_text)
-                        .put("brand_name", getString(R.string.brand_name))
+                        .put("brand_name", getString(customization.getBrandName()))
                         .format()
         );
 
@@ -61,7 +74,7 @@ public class CreateAccountActivity extends BaseActivity {
         passwordView = Ui.findView(this, R.id.password);
         verifyPasswordView = Ui.findView(this, R.id.verify_password);
 
-        useOrganizationSignup = getResources().getBoolean(R.bool.organization);
+        useOrganizationSignup = getResources().getBoolean(customization.getOrganization());
 
         Button submit = Ui.findView(this, R.id.action_create_account);
         submit.setOnClickListener(new View.OnClickListener() {
@@ -76,14 +89,16 @@ public class CreateAccountActivity extends BaseActivity {
 
                     @Override
                     public void onClick(View v) {
-                        startActivity(new Intent(v.getContext(), LoginActivity.class));
+                        Intent intent = new Intent(v.getContext(), LoginActivity.class);
+                        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+                        startActivity(intent);
                         finish();
                     }
                 });
 
-        if (getResources().getBoolean(R.bool.show_sign_up_page_fine_print)) {
-            String tosUri = getString(R.string.terms_of_service_uri);
-            String privacyPolicyUri = getString(R.string.privacy_policy_uri);
+        if (getResources().getBoolean(customization.getShowSignUpPageFinePrint())) {
+            String tosUri = getString(customization.getTermsOfServiceUri());
+            String privacyPolicyUri = getString(customization.getPrivacyPolicyUri());
 
             String finePrintText = Phrase.from(this, R.string.msg_create_account_disclaimer)
                     .put("tos_link", tosUri)
@@ -160,7 +175,7 @@ public class CreateAccountActivity extends BaseActivity {
                 public Void callApi(ParticleCloud particleCloud) throws ParticleCloudException {
                     if (useOrganizationSignup) {
                         particleCloud.signUpAndLogInWithCustomer(email, password,
-                                getString(R.string.organization_slug));
+                                getString(customization.getOrganizationSlug()));
                     } else {
                         particleCloud.signUpWithUser(email, password);
                     }
@@ -200,7 +215,7 @@ public class CreateAccountActivity extends BaseActivity {
                     } else if (error.getResponseData() != null) {
 
                         if (error.getResponseData().getHttpStatusCode() == 401
-                                && getResources().getBoolean(R.bool.organization)) {
+                                && getResources().getBoolean(customization.getOrganization())) {
                             msg = getString(R.string.create_account_account_already_exists_for_email_address);
                         } else {
                             msg = error.getServerErrorMsg();

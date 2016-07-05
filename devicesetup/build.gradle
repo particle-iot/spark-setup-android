@@ -1,7 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+group = 'com.github.Sushinn'
 
 // This is the library version used when deploying the artifact
-version = '0.3.6'
+version = '0.3.7'
 
 
 ext {
@@ -80,7 +82,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'io.particle:cloudsdk:0.3.4'
+    compile 'com.github.Sushinn:spark-sdk-android:v0.3.5-rc'
 
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'com.google.code.gson:gson:2.4'

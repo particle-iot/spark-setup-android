@@ -24,7 +24,7 @@
             android:layout_height="96dp"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/device_image_small"/>
+            tools:src="@drawable/device_image_small"/>
 
         <TextView
             android:id="@+id/wifi_list_header"
