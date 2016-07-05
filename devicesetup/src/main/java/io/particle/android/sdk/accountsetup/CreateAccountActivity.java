@@ -20,6 +20,7 @@ import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.ParticleSetupConstants;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Toaster;
@@ -65,7 +66,7 @@ public class CreateAccountActivity extends BaseActivity {
 
         Ui.setText(this, R.id.create_account_header_text,
                 Phrase.from(this, R.string.create_account_header_text)
-                        .put("brand_name", getString(R.string.brand_name))
+                        .put("brand_name", getString(customization.getBrandName()))
                         .format()
         );
 
@@ -88,7 +89,9 @@ public class CreateAccountActivity extends BaseActivity {
 
                     @Override
                     public void onClick(View v) {
-                        startActivity(new Intent(v.getContext(), LoginActivity.class));
+                        Intent intent = new Intent(v.getContext(), LoginActivity.class);
+                        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+                        startActivity(intent);
                         finish();
                     }
                 });
@@ -172,7 +175,7 @@ public class CreateAccountActivity extends BaseActivity {
                 public Void callApi(ParticleCloud particleCloud) throws ParticleCloudException {
                     if (useOrganizationSignup) {
                         particleCloud.signUpAndLogInWithCustomer(email, password,
-                                getString(R.string.organization_slug));
+                                getString(customization.getOrganizationSlug()));
                     } else {
                         particleCloud.signUpWithUser(email, password);
                     }

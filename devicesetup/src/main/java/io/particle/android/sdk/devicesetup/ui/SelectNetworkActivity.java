@@ -15,7 +15,9 @@ import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
+import io.particle.android.sdk.devicesetup.model.DeviceCustomization;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
+import io.particle.android.sdk.utils.ParticleSetupConstants;
 import io.particle.android.sdk.utils.WiFi;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -26,11 +28,14 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
 
 
     private WifiListFragment wifiListFragment;
+    private DeviceCustomization customization;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_network);
+
+        customization = DeviceCustomization.fromIntent(getIntent());
 
         wifiListFragment = Ui.findFrag(this, R.id.wifi_list_fragment);
         Ui.findView(this, R.id.action_rescan).setOnClickListener(new View.OnClickListener() {
@@ -43,7 +48,9 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
     }
 
     public void onManualNetworkEntryClicked(View view) {
-        startActivity(new Intent(this, ManualNetworkEntryActivity.class));
+        Intent intent = new Intent(this, ManualNetworkEntryActivity.class);
+        intent.putExtra(ParticleSetupConstants.CUSTOMIZATION_TAG, customization);
+        startActivity(intent);
         finish();
     }
 
@@ -66,9 +73,9 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
 
         String softApSSID = WiFi.getCurrentlyConnectedSSID(this);
         if (selectedNetwork.isSecured()) {
-            startActivity(PasswordEntryActivity.buildIntent(this, selectedNetwork.scan));
+            startActivity(PasswordEntryActivity.buildIntent(this, selectedNetwork.scan, customization));
         } else {
-            startActivity(ConnectingActivity.buildIntent(this, softApSSID, selectedNetwork.scan));
+            startActivity(ConnectingActivity.buildIntent(this, softApSSID, selectedNetwork.scan, customization));
         }
         finish();
     }

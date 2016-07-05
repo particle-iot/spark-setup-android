@@ -29,13 +29,32 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
 
     private final WifiManager wifiManager;
     private final WifiScannedBroadcastReceiver receiver = new WifiScannedBroadcastReceiver();
+    private final String networkPrefix;
+
+    private Predicate<ScanResult> ssidStartsWithProductName;
 
     private volatile ImmutableSet<ScanResultNetwork> mostRecentResult;
     private volatile int loadCount = 0;
 
-    public WifiScanResultLoader(Context context) {
+    public WifiScanResultLoader(Context context, String prefix) {
         super(context);
+        this.networkPrefix = prefix;
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+
+        ssidStartsWithProductName = new Predicate<ScanResult>() {
+
+            final String softApPrefix = getPrefix();
+
+            @Override
+            public boolean apply(ScanResult input) {
+                return input.SSID != null && input.SSID.toLowerCase().startsWith(softApPrefix);
+            }
+
+            String getPrefix() {
+                return (networkPrefix).toLowerCase();
+            }
+
+        };
     }
 
     @Override
@@ -104,21 +123,6 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
         }
     }
 
-
-    private final Predicate<ScanResult> ssidStartsWithProductName = new Predicate<ScanResult>() {
-
-        final String softApPrefix = getPrefix();
-
-        @Override
-        public boolean apply(ScanResult input) {
-            return input.SSID != null && input.SSID.toLowerCase().startsWith(softApPrefix);
-        }
-
-        String getPrefix() {
-            return (getContext().getString(R.string.network_name_prefix)+ "-").toLowerCase();
-        }
-
-    };
 
 
     private static final Function<ScanResult, ScanResultNetwork> toWifiNetwork =

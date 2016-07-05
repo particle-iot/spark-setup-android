@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         DeviceCustomization dc = new DeviceCustomization();
         dc.setBrandName(R.string.company_name);
         dc.setDeviceName(R.string.device);
+        dc.setNetworkNamePrefix(R.string.prefix);
         dc.setDeviceImageSmall(R.drawable.device_pic);
         ParticleDeviceSetupLibrary.startDeviceSetup(this, dc);
     }
