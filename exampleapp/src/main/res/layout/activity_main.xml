@@ -22,4 +22,13 @@
         android:layout_marginTop="76dp"
         android:text="Start Setup"/>
 
+    <Button
+        android:id="@+id/start_setup_custom_intent_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Setup with Custom Intent Builder"
+        android:layout_below="@+id/start_setup_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
 </RelativeLayout>
