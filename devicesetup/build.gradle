@@ -67,11 +67,13 @@ android {
     }
 
     uploadArchives {
-        repositories.mavenDeployer {
-            repository(url: "file:///tmp/mvn")
-            pom.groupId = "io.particle"
-            pom.artifactId = "devicesetup"
-            pom.version = version
+        repositories {
+            mavenDeployer {
+                repository(url: "file://${System.env.HOME}/.m2/repository/")
+                pom.groupId = "pet.clever"
+                pom.artifactId = "devicesetup"
+                pom.version = version
+            }
         }
     }
 }
