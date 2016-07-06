@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 // This is the library version used when deploying the artifact
 version = '0.3.6'
@@ -63,6 +64,15 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
+    }
+
+    uploadArchives {
+        repositories.mavenDeployer {
+            repository(url: "file:///tmp/mvn")
+            pom.groupId = "io.particle"
+            pom.artifactId = "devicesetup"
+            pom.version = version
+        }
     }
 }
 
