@@ -16,6 +16,7 @@ import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.SetupResult;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -97,7 +98,8 @@ public class SuccessActivity extends BaseActivity {
                 Intent intent = NextActivitySelector.getNextActivityIntent(
                         v.getContext(),
                         particleCloud,
-                        SDKGlobals.getSensitiveDataStorage());
+                        SDKGlobals.getSensitiveDataStorage(),
+                        new SetupResult(isSuccess, isSuccess ? DeviceSetupState.deviceToBeSetUpId : null));
 
                 // FIXME: we shouldn't do this in the lib.  looks like another argument for Fragments.
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP

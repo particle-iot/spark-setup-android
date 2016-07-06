@@ -200,7 +200,8 @@ public class LoginActivity extends BaseActivity {
                     startActivity(NextActivitySelector.getNextActivityIntent(
                             LoginActivity.this,
                             sparkCloud,
-                            SDKGlobals.getSensitiveDataStorage()));
+                            SDKGlobals.getSensitiveDataStorage(),
+                            null));
                     finish();
                 }
 
