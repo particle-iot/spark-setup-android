@@ -89,6 +89,7 @@ public class ParticleDeviceSetupLibrary {
      * @deprecated Use {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, Class)}
      *             or {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, SetupCompleteIntentBuilder)} instead.
      */
+    @Deprecated
     public static void startDeviceSetup(Context ctx) {
         Preconditions.checkNotNull(instance.setupCompleteIntentBuilder,
                 "SetupCompleteIntentBuilder instance is null");
