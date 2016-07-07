@@ -26,14 +26,10 @@ public class ParticleDeviceSetupLibrary {
      */
     public interface DeviceSetupCompleteContract {
 
-        /**
-         * The BroadcastIntent action sent when the device setup process is complete.
-         */
+        /** The BroadcastIntent action sent when the device setup process is complete. */
         String ACTION_DEVICE_SETUP_COMPLETE = "ACTION_DEVICE_SETUP_COMPLETE";
 
-        /**
-         * A boolean extra indicating if the setup was successful
-         */
+        /** A boolean extra indicating if the setup was successful */
         String EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL = "EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL";
 
         /**
@@ -59,16 +55,12 @@ public class ParticleDeviceSetupLibrary {
         public abstract void onSetupFailure();
 
 
-        /**
-         * Optional convenience method for registering this receiver.
-         */
+        /** Optional convenience method for registering this receiver. */
         public void register(Context ctx) {
             LocalBroadcastManager.getInstance(ctx).registerReceiver(this, buildIntentFilter());
         }
 
-        /**
-         * Optional convenience method for registering this receiver.
-         */
+        /** Optional convenience method for registering this receiver. */
         public void unregister(Context ctx) {
             LocalBroadcastManager.getInstance(ctx).unregisterReceiver(this);
         }
