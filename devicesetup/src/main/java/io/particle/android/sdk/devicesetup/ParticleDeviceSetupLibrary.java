@@ -167,6 +167,12 @@ public class ParticleDeviceSetupLibrary {
 
     private SetupCompleteIntentBuilder setupCompleteIntentBuilder;
 
+    /**
+     * @deprecated This exists only because {@link io.particle.android.sdk.ui.NextActivitySelector}
+     * is in a different package, and the plan is to remove that class soon.
+     * As soon as {@link io.particle.android.sdk.ui.NextActivitySelector} is removed, this will be removed.
+     */
+    @Deprecated
     public SetupCompleteIntentBuilder getSetupCompleteIntentBuilder() {
         return setupCompleteIntentBuilder;
     }
