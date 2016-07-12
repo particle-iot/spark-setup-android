@@ -2,11 +2,11 @@
 <resources>
 
     <!-- Phrase-templated strings -->
-    <string name="msg_device_not_listed">{device_name} not listed here? Hold the {setup_button_identifier} for three seconds to put it in setup mode; the {indicator_light} should turn {indicator_light_setup_color_name}</string>
+    <string name="msg_device_not_listed">{device_name} not listed here? (a) Remove the Hub dome (b) unplug the Hub and plug it back in (c) touch the center touchpad three times and (d) place the dome back on Hub base to put it in setup mode; the dome indicator light should turn blue</string>
     <string name="get_ready_title_text">Time to set up your {device_name}!</string>
     <string name="get_ready_text"><![CDATA[\n
 \u2022 Please power on your {device_name} by plugging it in.\n\n
-\u2022 The indicator light should blink {indicator_light_setup_color_name}. If this {device_name} has been set up before, hold the {setup_button_identifier} for 3 seconds to set up again.\n\n
+\u2022 The dome indicator light should blink blue. If not then this {device_name} may have been set up before. To set it up again: (a) remove the Hub dome (b) unplug the Hub and plug it back in (c) touch the center touchpad three times and (d) place the dome back on Hub base.\n\n
 \u2022 Make sure your Android device is connected to the internet.\n\n
 \u2022 Tap the READY button to proceed.]]></string>
     <string name="wifi_list_header_text">Choose your {device_name}</string>

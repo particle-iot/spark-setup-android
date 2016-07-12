@@ -102,9 +102,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         Ui.setText(this, R.id.msg_device_not_listed,
                 Phrase.from(this, R.string.msg_device_not_listed)
                         .put("device_name", getString(R.string.device_name))
-                        .put("setup_button_identifier", getString(R.string.mode_button_name))
-                        .put("indicator_light", getString(R.string.indicator_light))
-                        .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
+//                        .put("setup_button_identifier", getString(R.string.mode_button_name))
+//                        .put("indicator_light", getString(R.string.indicator_light))
+//                        .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
                         .format()
         );
 
