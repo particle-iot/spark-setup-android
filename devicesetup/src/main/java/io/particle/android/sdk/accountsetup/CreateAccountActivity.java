@@ -228,7 +228,8 @@ public class CreateAccountActivity extends BaseActivity {
         startActivity(NextActivitySelector.getNextActivityIntent(
                 CreateAccountActivity.this,
                 cloud,
-                SDKGlobals.getSensitiveDataStorage()));
+                SDKGlobals.getSensitiveDataStorage(),
+                null));
         finish();
     }
 
