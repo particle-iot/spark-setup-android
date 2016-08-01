@@ -538,17 +538,11 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     // no data to pass along with this at the moment, I just want to specify
     // that this isn't an error which should necessarily count against retries.
     static class DeviceAlreadyClaimed extends SetupStepException {
-        public DeviceAlreadyClaimed(String msg, Throwable throwable) {
-            super(msg, throwable);
-        }
 
-        public DeviceAlreadyClaimed(String msg) {
+        DeviceAlreadyClaimed(String msg) {
             super(msg);
         }
 
-        public DeviceAlreadyClaimed(Throwable throwable) {
-            super(throwable);
-        }
     }
 
 }
