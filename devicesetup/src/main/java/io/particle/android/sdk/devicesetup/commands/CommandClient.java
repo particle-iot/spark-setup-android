@@ -4,8 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -108,7 +106,7 @@ public class CommandClient {
         }
 
         String built = commandData.toString();
-        log.i("*** BUILT COMMAND DATA: '" + StringEscapeUtils.escapeJava(built) + "'");
+        log.i("*** BUILT COMMAND DATA: '" + CommandClientUtils.escapeJava(built) + "'");
         return built;
     }
 
@@ -125,7 +123,7 @@ public class CommandClient {
         } while (truthy(line));
 
         String responseData = buffer.readUtf8();
-        log.d("Command response (raw): " + StringEscapeUtils.escapeJava(responseData));
+        log.d("Command response (raw): " + CommandClientUtils.escapeJava(responseData));
         T tee = gson.fromJson(responseData, responseType);
         log.d("Command response: " + tee);
         EZ.closeThisThingOrMaybeDont(buffer);

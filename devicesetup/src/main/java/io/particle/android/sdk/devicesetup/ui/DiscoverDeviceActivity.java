@@ -17,8 +17,6 @@ import android.view.View;
 
 import com.squareup.phrase.Phrase;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.security.PublicKey;
 import java.util.Set;
@@ -37,6 +35,7 @@ import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
+import io.particle.android.sdk.utils.ParticleDeviceSetupInternalStringUtils;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.WiFi;
@@ -506,8 +505,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             try {
                 log.d("Setting claim code using code: " + DeviceSetupState.claimCode);
 
+                String claimCodeNoBackslashes = ParticleDeviceSetupInternalStringUtils.remove(
+                        DeviceSetupState.claimCode, "\\");
                 SetCommand.Response response = client.sendCommandAndReturnResponse(
-                        new SetCommand("cc", StringUtils.remove(DeviceSetupState.claimCode, "\\")),
+                        new SetCommand("cc", claimCodeNoBackslashes),
                         SetCommand.Response.class, socketFactory);
 
                 if (truthy(response.responseCode)) {

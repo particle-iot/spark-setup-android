@@ -9,8 +9,6 @@ import android.net.wifi.WifiManager;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 
 import static io.particle.android.sdk.utils.Py.truthy;
@@ -95,8 +93,8 @@ public class WiFi {
             return null;
         }
         String quoteMark = "\"";
-        SSID = StringUtils.removeStart(SSID, quoteMark);
-        SSID = StringUtils.removeEnd(SSID, quoteMark);
+        SSID = ParticleDeviceSetupInternalStringUtils.removeStart(SSID, quoteMark);
+        SSID = ParticleDeviceSetupInternalStringUtils.removeEnd(SSID, quoteMark);
         return SSID;
     }
 
