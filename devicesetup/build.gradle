@@ -64,10 +64,6 @@ android {
         abortOnError false
     }
 
-    packagingOptions {
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-    }
 }
 
 // TESTING ONLY: to build against a locally built version of the cloud SDK, uncomment these
@@ -88,7 +84,6 @@ dependencies {
 
     compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'com.google.code.gson:gson:2.7'
-    compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.okio:okio:1.9.0'
     compile 'com.squareup.phrase:phrase:1.0.3'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'

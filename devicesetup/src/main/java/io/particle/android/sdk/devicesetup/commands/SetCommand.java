@@ -1,7 +1,9 @@
 package io.particle.android.sdk.devicesetup.commands;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
+
+import io.particle.android.sdk.utils.Preconditions;
+
 
 public class SetCommand extends Command {
 

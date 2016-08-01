@@ -17,10 +17,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.google.common.collect.FluentIterable;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import io.particle.android.sdk.devicesetup.R;
@@ -149,7 +149,11 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
         if (!previousData.equals(data)) {
             previousData = data;
             adapter.clear();
-            adapter.addAll(FluentIterable.from(data).toSortedList(wifiNetworkComparator));
+
+            List<T> asList = new ArrayList<>(data);
+            Collections.sort(asList, wifiNetworkComparator);
+
+            adapter.addAll(asList);
         }
 
         // setting the adapter at this point, instead of in onCreateView(), etc, means we get

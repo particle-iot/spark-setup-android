@@ -3,11 +3,10 @@ package io.particle.android.sdk.devicesetup.setupsteps;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 
-import com.google.common.base.Preconditions;
-
-import io.particle.android.sdk.devicesetup.ui.DeviceSetupState;
 import io.particle.android.sdk.devicesetup.SetupProcessException;
+import io.particle.android.sdk.devicesetup.ui.DeviceSetupState;
 import io.particle.android.sdk.utils.EZ;
+import io.particle.android.sdk.utils.Preconditions;
 import io.particle.android.sdk.utils.WiFi;
 
 import static io.particle.android.sdk.utils.Py.list;

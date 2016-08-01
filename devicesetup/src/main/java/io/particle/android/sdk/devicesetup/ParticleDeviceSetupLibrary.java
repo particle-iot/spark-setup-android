@@ -8,10 +8,9 @@ import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.google.common.base.Preconditions;
-
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
+import io.particle.android.sdk.utils.Preconditions;
 
 
 public class ParticleDeviceSetupLibrary {

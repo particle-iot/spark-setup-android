@@ -6,14 +6,16 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-
 import java.util.List;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import io.particle.android.sdk.utils.Funcy.Predicate;
 
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
+@ParametersAreNonnullByDefault
 public class WiFi {
 
     private static final TLog log = TLog.get(WiFi.class);
@@ -22,9 +24,9 @@ public class WiFi {
     public static Predicate<ScanResult> is24Ghz = new Predicate<ScanResult>() {
 
         @Override
-        public boolean apply(ScanResult input) {
+        public boolean test(ScanResult scanResult) {
             // values taken from the ScanResult source
-            return input.frequency > 2300 && input.frequency < 2500;
+            return scanResult.frequency > 2300 && scanResult.frequency < 2500;
         }
     };
 
@@ -34,7 +36,7 @@ public class WiFi {
     public static Predicate<ScanResult> isWifiNameTruthy = new Predicate<ScanResult>() {
 
         @Override
-        public boolean apply(ScanResult input) {
+        public boolean test(ScanResult input) {
             return truthy(input.SSID);
         }
     };

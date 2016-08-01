@@ -7,11 +7,6 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableSet;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +14,12 @@ import java.util.Set;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.utils.BetterAsyncTaskLoader;
+import io.particle.android.sdk.utils.Funcy;
+import io.particle.android.sdk.utils.Funcy.Func;
+import io.particle.android.sdk.utils.Funcy.Predicate;
 import io.particle.android.sdk.utils.TLog;
+
+import static io.particle.android.sdk.utils.Py.set;
 
 
 public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNetwork>> {
@@ -30,7 +30,7 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
     private final WifiManager wifiManager;
     private final WifiScannedBroadcastReceiver receiver = new WifiScannedBroadcastReceiver();
 
-    private volatile ImmutableSet<ScanResultNetwork> mostRecentResult;
+    private volatile Set<ScanResultNetwork> mostRecentResult;
     private volatile int loadCount = 0;
 
     public WifiScanResultLoader(Context context) {
@@ -76,11 +76,8 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
         }
 
         loadCount++;
-
-        mostRecentResult = FluentIterable.from(scanResults)
-                .filter(ssidStartsWithProductName)
-                .transform(toWifiNetwork)
-                .toSet();
+        // filter the list, transform the matched results, then wrap those in a Set
+        mostRecentResult = set(Funcy.transformList(scanResults, ssidStartsWithProductName, toWifiNetwork));
 
         if (mostRecentResult.isEmpty()) {
             log.i("No SSID scan results returned after filtering by product name.  " +
@@ -110,7 +107,7 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
         final String softApPrefix = getPrefix();
 
         @Override
-        public boolean apply(ScanResult input) {
+        public boolean test(ScanResult input) {
             return input.SSID != null && input.SSID.toLowerCase().startsWith(softApPrefix);
         }
 
@@ -121,8 +118,8 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
     };
 
 
-    private static final Function<ScanResult, ScanResultNetwork> toWifiNetwork =
-            new Function<ScanResult, ScanResultNetwork>() {
+    private static final Func<ScanResult, ScanResultNetwork> toWifiNetwork =
+            new Func<ScanResult, ScanResultNetwork>() {
         @Override
         public ScanResultNetwork apply(ScanResult input) {
             return new ScanResultNetwork(input);
