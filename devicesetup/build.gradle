@@ -83,8 +83,9 @@ dependencies {
     compile 'io.particle:cloudsdk:0.3.4'
 
     compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.code.gson:gson:2.7'
     compile 'com.google.guava:guava:18.0'
-    compile 'com.squareup.okio:okio:1.6.0'
+    compile 'com.squareup.okio:okio:1.9.0'
     compile 'com.squareup.phrase:phrase:1.0.3'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
 
