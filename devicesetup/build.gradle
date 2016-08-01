@@ -82,12 +82,12 @@ dependencies {
 
     compile 'io.particle:cloudsdk:0.3.4'
 
-    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.okio:okio:1.9.0'
     compile 'com.squareup.phrase:phrase:1.0.3'
-    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
 
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:recyclerview-v7:23.2.1'
