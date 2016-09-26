@@ -1,1 +1,5 @@
 include ':devicesetup', ':exampleapp'
+
+// for dev if u need/want to include cloudsdk then do this..
+//include 'cloudsdk', ':devicesetup', ':exampleapp'
+//project(':cloudsdk').projectDir = new File('/home/rrizun/git/spark-sdk-android/cloudsdk')
