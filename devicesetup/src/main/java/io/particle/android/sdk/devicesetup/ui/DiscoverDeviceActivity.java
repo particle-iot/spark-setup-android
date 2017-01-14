@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.devicesetup.ApConnector;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.DeviceIdCommand;
@@ -46,8 +47,7 @@ import static io.particle.android.sdk.utils.Py.truthy;
 
 
 public class DiscoverDeviceActivity extends RequiresWifiScansActivity
-        implements WifiListFragment.Client<ScanResultNetwork>,
-        ConnectToApFragment.Client {
+        implements WifiListFragment.Client<ScanResultNetwork>, ApConnector.Client {
 
 
     private static final int MAX_NUM_DISCOVER_PROCESS_ATTEMPTS = 5;
