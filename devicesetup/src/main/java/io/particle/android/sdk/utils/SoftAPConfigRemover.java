@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import static io.particle.android.sdk.utils.Py.set;
@@ -41,7 +40,7 @@ public class SoftAPConfigRemover {
         for (String ssid : loadSSIDStringSetWithKey(KEY_SOFT_AP_SSIDS)) {
             WiFi.removeNetwork(ssid, ctx);
         }
-        saveSSIDsWithKey(KEY_SOFT_AP_SSIDS, new HashSet<String>());
+        saveSSIDsWithKey(KEY_SOFT_AP_SSIDS, set());
     }
 
     public void onWifiNetworkDisabled(String ssid) {
@@ -56,16 +55,16 @@ public class SoftAPConfigRemover {
         for (String ssid : loadSSIDStringSetWithKey(KEY_DISABLED_WIFI_SSIDS)) {
             WiFi.reenableNetwork(ssid, ctx);
         }
-        saveSSIDsWithKey(KEY_DISABLED_WIFI_SSIDS, new HashSet<String>());
+        saveSSIDsWithKey(KEY_DISABLED_WIFI_SSIDS, set());
     }
 
 
     private Set<String> loadSSIDStringSetWithKey(String key) {
-        log.v("loadSSIDStringSetWithKey(" + key + ")");
+//        log.v("loadSSIDStringSetWithKey(" + key + ")");
 
         Set<String> ssids = set();
         ssids = prefs.getStringSet(key, ssids);
-        log.v("Loaded saved SSIDS: " + ssids);
+//        log.v("Loaded saved SSIDS: " + ssids);
 
         Set<String> diffQuotes = set();
         for (String ssid : ssids) {
@@ -74,13 +73,13 @@ public class SoftAPConfigRemover {
         }
         ssids.addAll(diffQuotes);
 
-        log.v("Returning SSIDS: " + ssids);
+//        log.v("Returning SSIDS: " + ssids);
         return ssids;
     }
 
     @SuppressLint("CommitPrefEdits")
     private void saveSSIDsWithKey(String key, Set<String> ssids) {
-        log.v("saveSSIDsWithKey() " + key + ", " + ssids);
+//        log.v("saveSSIDsWithKey() " + key + ", " + ssids);
         prefs.edit()
                 .putStringSet(key, ssids)
                 .commit();
