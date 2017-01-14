@@ -85,7 +85,8 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
         DeviceSetupState.previouslyConnectedWifiNetwork = WiFi.getCurrentlyConnectedSSID(this);
 
-        wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        Context appCtx = getApplicationContext();
+        wifiManager = (WifiManager) appCtx.getSystemService(Context.WIFI_SERVICE);
         sparkCloud = ParticleCloud.get(this);
 
         wifiListFragment = Ui.findFrag(this, R.id.wifi_list_fragment);
