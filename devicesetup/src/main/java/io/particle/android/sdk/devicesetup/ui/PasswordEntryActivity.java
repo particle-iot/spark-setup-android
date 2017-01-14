@@ -104,7 +104,7 @@ public class PasswordEntryActivity extends BaseActivity {
     }
 
     public void onConnectClicked(View view) {
-        String secret = passwordBox.getText().toString();
+        String secret = passwordBox.getText().toString().trim();
         startActivity(ConnectingActivity.buildIntent(this,
                 WiFi.getCurrentlyConnectedSSID(this),
                 networkToConnectTo,
