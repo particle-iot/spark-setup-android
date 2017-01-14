@@ -2,8 +2,6 @@ package io.particle.android.sdk.devicesetup.ui;
 
 import android.Manifest.permission;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -56,22 +54,11 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
         PermissionsFragment.ensureAttached(this);
 
-        Ui.findView(this, R.id.action_im_ready).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onReadyButtonClicked();
-                    }
-                }
-        );
+        Ui.findView(this, R.id.action_im_ready).setOnClickListener(this::onReadyButtonClicked);
         Ui.setTextFromHtml(this, R.id.action_troubleshooting, R.string.troubleshooting)
-                .setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
-                        startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
-                    }
+                .setOnClickListener(v -> {
+                    Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
+                    startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
                 });
 
         Ui.setText(this, R.id.get_ready_text,
@@ -100,7 +87,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
     }
 
-    private void onReadyButtonClicked() {
+    private void onReadyButtonClicked(View v) {
         // FIXME: check here that another of these tasks isn't already running
         DeviceSetupState.reset();
         showProgress(true);
@@ -157,15 +144,12 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                     new AlertDialog.Builder(GetReadyActivity.this)
                             .setTitle(R.string.access_denied)
                             .setMessage(errorMsg)
-                            .setPositiveButton(R.string.ok, new OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    log.i("Logging out user");
-                                    sparkCloud.logOut();
-                                    startLoginActivity();
-                                    finish();
-                                }
+                            .setPositiveButton(R.string.ok, (dialog, which) -> {
+                                dialog.dismiss();
+                                log.i("Logging out user");
+                                sparkCloud.logOut();
+                                startLoginActivity();
+                                finish();
                             })
                             .show();
 
@@ -182,12 +166,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                     new AlertDialog.Builder(GetReadyActivity.this)
                             .setTitle(R.string.error)
                             .setMessage(errorMsg)
-                            .setPositiveButton(R.string.ok, new OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
+                            .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
                             .show();
                 }
             }

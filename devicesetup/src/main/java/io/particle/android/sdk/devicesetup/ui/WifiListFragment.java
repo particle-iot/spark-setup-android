@@ -19,7 +19,6 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -52,14 +51,6 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
 
 
     private static final TLog log = TLog.get(WifiListFragment.class);
-
-
-    private static final Comparator<WifiNetwork> wifiNetworkComparator = new Comparator<WifiNetwork>() {
-        @Override
-        public int compare(WifiNetwork lhs, WifiNetwork rhs) {
-            return lhs.getSsid().compareTo(rhs.getSsid());
-        }
-    };
 
 
     private WifiNetworkAdapter adapter;
@@ -143,7 +134,7 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
     public void onLoadFinished(Loader<Set<T>> loader, Set<T> data) {
         log.d("new scan results: " + data);
 
-        data = (data == null) ? Collections.<T>emptySet() : data;
+        data = (data == null) ? Collections.emptySet() : data;
 
         // only do this work if our data has actually changed
         if (!previousData.equals(data)) {
@@ -151,7 +142,7 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
             adapter.clear();
 
             List<T> asList = new ArrayList<>(data);
-            Collections.sort(asList, wifiNetworkComparator);
+            Collections.sort(asList, (lhs, rhs) -> lhs.getSsid().compareTo(rhs.getSsid()));
 
             adapter.addAll(asList);
         }
@@ -185,14 +176,11 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
             return;
         }
 
-        aggroLoadingRunnable =  new Runnable() {
-            @Override
-            public void run() {
-                log.d("Running aggro loading");
-                scanAsync();
-                aggroLoadingRunnable = null;
-                scheduleNextAggroLoad();
-            }
+        aggroLoadingRunnable = () -> {
+            log.d("Running aggro loading");
+            scanAsync();
+            aggroLoadingRunnable = null;
+            scheduleNextAggroLoad();
         };
         aggroLoadingHandler.postDelayed(aggroLoadingRunnable, client.getAggroLoadingTimeMillis());
     }

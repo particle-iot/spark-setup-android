@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.ui;
 
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
@@ -33,12 +31,9 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
         setContentView(R.layout.activity_select_network);
 
         wifiListFragment = Ui.findFrag(this, R.id.wifi_list_fragment);
-        Ui.findView(this, R.id.action_rescan).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ParticleUi.showParticleButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, true);
-                wifiListFragment.scanAsync();
-            }
+        Ui.findView(this, R.id.action_rescan).setOnClickListener(v -> {
+            ParticleUi.showParticleButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, true);
+            wifiListFragment.scanAsync();
         });
     }
 
@@ -52,12 +47,7 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
         if (WifiSecurity.isEnterpriseNetwork(selectedNetwork.scan.wifiSecurityType)) {
             new Builder(this)
                     .setMessage(getString(R.string.enterprise_networks_not_supported))
-                    .setPositiveButton(R.string.ok, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
                     .show();
             return;
         }

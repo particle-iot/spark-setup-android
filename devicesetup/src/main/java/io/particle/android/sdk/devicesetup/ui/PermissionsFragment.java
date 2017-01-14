@@ -1,8 +1,6 @@
 package io.particle.android.sdk.devicesetup.ui;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -76,34 +74,25 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
         if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permission)) {
             dialogBuilder.setTitle(R.string.location_permission_dialog_title)
                     .setMessage(R.string.location_permission_dialog_text)
-                    .setPositiveButton(R.string.got_it, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            requestPermission(permission);
-                        }
+                    .setPositiveButton(R.string.got_it, (dialog, which) -> {
+                        dialog.dismiss();
+                        requestPermission(permission);
                     });
         } else {
             // user has explicitly denied this permission to setup.
             // show a simple dialog and bail out.
             dialogBuilder.setTitle(R.string.location_permission_denied_dialog_title)
                     .setMessage(R.string.location_permission_denied_dialog_text)
-                    .setPositiveButton(R.string.settings, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            String pkgName = getActivity().getApplicationInfo().packageName;
-                            intent.setData(Uri.parse("package:" + pkgName));
-                            startActivity(intent);
-                        }
+                    .setPositiveButton(R.string.settings, (dialog, which) -> {
+                        dialog.dismiss();
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        String pkgName = getActivity().getApplicationInfo().packageName;
+                        intent.setData(Uri.parse("package:" + pkgName));
+                        startActivity(intent);
                     })
-                    .setNegativeButton(R.string.exit_setup, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Client client = (Client) getActivity();
-                            client.onUserDeniedPermission(permission);
-                        }
+                    .setNegativeButton(R.string.exit_setup, (dialog, which) -> {
+                        Client client = (Client) getActivity();
+                        client.onUserDeniedPermission(permission);
                     });
         }
 
@@ -132,15 +121,14 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
     }
 
     private void requestPermission(String permission) {
-        ActivityCompat.requestPermissions(getActivity(),
-                new String[]{permission},
-                REQUEST_CODE);
+        ActivityCompat.requestPermissions(getActivity(), new String[] {permission}, REQUEST_CODE);
     }
 
     private static final int REQUEST_CODE = 128;
 
-    private static final String PREF_BUCKET_NAME = "permissionsFragmentPrefs";
-    private static final String PREF_KEY_PERMISSION_DIALOGS_SHOWN = "permissionsDialogsShown";
+    private static final String
+            PREF_BUCKET_NAME = "permissionsFragmentPrefs",
+            PREF_KEY_PERMISSION_DIALOGS_SHOWN = "permissionsDialogsShown";
 
     private static boolean haveShownPermissionDialog(Context ctx, String permission) {
         SharedPreferences prefs = ctx.getSharedPreferences(PREF_BUCKET_NAME, Context.MODE_PRIVATE);

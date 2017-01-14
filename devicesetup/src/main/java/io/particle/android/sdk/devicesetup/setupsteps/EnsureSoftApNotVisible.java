@@ -1,7 +1,6 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
 import android.content.Context;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import io.particle.android.sdk.devicesetup.SetupProcessException;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.Funcy;
-import io.particle.android.sdk.utils.Funcy.Func;
 import io.particle.android.sdk.utils.Funcy.Predicate;
 import io.particle.android.sdk.utils.Preconditions;
 
@@ -29,12 +27,7 @@ public class EnsureSoftApNotVisible extends SetupStep {
 
         this.wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
         this.softApName = softApSSID;
-        this.matchesSoftApSSID = new Predicate<String>() {
-            @Override
-            public boolean test(String input) {
-                return softApName.equalsIgnoreCase(input);
-            }
-        };
+        this.matchesSoftApSSID = softApName::equalsIgnoreCase;
     }
 
     @Override
@@ -83,7 +76,8 @@ public class EnsureSoftApNotVisible extends SetupStep {
     }
 
     private boolean isSoftApVisible() {
-        List<String> scansPlusConnectedSsid = Funcy.transformList(wifiManager.getScanResults(), toSSID);
+        List<String> scansPlusConnectedSsid = Funcy.transformList(wifiManager.getScanResults(),
+                input -> (input == null) ? null : input.SSID);
         log.d("scansPlusConnectedSsid: " + scansPlusConnectedSsid);
         log.d("Soft AP we're looking for: " + softApName);
 
@@ -92,11 +86,4 @@ public class EnsureSoftApNotVisible extends SetupStep {
         return firstMatch != null;
     }
 
-
-    private static final Func<ScanResult, String> toSSID = new Func<ScanResult, String>() {
-        @Override
-        public String apply(ScanResult input) {
-            return (input == null) ? null : input.SSID;
-        }
-    };
 }

@@ -117,12 +117,9 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
 
         Ui.setText(this, R.id.network_name, networkToConnectTo.ssid);
         Button cancelButton = Ui.findView(this, R.id.action_cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                connectingProcessWorkerTask.cancel(false);
-                finish();
-            }
+        cancelButton.setOnClickListener(v -> {
+            connectingProcessWorkerTask.cancel(false);
+            finish();
         });
 
         Ui.setText(this, R.id.connecting_text,
@@ -248,25 +245,22 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                 // FIXME: handle "success, no ownership" case
                 resultCode = SuccessActivity.RESULT_SUCCESS;
 
-                EZ.runAsync(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Set<String> names = set();
-                            for (ParticleDevice device : sparkCloud.getDevices()) {
-                                if (device != null && device.getName() != null) {
-                                    names.add(device.getName());
-                                }
+                EZ.runAsync(() -> {
+                    try {
+                        Set<String> names = set();
+                        for (ParticleDevice device : sparkCloud.getDevices()) {
+                            if (device != null && device.getName() != null) {
+                                names.add(device.getName());
                             }
-                            ParticleDevice device = sparkCloud.getDevice(deviceId);
-                            if (device != null && !truthy(device.getName())) {
-                                device.setName(CoreNameGenerator.generateUniqueName(names));
-                            }
-                        } catch (Exception e) {
-                            // FIXME: do real error handling here, and only
-                            // handle ParticleCloudException instead of swallowing everything
-                            e.printStackTrace();
                         }
+                        ParticleDevice device = sparkCloud.getDevice(deviceId);
+                        if (device != null && !truthy(device.getName())) {
+                            device.setName(CoreNameGenerator.generateUniqueName(names));
+                        }
+                    } catch (Exception e) {
+                        // FIXME: do real error handling here, and only
+                        // handle ParticleCloudException instead of swallowing everything
+                        e.printStackTrace();
                     }
                 });
             } else {

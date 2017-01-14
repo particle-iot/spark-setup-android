@@ -2,8 +2,6 @@ package io.particle.android.sdk.devicesetup.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -99,6 +97,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                         .put("device_name", getString(R.string.device_name))
                         .format()
         );
+
         Ui.setText(this, R.id.msg_device_not_listed,
                 Phrase.from(this, R.string.msg_device_not_listed)
                         .put("device_name", getString(R.string.device_name))
@@ -109,12 +108,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         );
 
         Ui.setTextFromHtml(this, R.id.action_troubleshooting, R.string.troubleshooting).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
-                        startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
-                    }
+                v -> {
+                    Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
+                    startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
                 }
         );
 
@@ -172,21 +168,15 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         log.d("Wi-Fi disabled; prompting user");
         new AlertDialog.Builder(this)
                 .setTitle(R.string.wifi_required)
-                .setPositiveButton(R.string.enable_wifi, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        log.i("Enabling Wi-Fi at the user's request.");
-                        wifiManager.setWifiEnabled(true);
-                        wifiListFragment.scanAsync();
-                    }
+                .setPositiveButton(R.string.enable_wifi, (dialog, which) -> {
+                    dialog.dismiss();
+                    log.i("Enabling Wi-Fi at the user's request.");
+                    wifiManager.setWifiEnabled(true);
+                    wifiListFragment.scanAsync();
                 })
-                .setNegativeButton(R.string.exit_setup, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        finish();
-                    }
+                .setNegativeButton(R.string.exit_setup, (dialog, which) -> {
+                    dialog.dismiss();
+                    finish();
                 })
                 .show();
     }
@@ -351,13 +341,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error)
                 .setMessage(errorMsg)
-                .setPositiveButton(R.string.ok, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
-                        finish();
-                    }
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    dialog.dismiss();
+                    startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
+                    finish();
                 })
                 .show();
     }
@@ -369,30 +356,24 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         new Builder(this)
                 .setTitle(getString(R.string.change_owner_question))
                 .setMessage(dialogMsg)
-                .setPositiveButton(getString(R.string.change_owner), new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        log.i("Changing owner to " + sparkCloud.getLoggedInUsername());
+                .setPositiveButton(getString(R.string.change_owner), (dialog, which) -> {
+                    dialog.dismiss();
+                    log.i("Changing owner to " + sparkCloud.getLoggedInUsername());
 //                        // FIXME: state mutation from another class.  Not pretty.
 //                        // Fix this by breaking DiscoverProcessWorker down into Steps
-                        resetWorker();
-                        discoverProcessWorker.needToClaimDevice = true;
-                        discoverProcessWorker.gotOwnershipInfo = true;
-                        discoverProcessWorker.isDetectedDeviceClaimed = false;
-                        DeviceSetupState.deviceNeedsToBeClaimed = true;
+                    resetWorker();
+                    discoverProcessWorker.needToClaimDevice = true;
+                    discoverProcessWorker.gotOwnershipInfo = true;
+                    discoverProcessWorker.isDetectedDeviceClaimed = false;
+                    DeviceSetupState.deviceNeedsToBeClaimed = true;
 
-                        showProgressDialog();
-                        startConnectWorker();
-                    }
+                    showProgressDialog();
+                    startConnectWorker();
                 })
-                .setNegativeButton(R.string.cancel, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
-                        finish();
-                    }
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                    startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
+                    finish();
                 })
                 .show();
     }
