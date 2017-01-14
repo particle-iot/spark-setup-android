@@ -137,12 +137,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             }
         });
 
-        Ui.findView(this, R.id.action_cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        Ui.findView(this, R.id.action_cancel).setOnClickListener(view -> finish());
     }
 
     @Override

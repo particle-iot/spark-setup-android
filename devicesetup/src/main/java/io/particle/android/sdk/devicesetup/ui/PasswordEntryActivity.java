@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
@@ -63,12 +62,7 @@ public class PasswordEntryActivity extends BaseActivity {
         Ui.setText(this, R.id.security_msg, getSecurityTypeMsg());
 
         // set up onClick (et al) listeners
-        showPwdBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                togglePasswordVisibility(isChecked);
-            }
-        });
+        showPwdBox.setOnCheckedChangeListener((buttonView, isChecked) -> togglePasswordVisibility(isChecked));
         // set up initial visibility state
         togglePasswordVisibility(showPwdBox.isChecked());
     }
