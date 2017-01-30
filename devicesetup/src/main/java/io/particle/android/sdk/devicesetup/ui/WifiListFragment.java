@@ -220,7 +220,7 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
             }
 
             T wifiNetwork = getItem(position);
-            Ui.setText(convertView, android.R.id.text1, wifiNetwork.getSsid());
+            Ui.setText(convertView, android.R.id.text1, wifiNetwork.getSsid().toString());
             Ui.findView(convertView, R.id.wifi_security_indicator_icon)
                     .setVisibility(wifiNetwork.isSecured() ? View.VISIBLE : View.GONE);
             return convertView;

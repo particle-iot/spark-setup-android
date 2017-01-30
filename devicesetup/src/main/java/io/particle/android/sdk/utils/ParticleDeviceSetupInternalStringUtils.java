@@ -39,7 +39,8 @@ public class ParticleDeviceSetupInternalStringUtils {
     }
 
 
-    private static String replace(final String text, final String searchString, final String replacement, int max) {
+    private static String replace(final String text, final String searchString,
+                                  final String replacement, int max) {
         if (isEmpty(text) || isEmpty(searchString) || replacement == null || max == 0) {
             return text;
         }

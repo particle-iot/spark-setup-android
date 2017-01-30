@@ -9,19 +9,23 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.MainThread;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.particle.android.sdk.utils.EZ;
+import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
-import io.particle.android.sdk.utils.WiFi;
+import io.particle.android.sdk.utils.WifiFacade;
 
 import static io.particle.android.sdk.utils.Py.list;
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
+@MainThread
 public class ApConnector {
 
     public interface Client {
@@ -32,14 +36,27 @@ public class ApConnector {
 
     }
 
+    public static WifiConfiguration buildUnsecuredConfig(SSID ssid) {
+        WifiConfiguration config = new WifiConfiguration();
+        config.SSID = ssid.inQuotes();
+        config.hiddenSSID = false;
+        config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+        // have to set a very high number in order to ensure that Android doesn't
+        // immediately drop this connection and reconnect to the a different AP
+        config.priority = 999999;
+        return config;
+    }
+
 
     private static final TLog log = TLog.get(ApConnector.class);
+
+    public static final long CONNECT_TO_DEVICE_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(20);
 
     private static final IntentFilter WIFI_STATE_CHANGE_FILTER = new IntentFilter(
             WifiManager.NETWORK_STATE_CHANGED_ACTION);
 
     private final DecoratedClient client;
-    private final WifiManager wifiManager;
+    private final WifiFacade wifiFacade;
     private final SimpleReceiver wifiLogger;
     private final Context appContext;
     private final SoftAPConfigRemover softAPConfigRemover;
@@ -49,11 +66,10 @@ public class ApConnector {
     private SimpleReceiver wifiStateChangeListener;
     private Runnable onTimeoutRunnable;
 
-    public ApConnector(Context appContext) {
-        Context app = appContext.getApplicationContext();
+    public ApConnector(Context ctx) {
+        this.appContext = ctx.getApplicationContext();
         this.client = new DecoratedClient();
-        this.appContext = appContext;
-        this.wifiManager = (WifiManager) app.getSystemService(Context.WIFI_SERVICE);
+        this.wifiFacade = WifiFacade.get(appContext);
         this.softAPConfigRemover = new SoftAPConfigRemover(appContext);
         this.mainThreadHandler = new Handler(Looper.getMainLooper());
         this.wifiLogger = SimpleReceiver.newReceiver(
@@ -71,27 +87,27 @@ public class ApConnector {
      * Connect this Android device to the specified AP.
      *
      * @param config the WifiConfiguration defining which AP to connect to
-     * @param timeoutInMillis how long to wait before timing out
      *
      * @return the SSID that was connected prior to calling this method.  Will be null if
      *          there was no network connected, or if already connected to the target network.
      */
-    public String connectToAP(Client client, final WifiConfiguration config, long timeoutInMillis) {
+    public SSID connectToAP(final WifiConfiguration config, Client client) {
         wifiLogger.register();
         this.client.setDecoratedClient(client);
 
         // cancel any currently running timeout, etc
         clearState();
 
-        final WifiInfo currentConnectionInfo = wifiManager.getConnectionInfo();
+        SSID configSSID = SSID.from(config);
+        final WifiInfo currentConnectionInfo = wifiFacade.getConnectionInfo();
         // are we already connected to the right AP?  (this could happen on retries)
-        if (isAlreadyConnectedToTargetNetwork(currentConnectionInfo, config.SSID)) {
+        if (isAlreadyConnectedToTargetNetwork(currentConnectionInfo, configSSID)) {
             // we're already connected to this AP, nothing to do.
             client.onApConnectionSuccessful(config);
             return null;
         }
 
-        scheduleTimeoutCheck(timeoutInMillis, config);
+        scheduleTimeoutCheck(CONNECT_TO_DEVICE_TIMEOUT_MILLIS, config);
         wifiStateChangeListener = SimpleReceiver.newRegisteredReceiver(
                 appContext, WIFI_STATE_CHANGE_FILTER,
                 (ctx, intent) -> onWifiChangeBroadcastReceived(intent, config));
@@ -106,7 +122,7 @@ public class ApConnector {
         // wonkiness I ran into when trying to do every one of these steps one right after
         // the other on the same thread.
 
-        final int alreadyConfiguredId = WiFi.getConfiguredNetworkId(config.SSID, appContext);
+        final int alreadyConfiguredId = wifiFacade.getIdForConfiguredNetwork(configSSID);
         if (alreadyConfiguredId != -1 && !useMoreComplexConnectionProcess) {
             // For some unexplained (and probably sad-trombone-y) reason, if the AP specified was
             // already configured and had been connected to in the past, it will often get to
@@ -117,8 +133,8 @@ public class ApConnector {
             // As a remedy, we pre-emptively remove that config.  *shakes fist toward Mountain View*
 
             setupRunnables.add(() -> {
-                if (wifiManager.removeNetwork(alreadyConfiguredId)) {
-                    log.d("Removed already-configured " + config.SSID + " network successfully");
+                if (wifiFacade.removeNetwork(alreadyConfiguredId)) {
+                    log.d("Removed already-configured " + configSSID + " network successfully");
                 } else {
                     log.e("Somehow failed to remove the already-configured network!?");
                     // not calling this state an actual failure, since it might succeed anyhow,
@@ -129,10 +145,10 @@ public class ApConnector {
 
         if (alreadyConfiguredId == -1 || !useMoreComplexConnectionProcess) {
             setupRunnables.add(() -> {
-                log.d("Adding network " + config.SSID);
-                networkID.set(wifiManager.addNetwork(config));
+                log.d("Adding network " + configSSID);
+                networkID.set(wifiFacade.addNetwork(config));
                 if (networkID.get() == -1) {
-                    log.e("Adding network " + config.SSID + " failed.");
+                    log.e("Adding network " + configSSID + " failed.");
                     client.onApConnectionFailed(config);
 
                 } else {
@@ -144,23 +160,23 @@ public class ApConnector {
         if (useMoreComplexConnectionProcess) {
             setupRunnables.add(() -> {
                 log.d("Disconnecting from networks; reconnecting momentarily.");
-                wifiManager.disconnect();
+                wifiFacade.disconnect();
             });
         }
 
         setupRunnables.add(() -> {
-            log.i("Enabling network " + config.SSID + " with network ID " + networkID.get());
-            wifiManager.enableNetwork(networkID.get(), !useMoreComplexConnectionProcess);
+            log.i("Enabling network " + configSSID + " with network ID " + networkID.get());
+            wifiFacade.enableNetwork(networkID.get(), !useMoreComplexConnectionProcess);
         });
 
         if (useMoreComplexConnectionProcess) {
             setupRunnables.add(() -> {
                 log.d("Disconnecting from networks; reconnecting momentarily.");
-                wifiManager.reconnect();
+                wifiFacade.reconnect();
             });
         }
 
-        String currentlyConnectedSSID = WiFi.getCurrentlyConnectedSSID(appContext);
+        SSID currentlyConnectedSSID = wifiFacade.getCurrentlyConnectedSSID();
         softAPConfigRemover.onWifiNetworkDisabled(currentlyConnectedSSID);
 
         long timeout = 0;
@@ -169,7 +185,7 @@ public class ApConnector {
             timeout += 1500;
         }
 
-        return currentConnectionInfo.getSSID();
+        return SSID.from(currentConnectionInfo);
     }
 
     public void stop() {
@@ -180,9 +196,9 @@ public class ApConnector {
 
 
     private static boolean isAlreadyConnectedToTargetNetwork(WifiInfo currentConnectionInfo,
-                                                             String targetNetworkSsid) {
+                                                             SSID targetNetworkSsid) {
         return (isCurrentlyConnectedToAWifiNetwork(currentConnectionInfo)
-                && targetNetworkSsid.equals(currentConnectionInfo.getSSID())
+                && targetNetworkSsid.equals(SSID.from(currentConnectionInfo))
         );
     }
 
@@ -223,9 +239,9 @@ public class ApConnector {
             // no WifiInfo or SSID means we're not interested.
             return;
         }
-        log.i("Connected to: " + wifiInfo.getSSID());
-        String ssid = wifiInfo.getSSID();
-        if (ssid.equals(config.SSID) || WiFi.enQuotifySsid(ssid).equals(config.SSID)) {
+        SSID newlyConnectedSSID = SSID.from(wifiInfo);
+        log.i("Connected to: " + newlyConnectedSSID);
+        if (newlyConnectedSSID.equals(SSID.from(config))) {
             // FIXME: find a way to record success in memory in case this happens to happen
             // during a config change (etc)?
             client.onApConnectionSuccessful(config);

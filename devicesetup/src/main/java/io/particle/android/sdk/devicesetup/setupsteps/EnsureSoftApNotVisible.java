@@ -1,7 +1,6 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
 import android.content.Context;
-import android.net.wifi.WifiManager;
 
 import java.util.List;
 
@@ -10,24 +9,26 @@ import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.Funcy;
 import io.particle.android.sdk.utils.Funcy.Predicate;
 import io.particle.android.sdk.utils.Preconditions;
+import io.particle.android.sdk.utils.SSID;
+import io.particle.android.sdk.utils.WifiFacade;
+
+import static io.particle.android.sdk.utils.Py.list;
 
 
 public class EnsureSoftApNotVisible extends SetupStep {
 
-    private final WifiManager wifiManager;
-    private final String softApName;
-    private final Predicate<String> matchesSoftApSSID;
+    private final WifiFacade wifiFacade;
+    private final SSID softApName;
+    private final Predicate<SSID> matchesSoftApSSID;
 
     private boolean wasFulfilledOnce = false;
 
-    public EnsureSoftApNotVisible(StepConfig stepConfig, String softApSSID, Context ctx) {
+    public EnsureSoftApNotVisible(StepConfig stepConfig, SSID softApSSID, Context ctx) {
         super(stepConfig);
-
         Preconditions.checkNotNull(softApSSID, "softApSSID cannot be null.");
-
-        this.wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+        wifiFacade = WifiFacade.get(ctx);
         this.softApName = softApSSID;
-        this.matchesSoftApSSID = softApName::equalsIgnoreCase;
+        this.matchesSoftApSSID = softApName::equals;
     }
 
     @Override
@@ -57,7 +58,7 @@ public class EnsureSoftApNotVisible extends SetupStep {
             }
 
             if (i % 6 == 0) {
-                wifiManager.startScan();
+                wifiFacade.startScan();
             }
 
             EZ.threadSleep(250);
@@ -81,8 +82,8 @@ public class EnsureSoftApNotVisible extends SetupStep {
         log.d("scansPlusConnectedSsid: " + scansPlusConnectedSsid);
         log.d("Soft AP we're looking for: " + softApName);
 
-        String firstMatch = Funcy.findFirstMatch(scansPlusConnectedSsid, matchesSoftApSSID);
-        log.d("Matching SSID?: " + firstMatch);
+        SSID firstMatch = Funcy.findFirstMatch(scansPlusConnectedSsid, matchesSoftApSSID);
+        log.d("Matching SSID result: '" + firstMatch + "'");
         return firstMatch != null;
     }
 

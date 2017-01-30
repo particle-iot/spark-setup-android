@@ -8,13 +8,10 @@ import java.util.Set;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
-import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
-import io.particle.android.sdk.devicesetup.commands.ScanApCommand.Scan;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
 import io.particle.android.sdk.utils.BetterAsyncTaskLoader;
 import io.particle.android.sdk.utils.Funcy;
-import io.particle.android.sdk.utils.Funcy.Func;
 import io.particle.android.sdk.utils.TLog;
 
 import static io.particle.android.sdk.utils.Py.set;
@@ -32,14 +29,11 @@ public class ScanApCommandLoader extends BetterAsyncTaskLoader<Set<ScanAPCommand
     private static final TLog log = TLog.get(ScanApCommandLoader.class);
 
     private final CommandClient commandClient;
-    private final InterfaceBindingSocketFactory socketFactory;
     private final Set<ScanAPCommandResult> accumulatedResults = set();
 
-    public ScanApCommandLoader(Context context, CommandClient client,
-                               InterfaceBindingSocketFactory socketFactory) {
+    public ScanApCommandLoader(Context context, CommandClient client) {
         super(context);
         commandClient = client;
-        this.socketFactory = socketFactory;
     }
 
     @Override
@@ -66,10 +60,10 @@ public class ScanApCommandLoader extends BetterAsyncTaskLoader<Set<ScanAPCommand
     @Override
     public Set<ScanAPCommandResult> loadInBackground() {
         try {
-            ScanApCommand.Response response = commandClient.sendCommandAndReturnResponse(
-                    new ScanApCommand(), ScanApCommand.Response.class, socketFactory);
+            ScanApCommand.Response response = commandClient.sendCommand(
+                    new ScanApCommand(), ScanApCommand.Response.class);
             accumulatedResults.addAll(
-                    Funcy.transformList(response.getScans(), toWifiNetwork)
+                    Funcy.transformList(response.getScans(), ScanAPCommandResult::new)
             );
             log.d("Latest accumulated scan results: " + accumulatedResults);
             return set(accumulatedResults);
@@ -79,15 +73,5 @@ public class ScanApCommandLoader extends BetterAsyncTaskLoader<Set<ScanAPCommand
             return null;
         }
     }
-
-
-    private static final Func<Scan, ScanAPCommandResult> toWifiNetwork =
-            new Func<ScanApCommand.Scan, ScanAPCommandResult>() {
-
-        @Override
-        public ScanAPCommandResult apply(ScanApCommand.Scan input) {
-            return new ScanAPCommandResult(input);
-        }
-    };
 
 }

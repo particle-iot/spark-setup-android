@@ -42,9 +42,8 @@ public class Crypto {
 
     public static String encryptAndEncodeToHex(String inputString, PublicKey publicKey)
             throws CryptoException {
-        byte[] asBytes = null;
         Charset utf8 = Charset.forName("UTF-8");
-        asBytes = inputString.getBytes(utf8);
+        byte[] asBytes = inputString.getBytes(utf8);
         byte[] encryptedBytes = encryptWithKey(asBytes, publicKey);
         String hex = ByteString.of(encryptedBytes).hex();
         // forcing lowercase here because of a bug in the early firmware that didn't accept

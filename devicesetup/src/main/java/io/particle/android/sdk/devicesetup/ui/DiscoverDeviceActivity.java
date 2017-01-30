@@ -1,11 +1,9 @@
 package io.particle.android.sdk.devicesetup.ui;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
@@ -18,15 +16,14 @@ import com.squareup.phrase.Phrase;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.ApConnector;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.DeviceIdCommand;
-import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 import io.particle.android.sdk.devicesetup.commands.PublicKeyCommand;
 import io.particle.android.sdk.devicesetup.commands.SetCommand;
 import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader;
@@ -35,27 +32,28 @@ import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.ParticleDeviceSetupInternalStringUtils;
+import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
-import io.particle.android.sdk.utils.WiFi;
+import io.particle.android.sdk.utils.WifiFacade;
 import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
+// FIXME: this activity is *far* too complicated.  Split it out into smaller components.
 public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         implements WifiListFragment.Client<ScanResultNetwork>, ApConnector.Client {
 
 
+    // see ApConnector for the timeout value used for connecting to the soft AP
     private static final int MAX_NUM_DISCOVER_PROCESS_ATTEMPTS = 5;
-    private static final long CONNECT_TO_DEVICE_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(20);
-
 
     private static final TLog log = TLog.get(DiscoverDeviceActivity.class);
 
 
-    private WifiManager wifiManager;
+    private WifiFacade wifiFacade;
     private ParticleCloud sparkCloud;
     private DiscoverProcessWorker discoverProcessWorker;
     private SoftAPConfigRemover softAPConfigRemover;
@@ -68,24 +66,22 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     private int discoverProcessAttempts = 0;
 
-    // FIXME: UGH. Figure out a way to pass this info along without making it
-    // into class-wide mutable state.
-    private String currentSSID;
+    private SSID selectedSoftApSSID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_device);
 
+        wifiFacade = WifiFacade.get(this);
+
         softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
 
-        DeviceSetupState.previouslyConnectedWifiNetwork = WiFi.getCurrentlyConnectedSSID(this);
+        DeviceSetupState.previouslyConnectedWifiNetwork = wifiFacade.getCurrentlyConnectedSSID();
 
-        Context appCtx = getApplicationContext();
-        wifiManager = (WifiManager) appCtx.getSystemService(Context.WIFI_SERVICE);
-        sparkCloud = ParticleCloud.get(this);
+        sparkCloud = ParticleCloudSDK.getCloud();
 
         wifiListFragment = Ui.findFrag(this, R.id.wifi_list_fragment);
         ConnectToApFragment.ensureAttached(this);
@@ -124,14 +120,11 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             );
         }
 
-        Ui.findView(this, R.id.action_log_out).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sparkCloud.logOut();
-                log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
-                startActivity(new Intent(DiscoverDeviceActivity.this, LoginActivity.class));
-                finish();
-            }
+        Ui.findView(this, R.id.action_log_out).setOnClickListener(view -> {
+            sparkCloud.logOut();
+            log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
+            startActivity(new Intent(DiscoverDeviceActivity.this, LoginActivity.class));
+            finish();
         });
 
         Ui.findView(this, R.id.action_cancel).setOnClickListener(view -> finish());
@@ -140,7 +133,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     @Override
     protected void onStart() {
         super.onStart();
-        if (!wifiManager.isWifiEnabled()) {
+        if (!wifiFacade.isWifiEnabled()) {
             onWifiDisabled();
         }
     }
@@ -160,10 +153,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     private void resetWorker() {
         discoverProcessWorker = new DiscoverProcessWorker(
-                CommandClient.newClientUsingDefaultSocketAddress());
+                CommandClient.newClientUsingDefaultsForDevices(this, selectedSoftApSSID)
+        );
     }
 
-    // FIXME: do we even want to do this...?
     private void onWifiDisabled() {
         log.d("Wi-Fi disabled; prompting user");
         new AlertDialog.Builder(this)
@@ -171,7 +164,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 .setPositiveButton(R.string.enable_wifi, (dialog, which) -> {
                     dialog.dismiss();
                     log.i("Enabling Wi-Fi at the user's request.");
-                    wifiManager.setWifiEnabled(true);
+                    wifiFacade.setWifiEnabled(true);
                     wifiListFragment.scanAsync();
                 })
                 .setNegativeButton(R.string.exit_setup, (dialog, which) -> {
@@ -183,16 +176,15 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     @Override
     public void onNetworkSelected(ScanResultNetwork selectedNetwork) {
-        WifiConfiguration wifiConfig = ConnectToApFragment.buildUnsecuredConfig(
-                selectedNetwork.getSsid(), false);
-        currentSSID = selectedNetwork.getSsid();
+        WifiConfiguration wifiConfig = ApConnector.buildUnsecuredConfig(selectedNetwork.getSsid());
+        selectedSoftApSSID = selectedNetwork.getSsid();
         connectToSoftAp(wifiConfig);
     }
 
     private void connectToSoftAp(WifiConfiguration config) {
         discoverProcessAttempts++;
-        softAPConfigRemover.onSoftApConfigured(config.SSID);
-        ConnectToApFragment.get(this).connectToAP(config, CONNECT_TO_DEVICE_TIMEOUT_MILLIS);
+        softAPConfigRemover.onSoftApConfigured(SSID.from(config.SSID));
+        ConnectToApFragment.get(this).connectToAP(config);
         showProgressDialog();
     }
 
@@ -241,8 +233,6 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 .put("device_name", getString(R.string.device_name))
                 .format().toString();
 
-
-
         connectToApSpinnerDialog = new ProgressDialog(this);
         connectToApSpinnerDialog.setMessage(msg);
         connectToApSpinnerDialog.setCancelable(false);
@@ -277,7 +267,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
         discoverProcessAttempts++;
 
-        // Kind of lame; this just has doInBackground() return null on success, or if an
+        // This just has doInBackground() return null on success, or if an
         // exception was thrown, it passes that along instead to indicate failure.
         connectToApTask = new AsyncTask<Void, Void, SetupStepException>() {
 
@@ -286,12 +276,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 try {
                     // including this sleep because without it,
                     // we seem to attempt a socket connection too early,
-                    // and it makes the process time out
+                    // and it makes the process time out(!)
                     log.d("Waiting a couple seconds before trying the socket connection...");
                     EZ.threadSleep(2000);
-
-                    discoverProcessWorker.doTheThing(
-                            new InterfaceBindingSocketFactory(DiscoverDeviceActivity.this, currentSSID));
+                    discoverProcessWorker.doTheThing();
                     return null;
 
                 } catch (SetupStepException e) {
@@ -307,7 +295,8 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 if (error == null) {
                     // no exceptions thrown, huzzah
                     hideProgressDialog();
-                    startActivity(new Intent(DiscoverDeviceActivity.this, SelectNetworkActivity.class));
+                    startActivity(SelectNetworkActivity.buildIntent(
+                            DiscoverDeviceActivity.this, selectedSoftApSSID));
                     finish();
 
                 } else if (error instanceof DeviceAlreadyClaimed) {
@@ -323,7 +312,6 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean canStartProcessAgain() {
         return discoverProcessAttempts < MAX_NUM_DISCOVER_PROCESS_ATTEMPTS;
     }
@@ -356,24 +344,26 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         new Builder(this)
                 .setTitle(getString(R.string.change_owner_question))
                 .setMessage(dialogMsg)
-                .setPositiveButton(getString(R.string.change_owner), (dialog, which) -> {
-                    dialog.dismiss();
-                    log.i("Changing owner to " + sparkCloud.getLoggedInUsername());
+                .setPositiveButton(getString(R.string.change_owner),
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            log.i("Changing owner to " + sparkCloud.getLoggedInUsername());
 //                        // FIXME: state mutation from another class.  Not pretty.
 //                        // Fix this by breaking DiscoverProcessWorker down into Steps
-                    resetWorker();
-                    discoverProcessWorker.needToClaimDevice = true;
-                    discoverProcessWorker.gotOwnershipInfo = true;
-                    discoverProcessWorker.isDetectedDeviceClaimed = false;
-                    DeviceSetupState.deviceNeedsToBeClaimed = true;
+                            resetWorker();
+                            discoverProcessWorker.needToClaimDevice = true;
+                            discoverProcessWorker.gotOwnershipInfo = true;
+                            discoverProcessWorker.isDetectedDeviceClaimed = false;
+                            DeviceSetupState.deviceNeedsToBeClaimed = true;
 
-                    showProgressDialog();
-                    startConnectWorker();
-                })
-                .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                    dialog.dismiss();
-                    startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
-                    finish();
+                            showProgressDialog();
+                            startConnectWorker();
+                        })
+                .setNegativeButton(R.string.cancel,
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
+                            finish();
                 })
                 .show();
     }
@@ -387,12 +377,11 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
         private final CommandClient client;
 
-        private String detectedDeviceID;
+        private volatile String detectedDeviceID;
 
         private volatile boolean isDetectedDeviceClaimed;
         private volatile boolean gotOwnershipInfo;
         private volatile boolean needToClaimDevice;
-
 
         DiscoverProcessWorker(CommandClient client) {
             this.client = client;
@@ -401,12 +390,12 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         // FIXME: all this should probably become a list of commands to run in a queue,
         // each with shortcut conditions for when they've already been fulfilled, instead of
         // this if-else/try-catch ladder.
-        public void doTheThing(InterfaceBindingSocketFactory socketFactory) throws SetupStepException {
+        public void doTheThing() throws SetupStepException {
             // 1. get device ID
             if (!truthy(detectedDeviceID)) {
                 try {
-                    DeviceIdCommand.Response response = client.sendCommandAndReturnResponse(
-                            new DeviceIdCommand(), DeviceIdCommand.Response.class, socketFactory);
+                    DeviceIdCommand.Response response = client.sendCommand(
+                            new DeviceIdCommand(), DeviceIdCommand.Response.class);
                     detectedDeviceID = response.deviceIdHex.toLowerCase();
                     DeviceSetupState.deviceToBeSetUpId = detectedDeviceID;
                     isDetectedDeviceClaimed = truthy(response.isClaimed);
@@ -418,7 +407,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             // 2. Get public key
             if (DeviceSetupState.publicKey == null) {
                 try {
-                    DeviceSetupState.publicKey = getPublicKey(socketFactory);
+                    DeviceSetupState.publicKey = getPublicKey();
                 } catch (Crypto.CryptoException e) {
                     throw new SetupStepException("Unable to get public key: ", e);
 
@@ -441,7 +430,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
                 // device was never claimed before - so we need to claim it anyways
                 if (!isDetectedDeviceClaimed) {
-                    setClaimCode(socketFactory);
+                    setClaimCode();
                     needToClaimDevice = true;
 
                 } else {
@@ -469,7 +458,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
             } else {
                 if (needToClaimDevice) {
-                    setClaimCode(socketFactory);
+                    setClaimCode();
                 }
                 // Success: no exception thrown, the part of the process is complete.  Let the caller
                 // continue on with the setup process.
@@ -477,16 +466,14 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             }
         }
 
-        private void setClaimCode(InterfaceBindingSocketFactory socketFactory)
-                throws SetupStepException {
+        private void setClaimCode() throws SetupStepException {
             try {
                 log.d("Setting claim code using code: " + DeviceSetupState.claimCode);
 
                 String claimCodeNoBackslashes = ParticleDeviceSetupInternalStringUtils.remove(
                         DeviceSetupState.claimCode, "\\");
-                SetCommand.Response response = client.sendCommandAndReturnResponse(
-                        new SetCommand("cc", claimCodeNoBackslashes),
-                        SetCommand.Response.class, socketFactory);
+                SetCommand.Response response = client.sendCommand(
+                        new SetCommand("cc", claimCodeNoBackslashes), SetCommand.Response.class);
 
                 if (truthy(response.responseCode)) {
                     // a non-zero response indicates an error, ala UNIX return codes
@@ -501,11 +488,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             }
         }
 
-        private PublicKey getPublicKey(InterfaceBindingSocketFactory socketFactory)
-                throws Crypto.CryptoException, IOException {
-            PublicKeyCommand.Response response = this.client.sendCommandAndReturnResponse(
-                    new PublicKeyCommand(), PublicKeyCommand.Response.class, socketFactory);
-
+        private PublicKey getPublicKey() throws Crypto.CryptoException, IOException {
+            PublicKeyCommand.Response response = this.client.sendCommand(
+                    new PublicKeyCommand(), PublicKeyCommand.Response.class);
             return Crypto.readPublicKeyFromHexEncodedDerString(response.publicKey);
         }
     }
