@@ -168,13 +168,18 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     }
 
     private List<SetupStep> buildSteps() {
+        CommandClient commandClient = CommandClient.newClientUsingDefaultsForDevices(
+                this, deviceSoftApSsid);
+        SetupStepApReconnector reconnector = new SetupStepApReconnector(
+                WifiFacade.get(this), apConnector, new Handler(), deviceSoftApSsid);
+
         ConfigureAPStep configureAPStep = new ConfigureAPStep(
                 StepConfig.newBuilder()
                         .setMaxAttempts(MAX_RETRIES_CONFIGURE_AP)
                         .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
                         .setStepId(R.id.configure_device_wifi_credentials)
                         .build(),
-                client, networkToConnectTo, networkSecretPlaintext, publicKey, this);
+                commandClient, reconnector, networkToConnectTo, networkSecretPlaintext, publicKey);
 
         ConnectDeviceToNetworkStep connectDeviceToNetworkStep = new ConnectDeviceToNetworkStep(
                 StepConfig.newBuilder()
@@ -182,7 +187,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                         .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
                         .setStepId(R.id.connect_to_wifi_network)
                         .build(),
-                client, this);
+                commandClient, reconnector);
 
         WaitForDisconnectionFromDeviceStep waitForDisconnectionFromDeviceStep = new WaitForDisconnectionFromDeviceStep(
                 StepConfig.newBuilder()

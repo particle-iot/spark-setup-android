@@ -14,6 +14,7 @@ import io.particle.android.sdk.utils.Crypto;
 public class ConfigureAPStep extends SetupStep {
 
     private final CommandClient commandClient;
+    private final SetupStepApReconnector workerThreadApConnector;
     private final ScanApCommand.Scan networkToConnectTo;
     private final String networkSecretPlaintext;
     private final PublicKey publicKey;
@@ -21,10 +22,12 @@ public class ConfigureAPStep extends SetupStep {
     private volatile boolean commandSent = false;
 
     public ConfigureAPStep(StepConfig stepConfig, CommandClient commandClient,
+                           SetupStepApReconnector workerThreadApConnector,
                            ScanApCommand.Scan networkToConnectTo, String networkSecretPlaintext,
                            PublicKey publicKey) {
         super(stepConfig);
         this.commandClient = commandClient;
+        this.workerThreadApConnector = workerThreadApConnector;
         this.networkToConnectTo = networkToConnectTo;
         this.networkSecretPlaintext = networkSecretPlaintext;
         this.publicKey = publicKey;
@@ -55,6 +58,8 @@ public class ConfigureAPStep extends SetupStep {
         ConfigureApCommand command = builder.build();
 
         try {
+            log.d("Ensuring connection to AP");
+            workerThreadApConnector.ensureConnectionToSoftAp();
 
             ConfigureApCommand.Response response = commandClient.sendCommand(
                     command, ConfigureApCommand.Response.class);
