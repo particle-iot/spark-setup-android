@@ -178,6 +178,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     public void onNetworkSelected(ScanResultNetwork selectedNetwork) {
         WifiConfiguration wifiConfig = ApConnector.buildUnsecuredConfig(selectedNetwork.getSsid());
         selectedSoftApSSID = selectedNetwork.getSsid();
+        resetWorker();
         connectToSoftAp(wifiConfig);
     }
 
