@@ -157,6 +157,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
             connectingProcessWorkerTask.cancel(true);
             connectingProcessWorkerTask = null;
         }
+        apConnector.stop();
     }
 
     @Override
