@@ -77,8 +77,19 @@ public class EnsureSoftApNotVisible extends SetupStep {
     }
 
     private boolean isSoftApVisible() {
-        List<String> scansPlusConnectedSsid = Funcy.transformList(wifiManager.getScanResults(),
-                input -> (input == null) ? null : input.SSID);
+        List<SSID> scansPlusConnectedSsid = list();
+
+        SSID currentlyConnected = wifiFacade.getCurrentlyConnectedSSID();
+        if (currentlyConnected != null) {
+            scansPlusConnectedSsid.add(currentlyConnected);
+        }
+
+        scansPlusConnectedSsid.addAll(
+                Funcy.transformList(wifiFacade.getScanResults(),
+                Funcy.notNull(),
+                SSID::from)
+        );
+
         log.d("scansPlusConnectedSsid: " + scansPlusConnectedSsid);
         log.d("Soft AP we're looking for: " + softApName);
 
