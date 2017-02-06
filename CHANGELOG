@@ -1,3 +1,9 @@
+0.3.7
+=====
+* New callback option: now the SDK will optionally fire a supplied Intent at the completion of the setup process  (thanks to Charles Korn <ckorn@thoughtworks.com>)
+* Fix a crash for two-legged auth users
+
+
 0.3.6
 =====
 * Fix a few hard-coded user-facing strings

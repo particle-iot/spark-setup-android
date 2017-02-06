@@ -1,11 +1,14 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.AnyThread;
+import android.support.annotation.WorkerThread;
 
 import io.particle.android.sdk.devicesetup.SetupProcessException;
 import io.particle.android.sdk.utils.TLog;
 
 
+@WorkerThread
 public abstract class SetupStep {
 
     protected final TLog log;
@@ -39,6 +42,7 @@ public abstract class SetupStep {
         }
     }
 
+    @AnyThread
     public StepConfig getStepConfig() {
         return this.stepConfig;
     }

@@ -1,7 +1,10 @@
 package io.particle.android.sdk.devicesetup.commands.data;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
+
+import android.util.SparseArray;
+
+import io.particle.android.sdk.utils.Preconditions;
+
 
 public enum WifiSecurity {
 
@@ -16,21 +19,19 @@ public enum WifiSecurity {
     WPA2_MIXED_PSK(0x00400006); // WPA2 Security with AES & TKIP
 
 
-    static final ImmutableMap<Integer, WifiSecurity> fromIntMap;
+    static final SparseArray<WifiSecurity> fromIntMap;
 
     static {
-        ImmutableMap.Builder<Integer, WifiSecurity> builder = ImmutableMap.builder();
-        fromIntMap = builder
-                .put(OPEN.asInt(), OPEN)
-                .put(WEP_PSK.asInt(), WEP_PSK)
-                .put(WEP_SHARED.asInt(), WEP_SHARED)
-                .put(WPA_TKIP_PSK.asInt(), WPA_TKIP_PSK)
-                .put(WPA_MIXED_PSK.asInt(), WPA_MIXED_PSK)
-                .put(WPA_AES_PSK.asInt(), WPA_AES_PSK)
-                .put(WPA2_AES_PSK.asInt(), WPA2_AES_PSK)
-                .put(WPA2_TKIP_PSK.asInt(), WPA2_TKIP_PSK)
-                .put(WPA2_MIXED_PSK.asInt(), WPA2_MIXED_PSK)
-                .build();
+        fromIntMap = new SparseArray<>();
+        fromIntMap.put(OPEN.asInt(), OPEN);
+        fromIntMap.put(WEP_PSK.asInt(), WEP_PSK);
+        fromIntMap.put(WEP_SHARED.asInt(), WEP_SHARED);
+        fromIntMap.put(WPA_TKIP_PSK.asInt(), WPA_TKIP_PSK);
+        fromIntMap.put(WPA_MIXED_PSK.asInt(), WPA_MIXED_PSK);
+        fromIntMap.put(WPA_AES_PSK.asInt(), WPA_AES_PSK);
+        fromIntMap.put(WPA2_AES_PSK.asInt(), WPA2_AES_PSK);
+        fromIntMap.put(WPA2_TKIP_PSK.asInt(), WPA2_TKIP_PSK);
+        fromIntMap.put(WPA2_MIXED_PSK.asInt(), WPA2_MIXED_PSK);
     }
 
     private final int intValue;
@@ -48,7 +49,10 @@ public enum WifiSecurity {
 
     public static WifiSecurity fromInteger(Integer value) {
         Preconditions.checkNotNull(value);
-        Preconditions.checkArgument(fromIntMap.containsKey(value), "Value not found in map: " + value);
+        fromIntMap.indexOfKey(value);
+        Preconditions.checkArgument(
+                fromIntMap.indexOfKey(value) >= 0,
+                "Value not found in map: " + value);
 
         return fromIntMap.get(value);
     }

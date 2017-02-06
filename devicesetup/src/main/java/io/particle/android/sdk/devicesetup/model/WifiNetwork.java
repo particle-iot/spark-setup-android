@@ -1,9 +1,11 @@
 package io.particle.android.sdk.devicesetup.model;
 
+import io.particle.android.sdk.utils.SSID;
+
 
 public interface WifiNetwork {
 
-    public String getSsid();
+    SSID getSsid();
 
-    public boolean isSecured();
+    boolean isSecured();
 }

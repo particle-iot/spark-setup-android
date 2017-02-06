@@ -1,10 +1,7 @@
 package io.particle.android.sdk.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
-import com.google.common.base.Preconditions;
 
 import io.particle.android.sdk.accountsetup.CreateAccountActivity;
 import io.particle.android.sdk.accountsetup.LoginActivity;
@@ -13,6 +10,7 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.SetupCompleteIntentBuilder;
 import io.particle.android.sdk.devicesetup.SetupResult;
 import io.particle.android.sdk.persistance.SensitiveDataStorage;
+import io.particle.android.sdk.utils.Preconditions;
 import io.particle.android.sdk.utils.TLog;
 
 import static io.particle.android.sdk.utils.Py.any;

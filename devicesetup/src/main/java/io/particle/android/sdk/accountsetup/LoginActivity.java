@@ -6,18 +6,16 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.squareup.phrase.Phrase;
 
-import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
+import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
@@ -60,15 +58,12 @@ public class LoginActivity extends BaseActivity {
         // Set up the login form.
         emailView = Ui.findView(this, R.id.email);
         passwordView = Ui.findView(this, R.id.password);
-        passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.action_log_in || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
+        passwordView.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == R.id.action_log_in || id == EditorInfo.IME_NULL) {
+                attemptLogin();
+                return true;
             }
+            return false;
         });
 
         for (EditText tv : list(emailView, passwordView)) {
@@ -92,12 +87,7 @@ public class LoginActivity extends BaseActivity {
         }
 
         Button submit = Ui.findView(this, R.id.action_log_in);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        submit.setOnClickListener(view -> attemptLogin());
 
         Ui.setText(this, R.id.log_in_header_text,
                 Phrase.from(this, R.string.log_in_header_text)
@@ -106,13 +96,9 @@ public class LoginActivity extends BaseActivity {
         );
 
         Ui.setTextFromHtml(this, R.id.user_has_no_account, R.string.msg_no_account)
-                .setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(v.getContext(), CreateAccountActivity.class));
-                        finish();
-                    }
+                .setOnClickListener(v -> {
+                    startActivity(new Intent(v.getContext(), CreateAccountActivity.class));
+                    finish();
                 });
 
         Ui.setTextFromHtml(this, R.id.forgot_password, R.string.msg_forgot_password);
@@ -225,8 +211,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     private boolean isPasswordValid(String password) {
-        // FIXME: we should probably fix this number...  just making sure
-        // there are no blank passwords.
         return (password.length() > 0);
     }
 

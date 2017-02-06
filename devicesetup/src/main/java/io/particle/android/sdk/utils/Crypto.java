@@ -2,10 +2,6 @@ package io.particle.android.sdk.utils;
 
 import android.annotation.SuppressLint;
 
-import com.google.common.io.BaseEncoding;
-
-import org.apache.commons.lang3.CharEncoding;
-
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -19,6 +15,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+import okio.ByteString;
 
 
 @ParametersAreNonnullByDefault
@@ -36,19 +34,18 @@ public class Crypto {
     private static final TLog log = TLog.get(Crypto.class);
 
 
-    public static PublicKey readPublicKeyFromHexEncodedDerString(String hexBytes)
+    public static PublicKey readPublicKeyFromHexEncodedDerString(String hexString)
             throws CryptoException {
-        byte[] rawBytes = BaseEncoding.base16().decode(hexBytes);
+        byte[] rawBytes = ByteString.decodeHex(hexString).toByteArray();
         return buildPublicKey(rawBytes);
     }
 
     public static String encryptAndEncodeToHex(String inputString, PublicKey publicKey)
             throws CryptoException {
-        byte[] asBytes = null;
-        Charset utf8 = Charset.forName(CharEncoding.UTF_8);
-        asBytes = inputString.getBytes(utf8);
+        Charset utf8 = Charset.forName("UTF-8");
+        byte[] asBytes = inputString.getBytes(utf8);
         byte[] encryptedBytes = encryptWithKey(asBytes, publicKey);
-        String hex = BaseEncoding.base16().encode(encryptedBytes);
+        String hex = ByteString.of(encryptedBytes).hex();
         // forcing lowercase here because of a bug in the early firmware that didn't accept
         // hex encoding in uppercase
         return hex.toLowerCase();
@@ -89,6 +86,5 @@ public class Crypto {
                     "This should be impossible, but there is no RSA impl on this device", e);
         }
     }
-
 
 }

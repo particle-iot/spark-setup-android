@@ -1,14 +1,11 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
 
-import android.content.Context;
-
 import java.io.IOException;
 import java.security.PublicKey;
 
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.ConfigureApCommand;
-import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.utils.Crypto;
@@ -17,22 +14,23 @@ import io.particle.android.sdk.utils.Crypto;
 public class ConfigureAPStep extends SetupStep {
 
     private final CommandClient commandClient;
+    private final SetupStepApReconnector workerThreadApConnector;
     private final ScanApCommand.Scan networkToConnectTo;
     private final String networkSecretPlaintext;
     private final PublicKey publicKey;
-    private final Context ctx;
 
     private volatile boolean commandSent = false;
 
     public ConfigureAPStep(StepConfig stepConfig, CommandClient commandClient,
+                           SetupStepApReconnector workerThreadApConnector,
                            ScanApCommand.Scan networkToConnectTo, String networkSecretPlaintext,
-                           PublicKey publicKey, Context ctx) {
+                           PublicKey publicKey) {
         super(stepConfig);
         this.commandClient = commandClient;
+        this.workerThreadApConnector = workerThreadApConnector;
         this.networkToConnectTo = networkToConnectTo;
         this.networkSecretPlaintext = networkSecretPlaintext;
         this.publicKey = publicKey;
-        this.ctx = ctx;
     }
 
     protected void onRunStep() throws SetupStepException {
@@ -60,8 +58,11 @@ public class ConfigureAPStep extends SetupStep {
         ConfigureApCommand command = builder.build();
 
         try {
-            ConfigureApCommand.Response response = commandClient.sendCommandAndReturnResponse(
-                    command, ConfigureApCommand.Response.class, new InterfaceBindingSocketFactory(ctx));
+            log.d("Ensuring connection to AP");
+            workerThreadApConnector.ensureConnectionToSoftAp();
+
+            ConfigureApCommand.Response response = commandClient.sendCommand(
+                    command, ConfigureApCommand.Response.class);
             if (!response.isOk()) {
                 throw new SetupStepException("Error response code " + response.responseCode +
                         " while configuring device");

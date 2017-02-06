@@ -1,35 +1,35 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
-import android.content.Context;
-
 import java.io.IOException;
 
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.ConnectAPCommand;
-import io.particle.android.sdk.devicesetup.commands.InterfaceBindingSocketFactory;
 
 
 public class ConnectDeviceToNetworkStep extends SetupStep {
 
     private final CommandClient commandClient;
-    private final Context ctx;
+    private final SetupStepApReconnector workerThreadApConnector;
 
     private volatile boolean commandSent = false;
 
-    public ConnectDeviceToNetworkStep(StepConfig stepConfig, CommandClient commandClient, Context ctx) {
+    public ConnectDeviceToNetworkStep(StepConfig stepConfig, CommandClient commandClient,
+                                      SetupStepApReconnector workerThreadApConnector) {
         super(stepConfig);
         this.commandClient = commandClient;
-        this.ctx = ctx;
+        this.workerThreadApConnector = workerThreadApConnector;
     }
 
     @Override
     protected void onRunStep() throws SetupStepException {
         try {
+            log.d("Ensuring connection to AP");
+            workerThreadApConnector.ensureConnectionToSoftAp();
+
             log.d("Sending connect-ap command");
-            ConnectAPCommand.Response response = commandClient.sendCommandAndReturnResponse(
-                    new ConnectAPCommand(0), ConnectAPCommand.Response.class,
-                    new InterfaceBindingSocketFactory(ctx)
-            );
+            ConnectAPCommand.Response response = commandClient.sendCommand(
+                    // FIXME: is hard-coding zero here correct?  If so, document why
+                    new ConnectAPCommand(0), ConnectAPCommand.Response.class);
             if (!response.isOK()) {
                 throw new SetupStepException("ConnectAPCommand returned non-zero response code: " +
                         response.responseCode);

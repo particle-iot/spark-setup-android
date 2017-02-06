@@ -1,35 +1,27 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
 import android.content.Context;
-import android.net.wifi.WifiManager;
 
-import com.google.common.base.Preconditions;
-
-import io.particle.android.sdk.devicesetup.ui.DeviceSetupState;
 import io.particle.android.sdk.devicesetup.SetupProcessException;
+import io.particle.android.sdk.devicesetup.ui.DeviceSetupState;
 import io.particle.android.sdk.utils.EZ;
-import io.particle.android.sdk.utils.WiFi;
-
-import static io.particle.android.sdk.utils.Py.list;
+import io.particle.android.sdk.utils.Preconditions;
+import io.particle.android.sdk.utils.SSID;
+import io.particle.android.sdk.utils.WifiFacade;
 
 
 public class WaitForDisconnectionFromDeviceStep extends SetupStep {
 
-    private final Context ctx;
-    private final String softApName;
-    private final WifiManager wifiManager;
+    private final SSID softApName;
+    private final WifiFacade wifiFacade;
 
     private boolean wasDisconnected = false;
 
-    public WaitForDisconnectionFromDeviceStep(StepConfig stepConfig, String softApSSID,
-                                              Context ctx) {
+    public WaitForDisconnectionFromDeviceStep(StepConfig stepConfig, SSID softApSSID, Context ctx) {
         super(stepConfig);
-
         Preconditions.checkNotNull(softApSSID, "softApSSID cannot be null.");
-
-        this.ctx = ctx;
         this.softApName = softApSSID;
-        this.wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+        this.wifiFacade = WifiFacade.get(ctx);
     }
 
     @Override
@@ -60,23 +52,15 @@ public class WaitForDisconnectionFromDeviceStep extends SetupStep {
     }
 
     private void reenablePreviousWifi() {
-        String prevSSID = DeviceSetupState.previouslyConnectedWifiNetwork;
-
-        for (String ssid : list(prevSSID, WiFi.enQuotifySsid(prevSSID))) {
-            int netId = WiFi.getConfiguredNetworkId(ssid, ctx);
-            log.d("Found ID " + netId + " for network " + ssid);
-            if (netId != -1) {
-                wifiManager.enableNetwork(netId, false);
-            }
-        }
-
-        wifiManager.reassociate();
+        SSID prevSSID = DeviceSetupState.previouslyConnectedWifiNetwork;
+        wifiFacade.reenableNetwork(prevSSID);
+        wifiFacade.reassociate();
     }
 
     private boolean isConnectedToSoftAp() {
-        String currentlyConnectedSSID = WiFi.getCurrentlyConnectedSSID(ctx);
+        SSID currentlyConnectedSSID = wifiFacade.getCurrentlyConnectedSSID();
         log.d("Currently connected SSID: " + currentlyConnectedSSID);
-        return softApName.equalsIgnoreCase(currentlyConnectedSSID);
+        return softApName.equals(currentlyConnectedSSID);
     }
 
 }

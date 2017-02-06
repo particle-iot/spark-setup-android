@@ -7,14 +7,13 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.Pair;
 import android.util.SparseArray;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.phrase.Phrase;
 
-import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.ParticleCloud;
-import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
+import io.particle.android.sdk.cloud.SDKGlobals;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary.DeviceSetupCompleteContract;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.SetupResult;
 import io.particle.android.sdk.ui.BaseActivity;
@@ -92,43 +91,35 @@ public class SuccessActivity extends BaseActivity {
         Ui.setText(this, R.id.result_summary, resultStrings.first);
         Ui.setText(this, R.id.result_details, resultStrings.second);
 
-        Ui.findView(this, R.id.action_done).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = NextActivitySelector.getNextActivityIntent(
-                        v.getContext(),
-                        particleCloud,
-                        SDKGlobals.getSensitiveDataStorage(),
-                        new SetupResult(isSuccess, isSuccess ? DeviceSetupState.deviceToBeSetUpId : null));
+        Ui.findView(this, R.id.action_done).setOnClickListener(v -> {
+            Intent intent = NextActivitySelector.getNextActivityIntent(
+                    v.getContext(),
+                    particleCloud,
+                    SDKGlobals.getSensitiveDataStorage(),
+                    new SetupResult(isSuccess, isSuccess ? DeviceSetupState.deviceToBeSetUpId : null));
 
-                // FIXME: we shouldn't do this in the lib.  looks like another argument for Fragments.
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+            // FIXME: we shouldn't do this in the lib.  looks like another argument for Fragments.
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
 
-                Intent result;
-                result = new Intent(ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.ACTION_DEVICE_SETUP_COMPLETE)
-                        .putExtra(ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL, isSuccess);
-                if (isSuccess) {
-                    result.putExtra(ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.EXTRA_CONFIGURED_DEVICE_ID,
-                            DeviceSetupState.deviceToBeSetUpId);
-                }
-                LocalBroadcastManager.getInstance(v.getContext()).sendBroadcast(result);
-
-                finish();
+            Intent result = new Intent(DeviceSetupCompleteContract.ACTION_DEVICE_SETUP_COMPLETE)
+                    .putExtra(DeviceSetupCompleteContract.EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL, isSuccess);
+            if (isSuccess) {
+                result.putExtra(DeviceSetupCompleteContract.EXTRA_CONFIGURED_DEVICE_ID,
+                        DeviceSetupState.deviceToBeSetUpId);
             }
+            LocalBroadcastManager.getInstance(v.getContext()).sendBroadcast(result);
+
+            finish();
         });
 
         Ui.setTextFromHtml(this, R.id.action_troubleshooting, R.string.troubleshooting)
-                .setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
-                        startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
-                    }
+                .setOnClickListener(v -> {
+                    Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
+                    startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
                 });
 
     }
