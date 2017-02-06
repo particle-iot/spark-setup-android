@@ -1,20 +1,32 @@
 package io.particle.android.sdk.accountsetup;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import com.squareup.phrase.Phrase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.SDKGlobals;
+import io.particle.android.sdk.cloud.models.AccountInfo;
+import io.particle.android.sdk.cloud.models.SignUpInfo;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
@@ -38,11 +50,34 @@ public class CreateAccountActivity extends BaseActivity {
     private Async.AsyncApiWorker<ParticleCloud, Void> createAccountTask = null;
 
     // UI references.
+    private EditText firstNameView;
+    private EditText lastNameView;
+    private EditText companyNameView;
     private EditText emailView;
     private EditText passwordView;
     private EditText verifyPasswordView;
+    private Switch companyChoiceView;
 
     private boolean useOrganizationSignup;
+
+    private final CompoundButton.OnCheckedChangeListener companyAccountCheckedListener =
+            (CompoundButton buttonView, boolean isChecked) -> {
+                if (isChecked) {
+                    TypedArray typedArray = obtainStyledAttributes(R.style.SparkEditText, new int[]{android.R.attr.background});
+                    int backgroundDefault = ContextCompat.getColor(CreateAccountActivity.this,
+                            R.color.register_field_background_color_enabled);
+                    typedArray.recycle();
+                    verifyPasswordView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+                    companyNameView.setBackgroundColor(backgroundDefault);
+                    companyChoiceView.setText(R.string.prompt_company_account_enabled);
+                } else {
+                    verifyPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                    companyNameView.setBackgroundColor(ContextCompat.getColor(CreateAccountActivity.this,
+                            R.color.register_field_background_color_disabled));
+                    companyChoiceView.setText(R.string.prompt_company_account_disabled);
+                }
+                companyNameView.setEnabled(isChecked);
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,28 +92,24 @@ public class CreateAccountActivity extends BaseActivity {
                         .format()
         );
 
+        firstNameView = Ui.findView(this, R.id.first);
+        lastNameView = Ui.findView(this, R.id.last);
+        companyNameView = Ui.findView(this, R.id.company);
+        companyChoiceView = Ui.findView(this, R.id.companyAccount);
         emailView = Ui.findView(this, R.id.email);
         passwordView = Ui.findView(this, R.id.password);
         verifyPasswordView = Ui.findView(this, R.id.verify_password);
 
+        companyChoiceView.setOnCheckedChangeListener(companyAccountCheckedListener);
         useOrganizationSignup = getResources().getBoolean(R.bool.organization);
 
         Button submit = Ui.findView(this, R.id.action_create_account);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptCreateAccount();
-            }
-        });
+        submit.setOnClickListener(view -> attemptCreateAccount());
 
         Ui.setTextFromHtml(this, R.id.already_have_an_account_text, R.string.msg_user_already_has_account)
-                .setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(v.getContext(), LoginActivity.class));
-                        finish();
-                    }
+                .setOnClickListener(v -> {
+                    startActivity(new Intent(v.getContext(), LoginActivity.class));
+                    finish();
                 });
 
         if (getResources().getBoolean(R.bool.show_sign_up_page_fine_print)) {
@@ -110,6 +141,9 @@ public class CreateAccountActivity extends BaseActivity {
         // Reset errors.
         emailView.setError(null);
         passwordView.setError(null);
+        firstNameView.setError(null);
+        lastNameView.setError(null);
+        companyNameView.setError(null);
 
         // Store values at the time of the login attempt.
         final String email = emailView.getText().toString();
@@ -144,74 +178,109 @@ public class CreateAccountActivity extends BaseActivity {
             focusView = passwordView;
             cancel = true;
         }
+        boolean empty;
+        // Check for a company account checked state
+        if (companyChoiceView.isChecked()) {
+            // Check for a valid company name
+            empty = isFieldEmpty(companyNameView);
+            cancel = empty || cancel;
+            focusView = empty ? companyNameView : focusView;
+        }
+        // Check for a valid Last name
+        empty = isFieldEmpty(lastNameView);
+        cancel = empty || cancel;
+        focusView = empty ? lastNameView : focusView;
+        // Check for a valid First name
+        empty = isFieldEmpty(firstNameView);
+        cancel = empty || cancel;
+        focusView = empty ? firstNameView : focusView;
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
-
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            ParticleUi.showParticleButtonProgress(this, R.id.action_create_account, true);
-            final ParticleCloud cloud = ParticleCloud.get(this);
-            createAccountTask = Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
-                @Override
-                public Void callApi(ParticleCloud particleCloud) throws ParticleCloudException {
-                    if (useOrganizationSignup) {
-                        particleCloud.signUpAndLogInWithCustomer(email, password,
-                                getString(R.string.organization_slug));
-                    } else {
-                        particleCloud.signUpWithUser(email, password);
-                    }
-                    return null;
-                }
-
-                @Override
-                public void onTaskFinished() {
-                    createAccountTask = null;
-                }
-
-                @Override
-                public void onSuccess(Void result) {
-                    log.d("onAccountCreated()!");
-                    if (isFinishing()) {
-                        return;
-                    }
-                    if (useOrganizationSignup) {
-                        // with org setup, we're already logged in upon successful account creation
-                        onLoginSuccess(cloud);
-                    } else {
-                        attemptLogin(email, password);
-                    }
-                }
-
-                @Override
-                public void onFailure(ParticleCloudException error) {
-                    // FIXME: look at old Spark app for what we do here UI & workflow-wise
-                    log.d("onFailed()");
-                    ParticleUi.showParticleButtonProgress(CreateAccountActivity.this,
-                            R.id.action_create_account, false);
-
-                    String msg = getString(R.string.create_account_unknown_error);
-                    if (error.getKind() == ParticleCloudException.Kind.NETWORK) {
-                        msg = getString(R.string.create_account_error_communicating_with_server);
-
-                    } else if (error.getResponseData() != null) {
-
-                        if (error.getResponseData().getHttpStatusCode() == 401
-                                && getResources().getBoolean(R.bool.organization)) {
-                            msg = getString(R.string.create_account_account_already_exists_for_email_address);
-                        } else {
-                            msg = error.getServerErrorMsg();
-                        }
-                    }
-
-                    Toaster.l(CreateAccountActivity.this, msg, Gravity.CENTER_VERTICAL);
-                    emailView.requestFocus();
-                }
-            });
+            attemptSignUp();
         }
+    }
+
+    private void attemptSignUp() {
+        AccountInfo accountInfo = new AccountInfo();
+        accountInfo.setFirstName(firstNameView.getText().toString());
+        accountInfo.setLastName(lastNameView.getText().toString());
+        accountInfo.setCompanyName(companyNameView.getText().toString());
+        accountInfo.setBusinessAccount(companyChoiceView.isChecked());
+        // Store values at the time of the signup attempt.
+        final String email = emailView.getText().toString();
+        final String password = passwordView.getText().toString();
+        SignUpInfo signUpInfo = new SignUpInfo(email, password, accountInfo);
+        // Show a progress spinner, and kick off a background task to
+        // perform the user login attempt.
+        ParticleUi.showParticleButtonProgress(this, R.id.action_create_account, true);
+        final ParticleCloud cloud = ParticleCloud.get(this);
+        createAccountTask = Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
+            @Override
+            public Void callApi(@NonNull ParticleCloud particleCloud) throws ParticleCloudException {
+                if (useOrganizationSignup) {
+                    particleCloud.signUpAndLogInWithCustomer(signUpInfo, getString(R.string.organization_slug));
+                } else {
+                    particleCloud.signUpWithUser(signUpInfo);
+                }
+                return null;
+            }
+
+            @Override
+            public void onTaskFinished() {
+                createAccountTask = null;
+            }
+
+            @Override
+            public void onSuccess(@NonNull Void result) {
+                log.d("onAccountCreated()!");
+                if (isFinishing()) {
+                    return;
+                }
+                if (useOrganizationSignup) {
+                    // with org setup, we're already logged in upon successful account creation
+                    onLoginSuccess(cloud);
+                } else {
+                    attemptLogin(email, password);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull ParticleCloudException error) {
+                // FIXME: look at old Spark app for what we do here UI & workflow-wise
+                log.d("onFailed()");
+                ParticleUi.showParticleButtonProgress(CreateAccountActivity.this,
+                        R.id.action_create_account, false);
+
+                String msg = getString(R.string.create_account_unknown_error);
+                if (error.getKind() == ParticleCloudException.Kind.NETWORK) {
+                    msg = getString(R.string.create_account_error_communicating_with_server);
+
+                } else if (error.getResponseData() != null) {
+
+                    if (error.getResponseData().getHttpStatusCode() == 401
+                            && getResources().getBoolean(R.bool.organization)) {
+                        msg = getString(R.string.create_account_account_already_exists_for_email_address);
+                    } else {
+                        msg = error.getServerErrorMsg();
+                    }
+                }
+
+                Toaster.l(CreateAccountActivity.this, msg, Gravity.CENTER_VERTICAL);
+                emailView.requestFocus();
+            }
+        });
+    }
+
+    private boolean isFieldEmpty(EditText formField) {
+        if (TextUtils.isEmpty(formField.getText().toString())) {
+            formField.setError(getString(R.string.error_field_required));
+            return true;
+        }
+        return false;
     }
 
     private boolean isEmailValid(String email) {
@@ -237,13 +306,13 @@ public class CreateAccountActivity extends BaseActivity {
         final ParticleCloud cloud = ParticleCloud.get(this);
         Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
-            public Void callApi(ParticleCloud particleCloud) throws ParticleCloudException {
+            public Void callApi(@NonNull ParticleCloud particleCloud) throws ParticleCloudException {
                 particleCloud.logIn(username, password);
                 return null;
             }
 
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(@NonNull Void result) {
                 log.d("Logged in...");
                 if (isFinishing()) {
                     return;
@@ -252,7 +321,7 @@ public class CreateAccountActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(ParticleCloudException error) {
+            public void onFailure(@NonNull ParticleCloudException error) {
                 log.w("onFailed(): " + error.getMessage());
                 ParticleUi.showParticleButtonProgress(CreateAccountActivity.this,
                         R.id.action_create_account, false);

@@ -18,8 +18,10 @@
 
     <string name="terms_of_service_uri">https://www.particle.io/tos</string>
     <string name="privacy_policy_uri">https://www.particle.io/privacy</string>
-    <string name="forgot_password_uri">https://www.particle.io/forgot-password</string>
-    <string name="troubleshooting_uri">https://community.particle.io/t/spark-core-troubleshooting-guide-spark-team/696</string>
+    <string name="forgot_password_uri">https://login.particle.io/forgot</string>
+    <string name="troubleshooting_uri">
+        https://community.particle.io/t/spark-core-troubleshooting-guide-spark-team/696
+    </string>
 
     <!-- FIXME: support static HTML for all these -->
     <string name="terms_of_service_html_file">NOT_DEFINED</string>
@@ -35,6 +37,9 @@
     <color name="link_text_color">@android:color/white</color>
     <color name="link_text_bg">#19AAAAAA</color>
     <color name="error_text_color">#FE4747</color>
+
+    <color name="register_field_background_color_enabled">@color/form_field_background</color>
+    <color name="register_field_background_color_disabled">#AACCCCCC</color>
 
 
     <color name="element_background_color">#00BAEC</color>
