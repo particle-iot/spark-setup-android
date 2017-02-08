@@ -115,6 +115,9 @@ public class WifiFacade {
                 Arrays.asList(connectivityManager.getAllNetworks()),
                 network -> {
                     NetworkInfo networkInfo = connectivityManager.getNetworkInfo(network);
+                    if (!Py.truthy(networkInfo.getExtraInfo())) {
+                        return false;
+                    }
                     return SSID.from(networkInfo.getExtraInfo()).equals(ssid);
                 }
         );
