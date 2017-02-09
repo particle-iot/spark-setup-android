@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- Base application theme. -->
     <style name="ParticleSetupTheme" parent="Theme.AppCompat">
@@ -27,8 +26,12 @@
         <item name="android:textAppearanceSmallPopupMenu">@style/PopupMenuText</item>
     </style>
 
-    <style name="PopupMenu" parent="Widget.AppCompat.Light.PopupMenu.Overflow"
-           tools:ignore="PrivateResource">
+    <style name="PopupMenuParent">
+        <item name="overlapAnchor">true</item>
+        <item name="android:dropDownHorizontalOffset">-4dip</item>
+    </style>
+
+    <style name="PopupMenu" parent="PopupMenuParent">
         <item name="android:dropDownSelector">@drawable/abc_list_selector_holo_dark</item>
         <!--<item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>-->
         <item name="android:popupBackground">@android:color/white</item>
