@@ -78,6 +78,6 @@ public class SoftAPConfigRemover {
         Set<String> asStrings = transformSet(ssids, SSID::toString);
         prefs.edit()
                 .putStringSet(key, asStrings)
-                .commit();
+                .apply();
     }
 }
