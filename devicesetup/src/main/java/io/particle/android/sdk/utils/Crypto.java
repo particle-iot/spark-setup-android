@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Locale;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.crypto.BadPaddingException;
@@ -48,13 +49,14 @@ public class Crypto {
         String hex = ByteString.of(encryptedBytes).hex();
         // forcing lowercase here because of a bug in the early firmware that didn't accept
         // hex encoding in uppercase
-        return hex.toLowerCase();
+        return hex.toLowerCase(Locale.ROOT);
     }
 
+    @SuppressLint("TrulyRandom")
     static byte[] encryptWithKey(byte[] inputData, PublicKey publicKey) throws CryptoException {
         try {
             @SuppressLint("GetInstance")  // the warning doesn't apply to how we're using this
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return cipher.doFinal(inputData);
 

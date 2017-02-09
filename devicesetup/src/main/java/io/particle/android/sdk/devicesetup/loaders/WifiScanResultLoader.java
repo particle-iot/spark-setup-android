@@ -6,6 +6,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import io.particle.android.sdk.devicesetup.R;
@@ -93,8 +94,8 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
         if (input == null || !truthy(input.SSID)) {
             return false;
         }
-        String softApPrefix = (getContext().getString(R.string.network_name_prefix) + "-").toLowerCase();
-        return input.SSID.toLowerCase().startsWith(softApPrefix);
+        String softApPrefix = (getContext().getString(R.string.network_name_prefix) + "-").toLowerCase(Locale.ROOT);
+        return input.SSID.toLowerCase(Locale.ROOT).startsWith(softApPrefix);
     };
 
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="ParticleSetupTheme" parent="Theme.AppCompat">
@@ -26,7 +27,8 @@
         <item name="android:textAppearanceSmallPopupMenu">@style/PopupMenuText</item>
     </style>
 
-    <style name="PopupMenu" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+    <style name="PopupMenu" parent="Widget.AppCompat.Light.PopupMenu.Overflow"
+           tools:ignore="PrivateResource">
         <item name="android:dropDownSelector">@drawable/abc_list_selector_holo_dark</item>
         <!--<item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>-->
         <item name="android:popupBackground">@android:color/white</item>
@@ -45,7 +47,8 @@
         <!-- only applies to API 19 + 21, but we still need this here as a placeholder. -->
     </style>
 
-    <style name="ParticleSetupTheme_DialogNoDimBackground" parent="@android:style/Theme.Holo.Dialog">
+    <style name="ParticleSetupTheme_DialogNoDimBackground"
+           parent="@android:style/Theme.Holo.Dialog">
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>

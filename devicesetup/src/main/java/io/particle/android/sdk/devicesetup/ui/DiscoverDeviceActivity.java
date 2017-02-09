@@ -15,6 +15,7 @@ import com.squareup.phrase.Phrase;
 
 import java.io.IOException;
 import java.security.PublicKey;
+import java.util.Locale;
 import java.util.Set;
 
 import io.particle.android.sdk.accountsetup.LoginActivity;
@@ -397,7 +398,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 try {
                     DeviceIdCommand.Response response = client.sendCommand(
                             new DeviceIdCommand(), DeviceIdCommand.Response.class);
-                    detectedDeviceID = response.deviceIdHex.toLowerCase();
+                    detectedDeviceID = response.deviceIdHex.toLowerCase(Locale.ROOT);
                     DeviceSetupState.deviceToBeSetUpId = detectedDeviceID;
                     isDetectedDeviceClaimed = truthy(response.isClaimed);
                 } catch (IOException e) {

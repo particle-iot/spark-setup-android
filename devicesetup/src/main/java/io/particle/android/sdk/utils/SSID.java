@@ -7,6 +7,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import java.util.Locale;
+
 
 /**
  * Simple value wrapper for SSID strings.  Eliminates case comparison issues and the quoting
@@ -59,7 +61,7 @@ public class SSID implements Comparable<SSID>, Parcelable {
 
     @Override
     public int hashCode() {
-        return ssidString.toLowerCase().hashCode();
+        return ssidString.toLowerCase(Locale.ROOT).hashCode();
     }
 
     @Override
