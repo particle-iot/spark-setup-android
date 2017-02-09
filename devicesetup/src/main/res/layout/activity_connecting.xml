@@ -99,6 +99,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"/>
 
@@ -136,6 +137,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"
                         tools:ignore="DuplicateIds"/>
@@ -174,6 +176,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"
                         tools:ignore="DuplicateIds"/>
@@ -212,6 +215,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"
                         tools:ignore="DuplicateIds"/>
@@ -250,6 +254,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"
                         tools:ignore="DuplicateIds"/>

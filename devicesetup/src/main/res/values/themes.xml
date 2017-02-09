@@ -26,7 +26,12 @@
         <item name="android:textAppearanceSmallPopupMenu">@style/PopupMenuText</item>
     </style>
 
-    <style name="PopupMenu" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+    <style name="PopupMenuParent">
+        <item name="overlapAnchor">true</item>
+        <item name="android:dropDownHorizontalOffset">-4dip</item>
+    </style>
+
+    <style name="PopupMenu" parent="PopupMenuParent">
         <item name="android:dropDownSelector">@drawable/abc_list_selector_holo_dark</item>
         <!--<item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>-->
         <item name="android:popupBackground">@android:color/white</item>
@@ -45,7 +50,8 @@
         <!-- only applies to API 19 + 21, but we still need this here as a placeholder. -->
     </style>
 
-    <style name="ParticleSetupTheme_DialogNoDimBackground" parent="@android:style/Theme.Holo.Dialog">
+    <style name="ParticleSetupTheme_DialogNoDimBackground"
+           parent="@android:style/Theme.Holo.Dialog">
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>
