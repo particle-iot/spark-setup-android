@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_marginBottom="@dimen/edittext_form_element_gap"
                 android:hint="@string/prompt_first_name"
-                android:inputType="text"/>
+                android:inputType="textPersonName|textCapWords"/>
 
             <EditText
                 android:id="@+id/last"
@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_marginBottom="@dimen/edittext_form_element_gap"
                 android:hint="@string/prompt_last_name"
-                android:inputType="text"/>
+                android:inputType="textPersonName|textCapWords"/>
 
             <EditText
                 android:id="@+id/email"
