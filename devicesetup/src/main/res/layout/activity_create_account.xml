@@ -38,6 +38,22 @@
                 tools:ignore="MissingPrefix"/>
 
             <EditText
+                android:id="@+id/first"
+                style="@style/SparkEditText"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="@dimen/edittext_form_element_gap"
+                android:hint="@string/prompt_first_name"
+                android:inputType="textPersonName|textCapWords"/>
+
+            <EditText
+                android:id="@+id/last"
+                style="@style/SparkEditText"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="@dimen/edittext_form_element_gap"
+                android:hint="@string/prompt_last_name"
+                android:inputType="textPersonName|textCapWords"/>
+
+            <EditText
                 android:id="@+id/email"
                 style="@style/SparkEditText"
                 android:layout_width="match_parent"
@@ -59,7 +75,27 @@
                 android:layout_width="match_parent"
                 android:layout_marginBottom="@dimen/edittext_form_element_gap"
                 android:hint="@string/prompt_verify_password"
+                android:imeOptions="actionDone"
                 android:inputType="textPassword"/>
+
+            <EditText
+                android:id="@+id/company"
+                style="@style/SparkEditText"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="@dimen/edittext_form_element_gap"
+                android:background="#AACCCCCC"
+                android:enabled="false"
+                android:hint="@string/prompt_company_name"
+                android:inputType="text"/>
+
+            <Switch
+                android:id="@+id/companyAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginBottom="@dimen/edittext_form_element_gap"
+                android:layout_marginTop="12dp"
+                android:text="@string/prompt_company_account_disabled"/>
 
             <!-- FIXME: remove later -->
             <EditText
@@ -72,8 +108,8 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="text"
                 android:maxLength="4"
-                android:visibility="gone"
-                android:textAllCaps="true"/>
+                android:textAllCaps="true"
+                android:visibility="gone"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"

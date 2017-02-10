@@ -54,13 +54,7 @@ public class PasswordResetActivity extends BaseActivity {
 
         sparkCloud = ParticleCloud.get(this);
 
-        Ui.findView(this, R.id.action_cancel).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        finish();
-                    }
-                });
+        Ui.findView(this, R.id.action_cancel).setOnClickListener(view -> finish());
         emailView = Ui.findView(this, R.id.email);
     }
 
@@ -73,12 +67,9 @@ public class PasswordResetActivity extends BaseActivity {
             new Builder(this)
                     .setTitle(getString(R.string.reset_password_dialog_title))
                     .setMessage(getString(R.string.reset_paassword_dialog_please_enter_a_valid_email))
-                    .setPositiveButton(R.string.ok, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            emailView.requestFocus();
-                        }
+                    .setPositiveButton(R.string.ok, (dialog, which) -> {
+                        dialog.dismiss();
+                        emailView.requestFocus();
                     })
                     .show();
         }
@@ -101,14 +92,14 @@ public class PasswordResetActivity extends BaseActivity {
             }
 
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(@NonNull Void result) {
                 onResetAttemptFinished("Instructions for how to reset your password will be sent " +
                         "to the provided email address.  Please check your email and continue " +
                         "according to instructions.");
             }
 
             @Override
-            public void onFailure(ParticleCloudException error) {
+            public void onFailure(@NonNull ParticleCloudException error) {
                 log.d("onFailed(): " + error.getMessage());
                 onResetAttemptFinished("Could not find a user with supplied email address, please " +
                         " check the address supplied or create a new user via the signup screen");
@@ -119,12 +110,9 @@ public class PasswordResetActivity extends BaseActivity {
     private void onResetAttemptFinished(String content) {
         new AlertDialog.Builder(this)
                 .setMessage(content)
-                .setPositiveButton(R.string.ok, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        finish();
-                    }
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    dialog.dismiss();
+                    finish();
                 })
                 .show();
     }
