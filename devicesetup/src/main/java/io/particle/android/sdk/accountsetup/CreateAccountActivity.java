@@ -63,10 +63,8 @@ public class CreateAccountActivity extends BaseActivity {
     private final CompoundButton.OnCheckedChangeListener companyAccountCheckedListener =
             (CompoundButton buttonView, boolean isChecked) -> {
                 if (isChecked) {
-                    TypedArray typedArray = obtainStyledAttributes(R.style.SparkEditText, new int[]{android.R.attr.background});
                     int backgroundDefault = ContextCompat.getColor(CreateAccountActivity.this,
                             R.color.register_field_background_color_enabled);
-                    typedArray.recycle();
                     verifyPasswordView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
                     companyNameView.setBackgroundColor(backgroundDefault);
                     companyChoiceView.setText(R.string.prompt_company_account_enabled);
