@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 
+import com.segment.analytics.Analytics;
 import com.squareup.phrase.Phrase;
 
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_device);
-
+        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Device discovery screen");
         wifiFacade = WifiFacade.get(this);
 
         softAPConfigRemover = new SoftAPConfigRemover(this);
@@ -366,7 +367,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                             dialog.dismiss();
                             startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
                             finish();
-                })
+                        })
                 .show();
     }
 

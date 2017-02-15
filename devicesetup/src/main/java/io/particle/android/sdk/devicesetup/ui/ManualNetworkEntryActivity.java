@@ -7,6 +7,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+
+import com.segment.analytics.Analytics;
 
 import java.util.Set;
 
@@ -39,14 +42,25 @@ public class ManualNetworkEntryActivity extends BaseActivity
     private WifiFacade wifiFacade;
     private SSID softApSSID;
 
+    private final CompoundButton.OnCheckedChangeListener secureCheckListener = (buttonView, isChecked) -> {
+        Analytics analytics = Analytics.with(getApplicationContext());
+        if (isChecked) {
+            analytics.track("Device Setup: Selected secured network");
+        } else {
+            analytics.track("Device Setup: Selected open network");
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Manual network entry screen");
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP);
         wifiFacade = WifiFacade.get(this);
 
         setContentView(R.layout.activity_manual_network_entry);
+        CheckBox secureCheckbox = Ui.findView(this, R.id.network_requires_password);
+        secureCheckbox.setOnCheckedChangeListener(secureCheckListener);
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
     }
 

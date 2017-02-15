@@ -7,10 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.segment.analytics.Analytics;
 
 import io.particle.android.sdk.devicesetup.R;
 
@@ -39,18 +40,13 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
-
+        Analytics.with(getApplicationContext()).track("Device Setup: Webview Screen");
         Toolbar toolbar = Ui.findView(this, R.id.toolbar);
         // FIXME: that color probably shouldn't be hardcoded, it should use a theme attr.
         toolbar.setNavigationIcon(
                 Ui.getTintedDrawable(this, R.drawable.ic_clear_black_24dp, android.R.color.white));
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> finish());
 
         if (getIntent().hasExtra(EXTRA_PAGE_TITLE)) {
             toolbar.setTitle(getIntent().getStringExtra(EXTRA_PAGE_TITLE));

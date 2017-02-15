@@ -7,6 +7,8 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
+import com.segment.analytics.Analytics;
+
 import java.util.Set;
 
 import io.particle.android.sdk.devicesetup.R;
@@ -39,6 +41,7 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Select Network Screen");
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP);
         setContentView(R.layout.activity_select_network);
 
@@ -64,12 +67,14 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
                     .show();
             return;
         }
-
+        Analytics analytics = Analytics.with(getApplicationContext());
         wifiListFragment.stopAggroLoading();
 
         if (selectedNetwork.isSecured()) {
+            analytics.track("Device Setup: Selected secured network");
             startActivity(PasswordEntryActivity.buildIntent(this, softApSSID, selectedNetwork.scan));
         } else {
+            analytics.track("Device Setup: Selected open network");
             SSID softApSSID = wifiFacade.getCurrentlyConnectedSSID();
             startActivity(ConnectingActivity.buildIntent(this, softApSSID, selectedNetwork.scan));
         }

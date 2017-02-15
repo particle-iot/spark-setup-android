@@ -9,6 +9,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
+import com.segment.analytics.Analytics;
 
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
@@ -49,7 +50,7 @@ public class PasswordEntryActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_entry);
-
+        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Password Entry Screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         networkToConnectTo = gson.fromJson(

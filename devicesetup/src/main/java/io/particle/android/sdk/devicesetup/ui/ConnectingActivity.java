@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
+import com.segment.analytics.Analytics;
 import com.squareup.phrase.Phrase;
 
 import java.security.PublicKey;
@@ -105,7 +106,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
-
+        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Connecting progress screen");
         sparkCloud = ParticleCloudSDK.getCloud();
         publicKey = DeviceSetupState.publicKey;
         deviceId = DeviceSetupState.deviceToBeSetUpId;
