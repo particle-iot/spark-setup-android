@@ -33,6 +33,7 @@ import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.ParticleDeviceSetupInternalStringUtils;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
@@ -73,7 +74,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_device);
-
+        SEGAnalytics.screen("Device Setup: Device discovery screen");
         wifiFacade = WifiFacade.get(this);
 
         softAPConfigRemover = new SoftAPConfigRemover(this);
@@ -366,7 +367,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                             dialog.dismiss();
                             startActivity(new Intent(DiscoverDeviceActivity.this, GetReadyActivity.class));
                             finish();
-                })
+                        })
                 .show();
     }
 

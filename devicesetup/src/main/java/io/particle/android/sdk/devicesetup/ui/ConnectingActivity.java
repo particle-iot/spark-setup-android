@@ -41,6 +41,7 @@ import io.particle.android.sdk.utils.CoreNameGenerator;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.Funcy;
 import io.particle.android.sdk.utils.Py;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
@@ -105,7 +106,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
-
+        SEGAnalytics.screen("Device Setup: Connecting progress screen");
         sparkCloud = ParticleCloudSDK.getCloud();
         publicKey = DeviceSetupState.publicKey;
         deviceId = DeviceSetupState.deviceToBeSetUpId;

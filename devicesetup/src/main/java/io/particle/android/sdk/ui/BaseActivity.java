@@ -2,10 +2,12 @@ package io.particle.android.sdk.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -20,6 +22,12 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class BaseActivity extends AppCompatActivity {
 
     private static boolean customFontInitDone = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SEGAnalytics.initialize(getApplicationContext());
+    }
 
     @Override
     protected void attachBaseContext(Context newBase) {
