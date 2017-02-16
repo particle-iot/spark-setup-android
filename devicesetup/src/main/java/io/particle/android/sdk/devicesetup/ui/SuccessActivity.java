@@ -79,7 +79,7 @@ public class SuccessActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_success);
-        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Setup Result Screen");
+        SEGAnalytics.screen("Device Setup: Setup Result Screen");
         particleCloud = ParticleCloudSDK.getCloud();
 
         int resultCode = getIntent().getIntExtra(EXTRA_RESULT_CODE, -1);
@@ -104,10 +104,9 @@ public class SuccessActivity extends BaseActivity {
                     analyticProperties.putValue("reason", "lost connection");
                     break;
             }
-            SEGAnalytics.track(getApplicationContext(), "Device Setup: Failure", analyticProperties);
+            SEGAnalytics.track("Device Setup: Failure", analyticProperties);
         } else {
-            SEGAnalytics.track(getApplicationContext(), "Device Setup: Success",
-                    RESULT_SUCCESS_UNKNOWN_OWNERSHIP == resultCode ?
+            SEGAnalytics.track("Device Setup: Success", RESULT_SUCCESS_UNKNOWN_OWNERSHIP == resultCode ?
                             new Properties().putValue("reason", "not claimed") : null);
         }
 

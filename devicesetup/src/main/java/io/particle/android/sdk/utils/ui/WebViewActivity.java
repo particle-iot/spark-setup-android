@@ -39,7 +39,7 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
-        SEGAnalytics.track(getApplicationContext(), "Device Setup: Webview Screen");
+        SEGAnalytics.track("Device Setup: Webview Screen");
         Toolbar toolbar = Ui.findView(this, R.id.toolbar);
         // FIXME: that color probably shouldn't be hardcoded, it should use a theme attr.
         toolbar.setNavigationIcon(

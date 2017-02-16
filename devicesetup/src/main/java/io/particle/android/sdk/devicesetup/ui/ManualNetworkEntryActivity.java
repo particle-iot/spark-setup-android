@@ -43,16 +43,16 @@ public class ManualNetworkEntryActivity extends BaseActivity
 
     private final CompoundButton.OnCheckedChangeListener secureCheckListener = (buttonView, isChecked) -> {
         if (isChecked) {
-            SEGAnalytics.track(getApplicationContext(), "Device Setup: Selected secured network");
+            SEGAnalytics.track("Device Setup: Selected secured network");
         } else {
-            SEGAnalytics.track(getApplicationContext(), "Device Setup: Selected open network");
+            SEGAnalytics.track("Device Setup: Selected open network");
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Manual network entry screen");
+        SEGAnalytics.screen("Device Setup: Manual network entry screen");
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP);
         wifiFacade = WifiFacade.get(this);
 

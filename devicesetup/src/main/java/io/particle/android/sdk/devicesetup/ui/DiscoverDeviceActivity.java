@@ -74,7 +74,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_device);
-        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Device discovery screen");
+        SEGAnalytics.screen("Device Setup: Device discovery screen");
         wifiFacade = WifiFacade.get(this);
 
         softAPConfigRemover = new SoftAPConfigRemover(this);

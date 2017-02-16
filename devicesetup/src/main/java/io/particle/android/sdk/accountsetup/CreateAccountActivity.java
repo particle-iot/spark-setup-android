@@ -79,7 +79,7 @@ public class CreateAccountActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
-        SEGAnalytics.screen(getApplicationContext(), "Auth: Sign Up screen");
+        SEGAnalytics.screen("Auth: Sign Up screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         Ui.setText(this, R.id.create_account_header_text,
@@ -243,7 +243,7 @@ public class CreateAccountActivity extends BaseActivity {
     }
 
     private void singUpTaskSuccess(String email, String password, AccountInfo accountInfo, ParticleCloud cloud) {
-        SEGAnalytics.track(getApplicationContext(), "android account creation", new Properties()
+        SEGAnalytics.track("android account creation", new Properties()
                 .putValue("email", email)
                 .putValue("firstname", accountInfo.getFirstName())
                 .putValue("lastname", accountInfo.getLastName())
@@ -256,9 +256,9 @@ public class CreateAccountActivity extends BaseActivity {
         if (useOrganizationSignup) {
             // with org setup, we're already logged in upon successful account creation
             onLoginSuccess(cloud);
-            SEGAnalytics.track(getApplicationContext(), "Auth: Signed Up New Customer");
+            SEGAnalytics.track("Auth: Signed Up New Customer");
         } else {
-            SEGAnalytics.track(getApplicationContext(), "Auth: Signed Up New User");
+            SEGAnalytics.track("Auth: Signed Up New User");
             attemptLogin(email, password);
         }
     }

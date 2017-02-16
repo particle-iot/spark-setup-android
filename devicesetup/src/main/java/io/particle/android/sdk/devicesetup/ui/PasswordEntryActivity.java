@@ -50,7 +50,7 @@ public class PasswordEntryActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_entry);
-        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Password Entry Screen");
+        SEGAnalytics.screen("Device Setup: Password Entry Screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         networkToConnectTo = gson.fromJson(

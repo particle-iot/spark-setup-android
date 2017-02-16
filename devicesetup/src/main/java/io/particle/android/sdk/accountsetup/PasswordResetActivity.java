@@ -49,7 +49,7 @@ public class PasswordResetActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_reset);
-        SEGAnalytics.screen(getApplicationContext(), "Auth: Forgot password screen");
+        SEGAnalytics.screen("Auth: Forgot password screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         sparkCloud = ParticleCloudSDK.getCloud();
@@ -59,7 +59,7 @@ public class PasswordResetActivity extends BaseActivity {
     }
 
     public void onPasswordResetClicked(View v) {
-        SEGAnalytics.track(getApplicationContext(), "Auth: Request password reset");
+        SEGAnalytics.track("Auth: Request password reset");
         final String email = emailView.getText().toString();
         if (isEmailValid(email)) {
             performReset();

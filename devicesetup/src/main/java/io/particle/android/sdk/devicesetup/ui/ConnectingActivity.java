@@ -106,7 +106,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
-        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Connecting progress screen");
+        SEGAnalytics.screen("Device Setup: Connecting progress screen");
         sparkCloud = ParticleCloudSDK.getCloud();
         publicKey = DeviceSetupState.publicKey;
         deviceId = DeviceSetupState.deviceToBeSetUpId;

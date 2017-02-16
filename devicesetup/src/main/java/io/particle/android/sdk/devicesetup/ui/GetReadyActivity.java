@@ -48,7 +48,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_ready);
-        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Get ready screen");
+        SEGAnalytics.screen("Device Setup: Get ready screen");
         sparkCloud = ParticleCloudSDK.getCloud();
         softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();

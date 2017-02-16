@@ -40,7 +40,7 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Select Network Screen");
+        SEGAnalytics.screen("Device Setup: Select Network Screen");
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP);
         setContentView(R.layout.activity_select_network);
 
@@ -69,10 +69,10 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
         wifiListFragment.stopAggroLoading();
 
         if (selectedNetwork.isSecured()) {
-            SEGAnalytics.track(getApplicationContext(), "Device Setup: Selected secured network");
+            SEGAnalytics.track("Device Setup: Selected secured network");
             startActivity(PasswordEntryActivity.buildIntent(this, softApSSID, selectedNetwork.scan));
         } else {
-            SEGAnalytics.track(getApplicationContext(), "Device Setup: Selected open network");
+            SEGAnalytics.track("Device Setup: Selected open network");
             SSID softApSSID = wifiFacade.getCurrentlyConnectedSSID();
             startActivity(ConnectingActivity.buildIntent(this, softApSSID, selectedNetwork.scan));
         }

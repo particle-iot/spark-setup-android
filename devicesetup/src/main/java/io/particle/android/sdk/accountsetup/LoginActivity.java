@@ -55,7 +55,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.particle_activity_login);
 
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
-        SEGAnalytics.screen(getApplicationContext(), "Auth: Login Screen");
+        SEGAnalytics.screen("Auth: Login Screen");
         sparkCloud = ParticleCloudSDK.getCloud();
 
         // Set up the login form.
@@ -190,8 +190,8 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onSuccess(@NonNull Void result) {
-                SEGAnalytics.identify(getApplicationContext(), email);
-                SEGAnalytics.track(getApplicationContext(), "Auth: Login success");
+                SEGAnalytics.identify(email);
+                SEGAnalytics.track("Auth: Login success");
                 log.d("Logged in...");
                 if (isFinishing()) {
                     return;
@@ -207,7 +207,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
                 log.d("onFailed(): " + error.getMessage());
-                SEGAnalytics.track(getApplicationContext(), "Auth: Login failure");
+                SEGAnalytics.track("Auth: Login failure");
                 ParticleUi.showParticleButtonProgress(LoginActivity.this,
                         R.id.action_log_in, false);
                 // FIXME: check specifically for 401 errors
