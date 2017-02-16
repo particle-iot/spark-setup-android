@@ -11,7 +11,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 
-import com.segment.analytics.Analytics;
 import com.squareup.phrase.Phrase;
 
 import java.io.IOException;
@@ -34,6 +33,7 @@ import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.ParticleDeviceSetupInternalStringUtils;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
@@ -74,7 +74,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_device);
-        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Device discovery screen");
+        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Device discovery screen");
         wifiFacade = WifiFacade.get(this);
 
         softAPConfigRemover = new SoftAPConfigRemover(this);

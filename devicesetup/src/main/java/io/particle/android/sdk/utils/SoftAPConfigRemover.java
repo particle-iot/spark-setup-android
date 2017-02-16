@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 
 import java.util.Set;
 
-import io.particle.android.sdk.utils.WifiFacade;
-
 import static io.particle.android.sdk.utils.Funcy.transformSet;
 import static io.particle.android.sdk.utils.Py.set;
 

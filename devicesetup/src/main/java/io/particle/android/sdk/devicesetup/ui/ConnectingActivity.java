@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
-import com.segment.analytics.Analytics;
 import com.squareup.phrase.Phrase;
 
 import java.security.PublicKey;
@@ -42,6 +41,7 @@ import io.particle.android.sdk.utils.CoreNameGenerator;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.Funcy;
 import io.particle.android.sdk.utils.Py;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
@@ -106,7 +106,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
-        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Connecting progress screen");
+        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Connecting progress screen");
         sparkCloud = ParticleCloudSDK.getCloud();
         publicKey = DeviceSetupState.publicKey;
         deviceId = DeviceSetupState.deviceToBeSetUpId;

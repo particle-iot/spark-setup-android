@@ -5,11 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.segment.analytics.Analytics;
-
 import io.particle.android.sdk.cloud.SDKGlobals;
-import io.particle.android.sdk.devicesetup.BuildConfig;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -28,17 +26,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //FIXME need to find method call whether analytics are set or export this part to application class 
-        try {
-            Analytics.with(getApplicationContext());
-        } catch (IllegalArgumentException exception) {
-            // Create an analytics client with the given context and Segment write key. 
-            Analytics analytics = new Analytics.Builder(getApplicationContext(),
-                    BuildConfig.ANALYTICS_KEY)
-                    .build();
-            analytics.optOut(!BuildConfig.ANALYTICS);
-            Analytics.setSingletonInstance(analytics);
-        }
+        SEGAnalytics.initialize(getApplicationContext());
     }
 
     @Override

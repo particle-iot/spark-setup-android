@@ -4,9 +4,6 @@ apply plugin: 'me.tatarka.retrolambda'
 // This is the library version used when deploying the artifact
 version = '0.4.0'
 
-def analytics = "false"
-def analyticsKey = '""'
-
 ext {
     bintrayRepo = 'android'
     bintrayName = 'devicesetup'
@@ -54,12 +51,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    buildTypes.all {
-        buildConfigField "String", "ANALYTICS_KEY", analyticsKey
-        //disabling analytics
-        buildConfigField "boolean", "ANALYTICS", analytics
     }
 
     buildTypes {

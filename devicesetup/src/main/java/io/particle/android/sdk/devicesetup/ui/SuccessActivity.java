@@ -9,7 +9,6 @@ import android.support.v4.util.Pair;
 import android.util.SparseArray;
 import android.widget.ImageView;
 
-import com.segment.analytics.Analytics;
 import com.segment.analytics.Properties;
 import com.squareup.phrase.Phrase;
 
@@ -21,6 +20,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.SetupResult;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
@@ -79,8 +79,7 @@ public class SuccessActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_success);
-        Analytics analytics = Analytics.with(getApplicationContext());
-        analytics.screen(null, "Device Setup: Setup Result Screen");
+        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Setup Result Screen");
         particleCloud = ParticleCloudSDK.getCloud();
 
         int resultCode = getIntent().getIntExtra(EXTRA_RESULT_CODE, -1);
@@ -105,10 +104,11 @@ public class SuccessActivity extends BaseActivity {
                     analyticProperties.putValue("reason", "lost connection");
                     break;
             }
-            analytics.track("Device Setup: Failure", analyticProperties);
+            SEGAnalytics.track(getApplicationContext(), "Device Setup: Failure", analyticProperties);
         } else {
-            analytics.track("Device Setup: Success", RESULT_SUCCESS_UNKNOWN_OWNERSHIP == resultCode ?
-                    new Properties().putValue("reason", "not claimed") : null);
+            SEGAnalytics.track(getApplicationContext(), "Device Setup: Success",
+                    RESULT_SUCCESS_UNKNOWN_OWNERSHIP == resultCode ?
+                            new Properties().putValue("reason", "not claimed") : null);
         }
 
         Pair<? extends CharSequence, CharSequence> resultStrings = buildUiStringPair(resultCode);

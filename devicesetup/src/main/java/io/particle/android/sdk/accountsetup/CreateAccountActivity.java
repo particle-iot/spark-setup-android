@@ -15,7 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 
-import com.segment.analytics.Analytics;
 import com.segment.analytics.Properties;
 import com.squareup.phrase.Phrase;
 
@@ -29,6 +28,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Toaster;
@@ -79,7 +79,7 @@ public class CreateAccountActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
-        Analytics.with(getApplicationContext()).screen(null, "Auth: Sign Up screen");
+        SEGAnalytics.screen(getApplicationContext(), "Auth: Sign Up screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         Ui.setText(this, R.id.create_account_header_text,
@@ -243,8 +243,7 @@ public class CreateAccountActivity extends BaseActivity {
     }
 
     private void singUpTaskSuccess(String email, String password, AccountInfo accountInfo, ParticleCloud cloud) {
-        Analytics analytics = Analytics.with(getApplicationContext());
-        analytics.track("android account creation", new Properties()
+        SEGAnalytics.track(getApplicationContext(), "android account creation", new Properties()
                 .putValue("email", email)
                 .putValue("firstname", accountInfo.getFirstName())
                 .putValue("lastname", accountInfo.getLastName())
@@ -257,9 +256,9 @@ public class CreateAccountActivity extends BaseActivity {
         if (useOrganizationSignup) {
             // with org setup, we're already logged in upon successful account creation
             onLoginSuccess(cloud);
-            analytics.track("Auth: Signed Up New Customer");
+            SEGAnalytics.track(getApplicationContext(), "Auth: Signed Up New Customer");
         } else {
-            analytics.track("Auth: Signed Up New User");
+            SEGAnalytics.track(getApplicationContext(), "Auth: Signed Up New User");
             attemptLogin(email, password);
         }
     }

@@ -9,14 +9,13 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 import android.widget.EditText;
 
-import com.segment.analytics.Analytics;
-
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -50,7 +49,7 @@ public class PasswordResetActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_reset);
-        Analytics.with(getApplicationContext()).screen(null, "Auth: Forgot password screen");
+        SEGAnalytics.screen(getApplicationContext(), "Auth: Forgot password screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         sparkCloud = ParticleCloudSDK.getCloud();
@@ -60,7 +59,7 @@ public class PasswordResetActivity extends BaseActivity {
     }
 
     public void onPasswordResetClicked(View v) {
-        Analytics.with(getApplicationContext()).track("Auth: Request password reset");
+        SEGAnalytics.track(getApplicationContext(), "Auth: Request password reset");
         final String email = emailView.getText().toString();
         if (isEmailValid(email)) {
             performReset();

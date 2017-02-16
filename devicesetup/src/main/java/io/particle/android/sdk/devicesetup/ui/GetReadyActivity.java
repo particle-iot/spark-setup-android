@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import com.segment.analytics.Analytics;
 import com.squareup.phrase.Phrase;
 
 import java.util.Arrays;
@@ -24,6 +23,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.Async.AsyncApiWorker;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
@@ -48,7 +48,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_ready);
-        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Get ready screen");
+        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Get ready screen");
         sparkCloud = ParticleCloudSDK.getCloud();
         softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();

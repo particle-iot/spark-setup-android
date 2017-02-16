@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.segment.analytics.Analytics;
 import com.squareup.phrase.Phrase;
 
 import io.particle.android.sdk.cloud.ParticleCloud;
@@ -23,6 +22,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -55,7 +55,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.particle_activity_login);
 
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
-        Analytics.with(getApplicationContext()).screen("Auth: Login Screen", null);
+        SEGAnalytics.screen(getApplicationContext(), "Auth: Login Screen");
         sparkCloud = ParticleCloudSDK.getCloud();
 
         // Set up the login form.
@@ -173,7 +173,6 @@ public class LoginActivity extends BaseActivity {
      * Attempts to sign in the account specified by the login form.
      */
     private void login(String email, String password) {
-        Analytics analytics = Analytics.with(getApplicationContext());
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
         ParticleUi.showParticleButtonProgress(this, R.id.action_log_in, true);
@@ -191,8 +190,8 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onSuccess(@NonNull Void result) {
-                analytics.identify(email);
-                analytics.track("Auth: Login success");
+                SEGAnalytics.identify(getApplicationContext(), email);
+                SEGAnalytics.track(getApplicationContext(), "Auth: Login success");
                 log.d("Logged in...");
                 if (isFinishing()) {
                     return;
@@ -208,7 +207,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
                 log.d("onFailed(): " + error.getMessage());
-                analytics.track("Auth: Login failure");
+                SEGAnalytics.track(getApplicationContext(), "Auth: Login failure");
                 ParticleUi.showParticleButtonProgress(LoginActivity.this,
                         R.id.action_log_in, false);
                 // FIXME: check specifically for 401 errors

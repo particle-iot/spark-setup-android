@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import com.segment.analytics.Analytics;
-
 import java.util.Set;
 
 import io.particle.android.sdk.devicesetup.R;
@@ -20,6 +18,7 @@ import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
 import io.particle.android.sdk.ui.BaseActivity;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.WifiFacade;
 import io.particle.android.sdk.utils.ui.ParticleUi;
@@ -43,18 +42,17 @@ public class ManualNetworkEntryActivity extends BaseActivity
     private SSID softApSSID;
 
     private final CompoundButton.OnCheckedChangeListener secureCheckListener = (buttonView, isChecked) -> {
-        Analytics analytics = Analytics.with(getApplicationContext());
         if (isChecked) {
-            analytics.track("Device Setup: Selected secured network");
+            SEGAnalytics.track(getApplicationContext(), "Device Setup: Selected secured network");
         } else {
-            analytics.track("Device Setup: Selected open network");
+            SEGAnalytics.track(getApplicationContext(), "Device Setup: Selected open network");
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Analytics.with(getApplicationContext()).screen(null, "Device Setup: Manual network entry screen");
+        SEGAnalytics.screen(getApplicationContext(), "Device Setup: Manual network entry screen");
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP);
         wifiFacade = WifiFacade.get(this);
 
