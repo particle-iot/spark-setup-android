@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 
 // This is the library version used when deploying the artifact
-version = '0.4.0'
+version = '0.4.1'
 
 ext {
     bintrayRepo = 'android'
@@ -80,7 +80,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'io.particle:cloudsdk:0.4.0'
+    compile 'io.particle:cloudsdk:0.4.1'
 
     compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'com.google.code.gson:gson:2.7'
