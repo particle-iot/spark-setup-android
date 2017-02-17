@@ -11,12 +11,12 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.phrase.Phrase;
 
 import java.io.IOException;
 
-import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.ParticleDevice;
@@ -83,6 +83,7 @@ public class SuccessActivity extends BaseActivity {
     }
 
     private EditText deviceNameView;
+    private TextView deviceNameLabelView;
     private ParticleCloud particleCloud;
 
     @Override
@@ -91,7 +92,8 @@ public class SuccessActivity extends BaseActivity {
         setContentView(R.layout.activity_success);
 
         particleCloud = ParticleCloud.get(this);
-        deviceNameView = Ui.findView(SuccessActivity.this, R.id.device_name);
+        deviceNameView = Ui.findView(this, R.id.device_name);
+        deviceNameLabelView = Ui.findView(this, R.id.device_name_label);
 
         int resultCode = getIntent().getIntExtra(EXTRA_RESULT_CODE, -1);
 
@@ -189,6 +191,8 @@ public class SuccessActivity extends BaseActivity {
 
             @Override
             public void onSuccess(@NonNull ParticleDevice particleDevice) {
+                deviceNameLabelView.setVisibility(View.VISIBLE);
+                deviceNameView.setVisibility(View.VISIBLE);
                 deviceNameView.setText(particleDevice.getName());
             }
 
@@ -196,6 +200,7 @@ public class SuccessActivity extends BaseActivity {
             public void onFailure(@NonNull ParticleCloudException e) {
                 //In case setup was successful, but we cannot retrieve device naming would be a minor issue
                 deviceNameView.setVisibility(View.GONE);
+                deviceNameLabelView.setVisibility(View.GONE);
             }
         });
     }
