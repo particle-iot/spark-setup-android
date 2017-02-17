@@ -36,6 +36,9 @@ proguard/
 /.idea/gradle.xml
 /.idea/libraries
 *.iml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/qaplug_profiles.xml
 
 # OS X noise
 .DS_Store
