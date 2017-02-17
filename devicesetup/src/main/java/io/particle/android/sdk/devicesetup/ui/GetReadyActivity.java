@@ -17,11 +17,13 @@ import java.util.Arrays;
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.Responses.ClaimCodeResponse;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.Async.AsyncApiWorker;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
@@ -46,8 +48,8 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_ready);
-
-        sparkCloud = ParticleCloud.get(this);
+        SEGAnalytics.screen("Device Setup: Get ready screen");
+        sparkCloud = ParticleCloudSDK.getCloud();
         softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
@@ -94,7 +96,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         final Context ctx = this;
         claimCodeWorker = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, ClaimCodeResponse>() {
             @Override
-            public ClaimCodeResponse callApi(ParticleCloud sparkCloud) throws ParticleCloudException {
+            public ClaimCodeResponse callApi(@NonNull ParticleCloud sparkCloud) throws ParticleCloudException {
                 Resources res = ctx.getResources();
                 if (res.getBoolean(R.bool.organization)) {
                     return sparkCloud.generateClaimCodeForOrg(
@@ -112,7 +114,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
             }
 
             @Override
-            public void onSuccess(ClaimCodeResponse result) {
+            public void onSuccess(@NonNull ClaimCodeResponse result) {
                 log.d("Claim code generated: " + result.claimCode);
 
                 DeviceSetupState.claimCode = result.claimCode;
@@ -128,7 +130,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
             }
 
             @Override
-            public void onFailure(ParticleCloudException error) {
+            public void onFailure(@NonNull ParticleCloudException error) {
                 log.d("Generating claim code failed");
                 ParticleCloudException.ResponseErrorData errorData = error.getResponseData();
                 if (errorData != null && errorData.getHttpStatusCode() == 401) {

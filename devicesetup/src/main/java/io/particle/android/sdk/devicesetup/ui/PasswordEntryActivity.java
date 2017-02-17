@@ -14,6 +14,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.ui.BaseActivity;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
@@ -49,7 +50,7 @@ public class PasswordEntryActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_entry);
-
+        SEGAnalytics.screen("Device Setup: Password Entry Screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         networkToConnectTo = gson.fromJson(

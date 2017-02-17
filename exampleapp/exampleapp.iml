@@ -121,6 +121,7 @@
     <orderEntry type="library" exported="" name="jsr305-3.0.1" level="project" />
     <orderEntry type="library" exported="" name="gson-2.7" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.9.0" level="project" />
+    <orderEntry type="library" exported="" name="analytics-4.2.6" level="project" />
     <orderEntry type="library" exported="" name="phrase-1.0.3" level="project" />
   </component>
 </module>

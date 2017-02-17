@@ -103,11 +103,8 @@ public class ParticleDeviceSetupLibrary {
     }
 
     public static void startDeviceSetup(Context ctx, final Class<? extends Activity> mainActivity) {
-        startDeviceSetup(ctx, new SetupCompleteIntentBuilder() {
-            @Override
-            public Intent buildIntent(Context ctx, SetupResult result) {
-                return new Intent(ctx, mainActivity);
-            }
+        startDeviceSetup(ctx, (ctx1, result) -> {
+            return new Intent(ctx1, mainActivity);
         });
     }
 
@@ -133,12 +130,7 @@ public class ParticleDeviceSetupLibrary {
     public static void init(Context ctx, final Class<? extends Activity> mainActivity) {
         init(ctx);
 
-        instance.setupCompleteIntentBuilder = new SetupCompleteIntentBuilder() {
-            @Override
-            public Intent buildIntent(Context ctx, SetupResult result) {
-                return new Intent(ctx, mainActivity);
-            }
-        };
+        instance.setupCompleteIntentBuilder = (ctx1, result) -> new Intent(ctx1, mainActivity);
     }
 
     /**

@@ -1,8 +1,6 @@
 package io.particle.android.sdk.accountsetup;
 
 import android.content.Intent;
-import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -17,13 +15,12 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 
+import com.segment.analytics.Properties;
 import com.squareup.phrase.Phrase;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.models.AccountInfo;
 import io.particle.android.sdk.cloud.models.SignUpInfo;
@@ -31,6 +28,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Toaster;
@@ -81,7 +79,7 @@ public class CreateAccountActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
-
+        SEGAnalytics.screen("Auth: Sign Up screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         Ui.setText(this, R.id.create_account_header_text,
@@ -215,7 +213,7 @@ public class CreateAccountActivity extends BaseActivity {
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
         ParticleUi.showParticleButtonProgress(this, R.id.action_create_account, true);
-        final ParticleCloud cloud = ParticleCloud.get(this);
+        final ParticleCloud cloud = ParticleCloudSDK.getCloud();
         createAccountTask = Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
             public Void callApi(@NonNull ParticleCloud particleCloud) throws ParticleCloudException {
@@ -234,43 +232,59 @@ public class CreateAccountActivity extends BaseActivity {
 
             @Override
             public void onSuccess(@NonNull Void result) {
-                log.d("onAccountCreated()!");
-                if (isFinishing()) {
-                    return;
-                }
-                if (useOrganizationSignup) {
-                    // with org setup, we're already logged in upon successful account creation
-                    onLoginSuccess(cloud);
-                } else {
-                    attemptLogin(email, password);
-                }
+                singUpTaskSuccess(email, password, accountInfo, cloud);
             }
 
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
-                // FIXME: look at old Spark app for what we do here UI & workflow-wise
-                log.d("onFailed()");
-                ParticleUi.showParticleButtonProgress(CreateAccountActivity.this,
-                        R.id.action_create_account, false);
-
-                String msg = getString(R.string.create_account_unknown_error);
-                if (error.getKind() == ParticleCloudException.Kind.NETWORK) {
-                    msg = getString(R.string.create_account_error_communicating_with_server);
-
-                } else if (error.getResponseData() != null) {
-
-                    if (error.getResponseData().getHttpStatusCode() == 401
-                            && getResources().getBoolean(R.bool.organization)) {
-                        msg = getString(R.string.create_account_account_already_exists_for_email_address);
-                    } else {
-                        msg = error.getServerErrorMsg();
-                    }
-                }
-
-                Toaster.l(CreateAccountActivity.this, msg, Gravity.CENTER_VERTICAL);
-                emailView.requestFocus();
+                signUpTaskFailure(error);
             }
         });
+    }
+
+    private void singUpTaskSuccess(String email, String password, AccountInfo accountInfo, ParticleCloud cloud) {
+        SEGAnalytics.track("android account creation", new Properties()
+                .putValue("email", email)
+                .putValue("firstname", accountInfo.getFirstName())
+                .putValue("lastname", accountInfo.getLastName())
+                .putValue("isbusiness", accountInfo.isBusinessAccount())
+                .putValue("company", accountInfo.getCompanyName()));
+        log.d("onAccountCreated()!");
+        if (isFinishing()) {
+            return;
+        }
+        if (useOrganizationSignup) {
+            // with org setup, we're already logged in upon successful account creation
+            onLoginSuccess(cloud);
+            SEGAnalytics.track("Auth: Signed Up New Customer");
+        } else {
+            SEGAnalytics.track("Auth: Signed Up New User");
+            attemptLogin(email, password);
+        }
+    }
+
+    private void signUpTaskFailure(@NonNull ParticleCloudException error) {
+        // FIXME: look at old Spark app for what we do here UI & workflow-wise
+        log.d("onFailed()");
+        ParticleUi.showParticleButtonProgress(CreateAccountActivity.this,
+                R.id.action_create_account, false);
+
+        String msg = getString(R.string.create_account_unknown_error);
+        if (error.getKind() == ParticleCloudException.Kind.NETWORK) {
+            msg = getString(R.string.create_account_error_communicating_with_server);
+
+        } else if (error.getResponseData() != null) {
+
+            if (error.getResponseData().getHttpStatusCode() == 401
+                    && getResources().getBoolean(R.bool.organization)) {
+                msg = getString(R.string.create_account_account_already_exists_for_email_address);
+            } else {
+                msg = error.getServerErrorMsg();
+            }
+        }
+
+        Toaster.l(CreateAccountActivity.this, msg, Gravity.CENTER_VERTICAL);
+        emailView.requestFocus();
     }
 
     private boolean isFieldEmpty(EditText formField) {
@@ -301,7 +315,7 @@ public class CreateAccountActivity extends BaseActivity {
     }
 
     private void attemptLogin(final String username, final String password) {
-        final ParticleCloud cloud = ParticleCloud.get(this);
+        final ParticleCloud cloud = ParticleCloudSDK.getCloud();
         Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
             public Void callApi(@NonNull ParticleCloud particleCloud) throws ParticleCloudException {

@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
 import io.particle.android.sdk.ui.BaseActivity;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.WifiFacade;
 import io.particle.android.sdk.utils.ui.ParticleUi;
@@ -39,14 +41,24 @@ public class ManualNetworkEntryActivity extends BaseActivity
     private WifiFacade wifiFacade;
     private SSID softApSSID;
 
+    private final CompoundButton.OnCheckedChangeListener secureCheckListener = (buttonView, isChecked) -> {
+        if (isChecked) {
+            SEGAnalytics.track("Device Setup: Selected secured network");
+        } else {
+            SEGAnalytics.track("Device Setup: Selected open network");
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        SEGAnalytics.screen("Device Setup: Manual network entry screen");
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP);
         wifiFacade = WifiFacade.get(this);
 
         setContentView(R.layout.activity_manual_network_entry);
+        CheckBox secureCheckbox = Ui.findView(this, R.id.network_requires_password);
+        secureCheckbox.setOnCheckedChangeListener(secureCheckListener);
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
     }
 
