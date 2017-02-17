@@ -51,7 +51,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="@string/device_naming_label"/>
+            android:text="@string/device_naming_label"
+            android:visibility="gone"/>
 
         <EditText
             android:id="@+id/device_name"
@@ -60,7 +61,8 @@
             android:layout_marginBottom="24dp"
             android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
             android:hint="@string/device_naming_hint"
-            android:inputType="textNoSuggestions"/>
+            android:inputType="textNoSuggestions"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/action_troubleshooting"
