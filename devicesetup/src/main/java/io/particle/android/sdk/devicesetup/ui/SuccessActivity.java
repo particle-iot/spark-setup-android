@@ -135,7 +135,7 @@ public class SuccessActivity extends BaseActivity {
 
         Ui.findView(this, R.id.action_done).setOnClickListener(v -> {
             deviceNameView.setError(null);
-            if (deviceNameView.getText().toString().isEmpty()) {
+            if (deviceNameView.getText().toString().isEmpty() && isSuccess) {
                 deviceNameView.setError(getString(R.string.error_field_required));
             } else {
                 finishSetup(v.getContext(), deviceNameView.getText().toString(), isSuccess);
