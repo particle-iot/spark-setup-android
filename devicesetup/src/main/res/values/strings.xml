@@ -101,5 +101,8 @@
     <string name="dialog_title_owned_by_another_user">This %1$s is owned by another user.  Change owner to %2$s?</string>
     <string name="change_owner_question">Change owner?</string>
     <string name="change_owner">Change owner</string>
+    <string name="device_naming_hint">none</string>
+    <string name="device_naming_label">Name your new device:</string>
+    <string name="device_naming_failure">Failed to change device name</string>
 
 </resources>

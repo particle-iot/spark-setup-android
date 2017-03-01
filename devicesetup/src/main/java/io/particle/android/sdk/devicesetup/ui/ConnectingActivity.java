@@ -283,7 +283,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                 });
             }
 
-            startActivity(SuccessActivity.buildIntent(ConnectingActivity.this, resultCode));
+            startActivity(SuccessActivity.buildIntent(ConnectingActivity.this, resultCode, deviceId));
             finish();
         }
 
