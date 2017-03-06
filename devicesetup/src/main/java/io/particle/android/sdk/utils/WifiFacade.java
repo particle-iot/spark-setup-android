@@ -138,6 +138,17 @@ public class WifiFacade {
         return wifiManager.enableNetwork(networkId, disableOthers);
     }
 
+    public WifiConfiguration getWifiConfiguration(SSID ssid) {
+        List<WifiConfiguration> wifiConfigurations = getConfiguredNetworks();
+        for (WifiConfiguration configuration : wifiConfigurations) {
+            log.d("Found configured wifi: " + configuration.SSID);
+            if (configuration.SSID.equals(ssid.inQuotes())) {
+                return configuration;
+            }
+        }
+        return null;
+    }
+
     @Nullable
     public WifiInfo getConnectionInfo() {
         return wifiManager.getConnectionInfo();

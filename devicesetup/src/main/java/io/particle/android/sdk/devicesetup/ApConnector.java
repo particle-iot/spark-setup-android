@@ -87,9 +87,8 @@ public class ApConnector {
      * Connect this Android device to the specified AP.
      *
      * @param config the WifiConfiguration defining which AP to connect to
-     *
      * @return the SSID that was connected prior to calling this method.  Will be null if
-     *          there was no network connected, or if already connected to the target network.
+     * there was no network connected, or if already connected to the target network.
      */
     public SSID connectToAP(final WifiConfiguration config, Client client) {
         wifiLogger.register();
@@ -147,6 +146,14 @@ public class ApConnector {
             setupRunnables.add(() -> {
                 log.d("Adding network " + configSSID);
                 networkID.set(wifiFacade.addNetwork(config));
+
+                if (networkID.get() == -1) {
+                    WifiConfiguration configuration = wifiFacade.getWifiConfiguration(configSSID);
+                    if (configuration != null) {
+                        networkID.set(configuration.networkId);
+                    }
+                }
+
                 if (networkID.get() == -1) {
                     log.e("Adding network " + configSSID + " failed.");
                     client.onApConnectionFailed(config);
