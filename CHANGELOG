@@ -1,3 +1,11 @@
+0.4.1
+=====
+* Device naming at the end of setup
+* Fix for setup wifi connection issues on Nougat
+* Cloudsdk version upgrade
+* Analytics
+* Added account info fields on signup
+
 0.4.0
 =====
 * Lambdas, android version upgrade, gradle upgrade to beta3, Refactoring
