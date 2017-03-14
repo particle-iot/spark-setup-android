@@ -194,7 +194,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                 StepConfig.newBuilder()
                         .setMaxAttempts(MAX_RETRIES_DISCONNECT_FROM_DEVICE)
                         .setResultCode(SuccessActivity.RESULT_FAILURE_NO_DISCONNECT)
-                        .setStepId(R.id.connect_to_wifi_network)
+                        .setStepId(R.id.reconnect_to_wifi_network)
                         .build(),
                 deviceSoftApSsid, this);
 
