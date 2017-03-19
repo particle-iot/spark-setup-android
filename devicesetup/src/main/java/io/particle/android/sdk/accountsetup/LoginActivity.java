@@ -224,10 +224,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private boolean isPasswordValid(String password) {
-        return (password.length() > 0);
+        return (password.length() > 7);
     }
 
 }
-
-
-

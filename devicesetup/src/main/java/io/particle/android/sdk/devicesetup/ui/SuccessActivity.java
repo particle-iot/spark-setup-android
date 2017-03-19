@@ -126,7 +126,7 @@ public class SuccessActivity extends BaseActivity {
         } else {
             showDeviceName(particleCloud);
             SEGAnalytics.track("Device Setup: Success", RESULT_SUCCESS_UNKNOWN_OWNERSHIP == resultCode ?
-                            new Properties().putValue("reason", "not claimed") : null);
+                    new Properties().putValue("reason", "not claimed") : null);
         }
 
         Pair<? extends CharSequence, CharSequence> resultStrings = buildUiStringPair(resultCode);
@@ -135,10 +135,14 @@ public class SuccessActivity extends BaseActivity {
 
         Ui.findView(this, R.id.action_done).setOnClickListener(v -> {
             deviceNameView.setError(null);
-            if (deviceNameView.getText().toString().isEmpty() && isSuccess) {
-                deviceNameView.setError(getString(R.string.error_field_required));
+            if (isSuccess) {
+                if (deviceNameView.getText().toString().isEmpty()) {
+                    deviceNameView.setError(getString(R.string.error_field_required));
+                } else {
+                    finishSetup(v.getContext(), deviceNameView.getText().toString(), true);
+                }
             } else {
-                finishSetup(v.getContext(), deviceNameView.getText().toString(), isSuccess);
+                leaveActivity(v.getContext(), false);
             }
         });
 
@@ -200,7 +204,7 @@ public class SuccessActivity extends BaseActivity {
 
     private void setDeviceName(ParticleDevice device, String deviceName) throws ParticleCloudException {
         //Set new device name only if it changed
-        if (!device.getName().equals(deviceName)) {
+        if (device.getName() != null && !device.getName().equals(deviceName)) {
             device.setName(deviceName);
         }
     }
