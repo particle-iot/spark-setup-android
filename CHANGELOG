@@ -2,6 +2,7 @@
 =====
 * Popup text color changed to white
 * Password length check (must be at least 8 characters)
+* Font sizes for tablet devices
 
 0.4.2
 =====
