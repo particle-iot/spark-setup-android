@@ -38,7 +38,7 @@
     </style>
 
     <style name="PopupMenuText" parent="TextAppearance.AppCompat.Widget.PopupMenu.Small">
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="ParticleSetupTheme.NoActionBar">

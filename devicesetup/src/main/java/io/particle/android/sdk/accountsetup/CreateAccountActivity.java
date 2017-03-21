@@ -302,7 +302,7 @@ public class CreateAccountActivity extends BaseActivity {
     private boolean isPasswordValid(String password) {
         // FIXME: we should probably fix this number...  just making sure
         // there are no blank passwords.
-        return (password.length() > 0);
+        return (password.length() > 7);
     }
 
     private void onLoginSuccess(ParticleCloud cloud) {
