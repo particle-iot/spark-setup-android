@@ -1,3 +1,10 @@
+0.4.4
+=====
+* Resetting password should be done through native screen.
+* Updating Android & Cloudsdk libraries
+* Replacing org & product slug with productId
+* Temporary fix for sign up "Invalid credentials" bug (sing up returning 200 response code bug)
+
 0.4.3
 =====
 * Popup text color changed to white

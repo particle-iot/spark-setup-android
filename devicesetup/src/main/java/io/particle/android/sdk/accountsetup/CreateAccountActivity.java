@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.View;
@@ -218,7 +219,7 @@ public class CreateAccountActivity extends BaseActivity {
             @Override
             public Void callApi(@NonNull ParticleCloud particleCloud) throws ParticleCloudException {
                 if (useOrganizationSignup) {
-                    particleCloud.signUpAndLogInWithCustomer(signUpInfo, getString(R.string.organization_slug));
+                    particleCloud.signUpAndLogInWithCustomer(signUpInfo, getResources().getInteger(R.integer.product_id));
                 } else {
                     particleCloud.signUpWithUser(signUpInfo);
                 }
@@ -281,6 +282,10 @@ public class CreateAccountActivity extends BaseActivity {
             } else {
                 msg = error.getServerErrorMsg();
             }
+        }
+        //TODO remove once sign up error code is fixed
+        if (error.getCause() != null && error.getCause().getMessage().contains(emailView.getText().toString())) {
+            msg = getString(R.string.create_account_account_already_exists_for_email_address);
         }
 
         Toaster.l(CreateAccountActivity.this, msg, Gravity.CENTER_VERTICAL);
