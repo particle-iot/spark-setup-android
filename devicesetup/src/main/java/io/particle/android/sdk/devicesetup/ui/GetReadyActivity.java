@@ -99,9 +99,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
             public ClaimCodeResponse callApi(@NonNull ParticleCloud sparkCloud) throws ParticleCloudException {
                 Resources res = ctx.getResources();
                 if (res.getBoolean(R.bool.organization)) {
-                    return sparkCloud.generateClaimCodeForOrg(
-                            res.getString(R.string.organization_slug),
-                            res.getString(R.string.product_slug));
+                    return sparkCloud.generateClaimCodeForOrg(res.getInteger(R.integer.product_id));
                 } else {
                     return sparkCloud.generateClaimCode();
                 }

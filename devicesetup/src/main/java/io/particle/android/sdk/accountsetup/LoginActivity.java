@@ -1,7 +1,6 @@
 package io.particle.android.sdk.accountsetup;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
@@ -26,7 +25,6 @@ import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
-import io.particle.android.sdk.utils.ui.WebViewActivity;
 
 import static io.particle.android.sdk.utils.Py.list;
 import static io.particle.android.sdk.utils.Py.truthy;
@@ -109,12 +107,7 @@ public class LoginActivity extends BaseActivity {
 
     public void onPasswordResetClicked(View v) {
         Intent intent;
-        if (getResources().getBoolean(R.bool.organization)) {
-            intent = PasswordResetActivity.buildIntent(this, emailView.getText().toString());
-        } else {
-            intent = WebViewActivity.buildIntent(this,
-                    Uri.parse(getString(R.string.forgot_password_uri)));
-        }
+        intent = PasswordResetActivity.buildIntent(this, emailView.getText().toString());
         startActivity(intent);
     }
 

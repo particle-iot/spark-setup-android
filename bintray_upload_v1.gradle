@@ -32,7 +32,7 @@ artifacts {
 Properties authDataProps = new Properties()
 try {
     authDataProps.load(project.rootProject.file('../bintray_user_auth_secrets.properties').newDataInputStream())
-} catch (Exception e) {
+} catch (Exception ignore) {
     // do nothing; this is the default state for everyone who isn't publishing
     // the lib.
 }

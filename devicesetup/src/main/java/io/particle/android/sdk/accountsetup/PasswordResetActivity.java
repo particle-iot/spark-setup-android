@@ -56,6 +56,7 @@ public class PasswordResetActivity extends BaseActivity {
 
         Ui.findView(this, R.id.action_cancel).setOnClickListener(view -> finish());
         emailView = Ui.findView(this, R.id.email);
+        emailView.setText(getIntent().getStringExtra(EXTRA_EMAIL));
     }
 
     public void onPasswordResetClicked(View v) {

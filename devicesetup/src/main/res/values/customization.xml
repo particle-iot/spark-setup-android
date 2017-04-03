@@ -63,8 +63,7 @@
 
     <!-- enable invite codes, other APIs -->
     <bool name="organization">false</bool>
-    <string name="organization_slug">CHANGE_ME</string>
-    <string name="product_slug">CHANGE_ME</string>
+    <integer name="product_id">0</integer>
 
     <!-- FIXME: unused, remove? -->
     <!-- filename of the setup video, which should be placed under the src/main/res/raw folder -->
