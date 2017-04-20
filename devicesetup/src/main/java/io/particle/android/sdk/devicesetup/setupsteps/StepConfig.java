@@ -3,7 +3,7 @@ package io.particle.android.sdk.devicesetup.setupsteps;
 import io.particle.android.sdk.utils.Preconditions;
 
 
-public class StepConfig {
+public final class StepConfig {
 
     public final int maxAttempts;
     public final int stepId;

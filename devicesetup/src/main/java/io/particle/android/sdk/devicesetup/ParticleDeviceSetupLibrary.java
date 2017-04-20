@@ -13,7 +13,7 @@ import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 import io.particle.android.sdk.utils.Preconditions;
 
 
-public class ParticleDeviceSetupLibrary {
+public final class ParticleDeviceSetupLibrary {
 
     /**
      * The contract for the broadcast sent upon device setup completion.

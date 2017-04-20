@@ -12,7 +12,7 @@ import static io.particle.android.sdk.utils.Py.truthy;
  * Configure the access point details to connect to when connect-ap is called. The AP doesn't have
  * to be in the list from scan-ap, allowing manual entry of hidden networks.
  */
-public class ConfigureApCommand extends Command {
+public final class ConfigureApCommand extends Command {
 
     public final Integer idx;
 
