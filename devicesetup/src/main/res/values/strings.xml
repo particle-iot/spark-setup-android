@@ -55,6 +55,7 @@
     <string name="no_wifi_networks_found">(No Wi-Fi networks found)</string>
     <string name="check_for_internet_connectivity">Checking for internet connectivity</string>
     <string name="connect_to_wifi_network">Connecting to Wi-Fi network</string>
+    <string name="reconnect_to_wifi_network">Disconnecting from softAP</string>
     <string name="configure_device_wifi_credentials">Configuring device Wi-Fi credentials</string>
     <string name="wait_for_device_cloud_connection">Waiting for device cloud connection</string>
     <string name="verify_product_ownership">Verifying product ownership</string>
@@ -101,5 +102,8 @@
     <string name="dialog_title_owned_by_another_user">This %1$s is owned by another user.  Change owner to %2$s?</string>
     <string name="change_owner_question">Change owner?</string>
     <string name="change_owner">Change owner</string>
+    <string name="device_naming_hint">none</string>
+    <string name="device_naming_label">Name your new device:</string>
+    <string name="device_naming_failure">Failed to change device name</string>
 
 </resources>

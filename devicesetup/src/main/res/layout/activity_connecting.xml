@@ -99,6 +99,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"/>
 
@@ -136,6 +137,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"
                         tools:ignore="DuplicateIds"/>
@@ -150,6 +152,43 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/reconnect_to_wifi_network"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
+
+                    <ProgressBar
+                        android:id="@+id/spinner"
+                        style="@style/SparkSpinner"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="left|center_vertical"
+                        android:layout_margin="0dp"
+                        android:visibility="visible"
+                        tools:ignore="DuplicateIds,RtlHardcoded"/>
+
+                    <ImageView
+                        android:id="@+id/checkbox"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
+                        android:src="@drawable/checkmark"
+                        android:visibility="gone"
+                        tools:ignore="DuplicateIds"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical"
+                        android:layout_marginLeft="8dp"
+                        android:text="@string/reconnect_to_wifi_network"
+                        android:textSize="@dimen/text_size_small"/>
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/wait_for_device_cloud_connection"
@@ -174,6 +213,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"
                         tools:ignore="DuplicateIds"/>
@@ -212,6 +252,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"
                         tools:ignore="DuplicateIds"/>
@@ -250,6 +291,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="left|center_vertical"
+                        android:contentDescription="@null"
                         android:src="@drawable/checkmark"
                         android:visibility="gone"
                         tools:ignore="DuplicateIds"/>

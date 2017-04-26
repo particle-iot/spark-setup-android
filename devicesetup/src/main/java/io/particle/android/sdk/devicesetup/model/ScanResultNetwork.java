@@ -4,6 +4,8 @@ import android.net.wifi.ScanResult;
 
 import java.util.Set;
 
+import io.particle.android.sdk.utils.SSID;
+
 import static io.particle.android.sdk.utils.Py.set;
 
 
@@ -13,15 +15,17 @@ public class ScanResultNetwork implements WifiNetwork {
     private static final Set<String> wifiSecurityTypes = set("WEP", "PSK", "EAP");
 
 
-    public final ScanResult scanResult;
+    private final ScanResult scanResult;
+    private final SSID ssid;
 
     public ScanResultNetwork(ScanResult scanResult) {
         this.scanResult = scanResult;
+        ssid = SSID.from(scanResult.SSID);
     }
 
     @Override
-    public String getSsid() {
-        return scanResult.SSID;
+    public SSID getSsid() {
+        return ssid;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package io.particle.android.sdk.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -8,7 +7,10 @@ import io.particle.android.sdk.accountsetup.CreateAccountActivity;
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
+import io.particle.android.sdk.devicesetup.SetupCompleteIntentBuilder;
+import io.particle.android.sdk.devicesetup.SetupResult;
 import io.particle.android.sdk.persistance.SensitiveDataStorage;
+import io.particle.android.sdk.utils.Preconditions;
 import io.particle.android.sdk.utils.TLog;
 
 import static io.particle.android.sdk.utils.Py.any;
@@ -22,42 +24,47 @@ public class NextActivitySelector {
     private static final TLog log = TLog.get(NextActivitySelector.class);
 
 
-    public static Intent getNextActivityIntent(Context ctx, ParticleCloud particleCloud,
-                                               SensitiveDataStorage credStorage) {
+    public static Intent getNextActivityIntent(Context ctx,
+                                               ParticleCloud particleCloud,
+                                               SensitiveDataStorage credStorage,
+                                               SetupResult setupResult) {
         NextActivitySelector selector = new NextActivitySelector(particleCloud, credStorage,
-                ParticleDeviceSetupLibrary.getInstance().getMainActivityClass());
+                ParticleDeviceSetupLibrary.getInstance().getSetupCompleteIntentBuilder());
 
-        Class <? extends Activity> nextActivity = selector.buildIntentForNextActivity();
-        return new Intent(ctx, nextActivity);
+        return selector.buildIntentForNextActivity(ctx, setupResult);
     }
 
 
     private final ParticleCloud cloud;
     private final SensitiveDataStorage credStorage;
-    private final Class<? extends Activity> mainActivityClass;
+    private final SetupCompleteIntentBuilder setupCompleteIntentBuilder;
 
     private NextActivitySelector(ParticleCloud cloud,
                                  SensitiveDataStorage credStorage,
-                                 Class<? extends Activity> mainActivityClass) {
+                                 SetupCompleteIntentBuilder setupCompleteIntentBuilder) {
+        Preconditions.checkNotNull(setupCompleteIntentBuilder, "SetupCompleteIntentBuilder instance is null");
+
         this.cloud = cloud;
         this.credStorage = credStorage;
-        this.mainActivityClass = mainActivityClass;
+        this.setupCompleteIntentBuilder = setupCompleteIntentBuilder;
     }
 
-
-    Class<? extends Activity> buildIntentForNextActivity() {
+    Intent buildIntentForNextActivity(Context ctx, SetupResult result) {
         if (!hasUserBeenLoggedInBefore()) {
             log.d("User has not been logged in before");
-            return CreateAccountActivity.class;
+            return new Intent(ctx, CreateAccountActivity.class);
         }
 
         if (!isOAuthTokenPresent()) {
             log.d("No auth token present");
-            return LoginActivity.class;
+            return new Intent(ctx, LoginActivity.class);
         }
 
-        log.d("Returning default activity");
-        return mainActivityClass;
+        log.d("Building setup complete activity...");
+        Intent successActivity = setupCompleteIntentBuilder.buildIntent(ctx, result);
+
+        log.d("Returning setup complete activity");
+        return successActivity;
     }
 
     boolean hasUserBeenLoggedInBefore() {

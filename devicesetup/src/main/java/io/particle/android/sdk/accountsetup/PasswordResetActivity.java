@@ -1,8 +1,6 @@
 package io.particle.android.sdk.accountsetup;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,9 +11,11 @@ import android.widget.EditText;
 
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
+import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -49,22 +49,18 @@ public class PasswordResetActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_reset);
-
+        SEGAnalytics.screen("Auth: Forgot password screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
-        sparkCloud = ParticleCloud.get(this);
+        sparkCloud = ParticleCloudSDK.getCloud();
 
-        Ui.findView(this, R.id.action_cancel).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        finish();
-                    }
-                });
+        Ui.findView(this, R.id.action_cancel).setOnClickListener(view -> finish());
         emailView = Ui.findView(this, R.id.email);
+        emailView.setText(getIntent().getStringExtra(EXTRA_EMAIL));
     }
 
     public void onPasswordResetClicked(View v) {
+        SEGAnalytics.track("Auth: Request password reset");
         final String email = emailView.getText().toString();
         if (isEmailValid(email)) {
             performReset();
@@ -73,12 +69,9 @@ public class PasswordResetActivity extends BaseActivity {
             new Builder(this)
                     .setTitle(getString(R.string.reset_password_dialog_title))
                     .setMessage(getString(R.string.reset_paassword_dialog_please_enter_a_valid_email))
-                    .setPositiveButton(R.string.ok, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            emailView.requestFocus();
-                        }
+                    .setPositiveButton(R.string.ok, (dialog, which) -> {
+                        dialog.dismiss();
+                        emailView.requestFocus();
                     })
                     .show();
         }
@@ -101,14 +94,14 @@ public class PasswordResetActivity extends BaseActivity {
             }
 
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(@NonNull Void result) {
                 onResetAttemptFinished("Instructions for how to reset your password will be sent " +
                         "to the provided email address.  Please check your email and continue " +
                         "according to instructions.");
             }
 
             @Override
-            public void onFailure(ParticleCloudException error) {
+            public void onFailure(@NonNull ParticleCloudException error) {
                 log.d("onFailed(): " + error.getMessage());
                 onResetAttemptFinished("Could not find a user with supplied email address, please " +
                         " check the address supplied or create a new user via the signup screen");
@@ -119,12 +112,9 @@ public class PasswordResetActivity extends BaseActivity {
     private void onResetAttemptFinished(String content) {
         new AlertDialog.Builder(this)
                 .setMessage(content)
-                .setPositiveButton(R.string.ok, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        finish();
-                    }
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    dialog.dismiss();
+                    finish();
                 })
                 .show();
     }

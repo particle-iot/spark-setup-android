@@ -1,17 +1,18 @@
 package io.particle.android.sdk.devicesetup.commands;
 
-import android.support.annotation.NonNull;
+import android.content.Context;
+import android.support.annotation.CheckResult;
 
 import com.google.gson.Gson;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.SocketFactory;
+
 import io.particle.android.sdk.utils.EZ;
+import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.TLog;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -22,16 +23,18 @@ import static io.particle.android.sdk.utils.Py.truthy;
 
 public class CommandClient {
 
-    public static final int DEFAULT_TIMEOUT_SECONDS = 10;
+    private static final int DEFAULT_TIMEOUT_SECONDS = 10;
 
 
-    public static CommandClient newClient(@NonNull InetSocketAddress socketAddress) {
-        return new CommandClient(socketAddress);
+    public static CommandClient newClient(Context ctx, SSID softApSSID, String ipAddress, int port) {
+        return new CommandClient(
+                ipAddress, port,
+                new NetworkBindingSocketFactory(ctx, softApSSID, DEFAULT_TIMEOUT_SECONDS * 1000));
     }
 
-    // FIXME: set these defaults in a resource file
-    public static CommandClient newClientUsingDefaultSocketAddress() {
-        return newClient(new InetSocketAddress("192.168.0.1", 5609));
+    // FIXME: set these defaults in a resource file?
+    public static CommandClient newClientUsingDefaultsForDevices(Context ctx, SSID softApSSID) {
+        return newClient(ctx, softApSSID, "192.168.0.1", 5609);
     }
 
 
@@ -39,36 +42,35 @@ public class CommandClient {
     private static final Gson gson = new Gson();
 
 
-    private final InetSocketAddress deviceAddress;
-
+    private final String ipAddress;
+    private final int port;
+    private final SocketFactory socketFactory;
 
     // no public constructor; use the factory methods above
-    private CommandClient(InetSocketAddress deviceAddress) {
-        this.deviceAddress = deviceAddress;
+    private CommandClient(String ipAddress, int port, SocketFactory socketFactory) {
+        this.ipAddress = ipAddress;
+        this.port = port;
+        this.socketFactory = socketFactory;
     }
 
-    public void sendCommand(Command command, CeciNestPasUnSocketFactory socketFactory) throws IOException {
-        sendAndMaybeReceive(command, Void.class, socketFactory);
+    public void sendCommand(Command command) throws IOException {
+        sendAndMaybeReceive(command, Void.class);
     }
 
-    public <T> T sendCommandAndReturnResponse(Command command, Class<T> responseType,
-                                              CeciNestPasUnSocketFactory socketFactory)
-            throws IOException {
-        return sendAndMaybeReceive(command, responseType, socketFactory);
+    @CheckResult
+    public <T> T sendCommand(Command command, Class<T> responseType) throws IOException {
+        return sendAndMaybeReceive(command, responseType);
     }
 
 
-    private <T> T sendAndMaybeReceive(Command command, Class<T> responseType,
-                                      CeciNestPasUnSocketFactory socketFactory) throws IOException {
+    private <T> T sendAndMaybeReceive(Command command, Class<T> responseType) throws IOException {
         log.i("Preparing to send command '" + command.getCommandName() + "'");
         String commandData = buildCommandData(command);
 
         BufferedSink buffer = null;
         try {
             // send command
-            int timeoutMillis = DEFAULT_TIMEOUT_SECONDS * 1000;
-            Socket socket = socketFactory.buildSocket(timeoutMillis);
-            socket.connect(deviceAddress, timeoutMillis);
+            Socket socket = socketFactory.createSocket(ipAddress, port);
             buffer = wrapSocket(socket, DEFAULT_TIMEOUT_SECONDS);
             log.d("Writing command data");
             buffer.writeUtf8(commandData);
@@ -108,7 +110,7 @@ public class CommandClient {
         }
 
         String built = commandData.toString();
-        log.i("*** BUILT COMMAND DATA: '" + StringEscapeUtils.escapeJava(built) + "'");
+        log.i("*** BUILT COMMAND DATA: '" + CommandClientUtils.escapeJava(built) + "'");
         return built;
     }
 
@@ -125,7 +127,7 @@ public class CommandClient {
         } while (truthy(line));
 
         String responseData = buffer.readUtf8();
-        log.d("Command response (raw): " + StringEscapeUtils.escapeJava(responseData));
+        log.d("Command response (raw): " + CommandClientUtils.escapeJava(responseData));
         T tee = gson.fromJson(responseData, responseType);
         log.d("Command response: " + tee);
         EZ.closeThisThingOrMaybeDont(buffer);

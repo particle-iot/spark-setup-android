@@ -24,7 +24,8 @@ public class ParticleUi {
     }
 
 
-    public static class BrandImageHeaderHider implements SoftKeyboardVisibilityDetectingLinearLayout.SoftKeyboardVisibilityChangeListener {
+    public static class BrandImageHeaderHider
+            implements SoftKeyboardVisibilityDetectingLinearLayout.SoftKeyboardVisibilityChangeListener {
 
         final View logoView;
 

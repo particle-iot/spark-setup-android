@@ -2,10 +2,6 @@ package io.particle.android.sdk.utils;
 
 import android.annotation.SuppressLint;
 
-import com.google.common.io.BaseEncoding;
-
-import org.apache.commons.lang3.CharEncoding;
-
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -13,12 +9,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Locale;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+import okio.ByteString;
 
 
 @ParametersAreNonnullByDefault
@@ -36,28 +35,28 @@ public class Crypto {
     private static final TLog log = TLog.get(Crypto.class);
 
 
-    public static PublicKey readPublicKeyFromHexEncodedDerString(String hexBytes)
+    public static PublicKey readPublicKeyFromHexEncodedDerString(String hexString)
             throws CryptoException {
-        byte[] rawBytes = BaseEncoding.base16().decode(hexBytes);
+        byte[] rawBytes = ByteString.decodeHex(hexString).toByteArray();
         return buildPublicKey(rawBytes);
     }
 
     public static String encryptAndEncodeToHex(String inputString, PublicKey publicKey)
             throws CryptoException {
-        byte[] asBytes = null;
-        Charset utf8 = Charset.forName(CharEncoding.UTF_8);
-        asBytes = inputString.getBytes(utf8);
+        Charset utf8 = Charset.forName("UTF-8");
+        byte[] asBytes = inputString.getBytes(utf8);
         byte[] encryptedBytes = encryptWithKey(asBytes, publicKey);
-        String hex = BaseEncoding.base16().encode(encryptedBytes);
+        String hex = ByteString.of(encryptedBytes).hex();
         // forcing lowercase here because of a bug in the early firmware that didn't accept
         // hex encoding in uppercase
-        return hex.toLowerCase();
+        return hex.toLowerCase(Locale.ROOT);
     }
 
+    @SuppressLint("TrulyRandom")
     static byte[] encryptWithKey(byte[] inputData, PublicKey publicKey) throws CryptoException {
         try {
             @SuppressLint("GetInstance")  // the warning doesn't apply to how we're using this
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return cipher.doFinal(inputData);
 
@@ -89,6 +88,5 @@ public class Crypto {
                     "This should be impossible, but there is no RSA impl on this device", e);
         }
     }
-
 
 }

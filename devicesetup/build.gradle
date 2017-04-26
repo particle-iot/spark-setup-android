@@ -1,9 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
+apply plugin: 'me.tatarka.retrolambda'
 
 // This is the library version used when deploying the artifact
-version = '0.3.6'
-
+version = '0.4.5'
 
 ext {
     bintrayRepo = 'android'
@@ -35,19 +35,23 @@ ext {
 
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
+
+    dexOptions {
+        javaMaxHeapSize "2g"
+    }
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     buildTypes {
@@ -58,7 +62,7 @@ android {
     }
 
     lintOptions {
-        abortOnError false
+        abortOnError true
     }
 
     packagingOptions {
@@ -92,19 +96,20 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'io.particle:cloudsdk:0.3.4'
+    compile 'io.particle:cloudsdk:0.4.3'
 
-    compile 'org.apache.commons:commons-lang3:3.3.2'
-    compile 'com.google.code.gson:gson:2.4'
-    compile 'com.google.guava:guava:18.0'
-    compile 'com.squareup.okio:okio:1.6.0'
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.squareup.okio:okio:1.9.0'
     compile 'com.squareup.phrase:phrase:1.0.3'
-    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+    compile 'com.segment.analytics.android:analytics:4.2.6'
 
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
-    compile 'com.android.support:support-v4:23.2.1'
-    compile 'com.android.support:support-annotations:23.2.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:support-annotations:25.3.1'
+
+    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'
 
     // TESTING ONLY (see other TESTING comments further up)
 //    compile(name: 'cloudsdk', ext: 'aar')
@@ -113,7 +118,6 @@ dependencies {
 apply from: '../pom_generator_v1.gradle'
 apply from: '../bintray_upload_v1.gradle'
 
-
 // disable insane, build-breaking doclint tool in Java 8
 if (JavaVersion.current().isJava8Compatible()) {
     tasks.withType(Javadoc) {
@@ -121,3 +125,4 @@ if (JavaVersion.current().isJava8Compatible()) {
         options.addStringOption('Xdoclint:none', '-quiet')
     }
 }
+apply plugin: 'com.getkeepsafe.dexcount'

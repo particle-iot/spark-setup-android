@@ -32,7 +32,13 @@ proguard/
 
 # IntelliJ project files that shouldn't be checked in
 /.idea/workspace.xml
+/.idea/tasks.xml
+/.idea/gradle.xml
 /.idea/libraries
+*.iml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/qaplug_profiles.xml
 
 # OS X noise
 .DS_Store

@@ -1,3 +1,50 @@
+0.4.5
+=====
+* Adding back email field for organization sign up.
+
+0.4.4
+=====
+* Resetting password should be done through native screen.
+* Updating Android & Cloudsdk libraries
+* Replacing org & product slug with productId
+* Temporary fix for sign up "Invalid credentials" bug (sing up returning 200 response code bug)
+
+0.4.3
+=====
+* Popup text color changed to white
+* Password length check (must be at least 8 characters)
+* Font sizes for tablet devices
+
+0.4.2
+=====
+* UI for step disconnecting from softAP
+
+0.4.1
+=====
+* Device naming at the end of setup
+* Fix for setup wifi connection issues on Nougat
+* Cloudsdk version upgrade
+* Analytics
+* Added account info fields on signup
+
+0.4.0
+=====
+* Lambdas, android version upgrade, gradle upgrade to beta3, Refactoring
+* Wifi class replaced with WifiFacade
+* Kill trailing spaces from passwords
+* Introduce SSID class
+* Remove some noisy logging
+* Kill old hacky "not a socket factory" with an actual SocketFactory
+* Introduce SetupStepApReconnector
+* Abort on lint errors
+
+
+0.3.7
+=====
+* New callback option: now the SDK will optionally fire a supplied Intent at the completion of the setup process  (thanks to Charles Korn <ckorn@thoughtworks.com>)
+* Fix a crash for two-legged auth users
+
+
 0.3.6
 =====
 * Fix a few hard-coded user-facing strings

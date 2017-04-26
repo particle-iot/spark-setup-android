@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -38,12 +39,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="12dp"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
             android:layout_marginTop="6dp"
             android:gravity="center"
             android:text="@string/setup_success_details"/>
+
+        <TextView
+            android:id="@+id/device_name_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/device_naming_label"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/device_name"
+            style="@style/SparkEditText"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="24dp"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
+            android:hint="@string/device_naming_hint"
+            android:inputType="textNoSuggestions"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/action_troubleshooting"
@@ -55,11 +74,22 @@
             android:text="@string/troubleshooting"
             android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/action_done"
-            style="@style/SparkButton"
-            android:layout_marginBottom="16dp"
-            android:text="@string/action_done"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <Button
+                android:id="@+id/action_done"
+                style="@style/SparkButton"
+                android:text="@string/action_done"/>
+
+            <ProgressBar
+                android:id="@id/button_progress_indicator"
+                style="@style/SparkSpinner"
+                android:layout_alignLeft="@id/action_done"
+                android:layout_alignStart="@id/action_done"
+                tools:ignore="RtlHardcoded"/>
+        </RelativeLayout>
 
     </LinearLayout>
 

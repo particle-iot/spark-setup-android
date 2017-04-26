@@ -25,8 +25,8 @@ public class WaitForCloudConnectivityStep extends SetupStep {
 
     @Override
     protected void onRunStep() throws SetupStepException {
-        // Wait for just a couple seconds for a WiFi connection if possible, in case we
-        // flip from the soft AP, to mobile data, and then to WiFi in rapid succession.
+        // Wait for just a couple seconds for a WifiFacade connection if possible, in case we
+        // flip from the soft AP, to mobile data, and then to WifiFacade in rapid succession.
         EZ.threadSleep(2000);
         int reachabilityRetries = 0;
         boolean isAPIHostReachable = checkIsApiHostAvailable();
@@ -54,6 +54,7 @@ public class WaitForCloudConnectivityStep extends SetupStep {
             return false;
         }
 
+        // FIXME: why is this commented out?  See what iOS does here now.
 //        try {
 //            cloud.getDevices();
 //        } catch (Exception e) {

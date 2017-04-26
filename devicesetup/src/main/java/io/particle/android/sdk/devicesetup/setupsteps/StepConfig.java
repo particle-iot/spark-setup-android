@@ -1,6 +1,7 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
-import com.google.common.base.Preconditions;
+import io.particle.android.sdk.utils.Preconditions;
+
 
 public class StepConfig {
 

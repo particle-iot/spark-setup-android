@@ -2,20 +2,23 @@ package io.particle.android.sdk.devicesetup.model;
 
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
+import io.particle.android.sdk.utils.SSID;
 
 
-// FIXME: this naming... is not ideal.
+// FIXME: this naming is not ideal.
 public class ScanAPCommandResult implements WifiNetwork {
 
     public final ScanApCommand.Scan scan;
+    public final SSID ssid;
 
     public ScanAPCommandResult(ScanApCommand.Scan scan) {
         this.scan = scan;
+        ssid = SSID.from(scan.ssid);
     }
 
     @Override
-    public String getSsid() {
-        return scan.ssid;
+    public SSID getSsid() {
+        return ssid;
     }
 
     @Override
