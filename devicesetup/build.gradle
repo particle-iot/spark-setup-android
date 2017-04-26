@@ -126,3 +126,7 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 apply plugin: 'com.getkeepsafe.dexcount'
+
+retrolambda {
+    jvmArgs '-noverify'
+}
