@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.View;
@@ -58,6 +57,7 @@ public class CreateAccountActivity extends BaseActivity {
     private Switch companyChoiceView;
 
     private boolean useOrganizationSignup;
+    private boolean useProductionSignup;
 
     private final CompoundButton.OnCheckedChangeListener companyAccountCheckedListener =
             (CompoundButton buttonView, boolean isChecked) -> {
@@ -99,6 +99,7 @@ public class CreateAccountActivity extends BaseActivity {
 
         companyChoiceView.setOnCheckedChangeListener(companyAccountCheckedListener);
         useOrganizationSignup = getResources().getBoolean(R.bool.organization);
+        useProductionSignup = getResources().getBoolean(R.bool.productMode);
 
         Button submit = Ui.findView(this, R.id.action_create_account);
         submit.setOnClickListener(view -> attemptCreateAccount());
@@ -218,8 +219,15 @@ public class CreateAccountActivity extends BaseActivity {
         createAccountTask = Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
             public Void callApi(@NonNull ParticleCloud particleCloud) throws ParticleCloudException {
-                if (useOrganizationSignup) {
-                    particleCloud.signUpAndLogInWithCustomer(signUpInfo, getResources().getInteger(R.integer.product_id));
+                if (useOrganizationSignup && !useProductionSignup) {
+                    throw new ParticleCloudException(new Exception("Organization is deprecated, use productMode instead."));
+//                    particleCloud.signUpAndLogInWithCustomer(signUpInfo, getString(R.string.organization_slug));
+                } else if (useProductionSignup) {
+                    int productId = getResources().getInteger(R.integer.product_id);
+                    if (productId == 0) {
+                        throw new ParticleCloudException(new Exception("Product id must be set when productMode is in use."));
+                    }
+                    particleCloud.signUpAndLogInWithCustomer(signUpInfo, productId);
                 } else {
                     particleCloud.signUpWithUser(signUpInfo);
                 }
@@ -254,7 +262,7 @@ public class CreateAccountActivity extends BaseActivity {
         if (isFinishing()) {
             return;
         }
-        if (useOrganizationSignup) {
+        if (useOrganizationSignup || useProductionSignup) {
             // with org setup, we're already logged in upon successful account creation
             onLoginSuccess(cloud);
             SEGAnalytics.track("Auth: Signed Up New Customer");
@@ -277,7 +285,8 @@ public class CreateAccountActivity extends BaseActivity {
         } else if (error.getResponseData() != null) {
 
             if (error.getResponseData().getHttpStatusCode() == 401
-                    && getResources().getBoolean(R.bool.organization)) {
+                    && (getResources().getBoolean(R.bool.organization) ||
+                    getResources().getBoolean(R.bool.productMode))) {
                 msg = getString(R.string.create_account_account_already_exists_for_email_address);
             } else {
                 msg = error.getServerErrorMsg();
