@@ -1,3 +1,7 @@
+0.4.6
+=====
+* Adding organization customization options as deprecated, trying to use deprecated organization option will result in exception.
+
 0.4.5
 =====
 * Adding back email field for organization sign up.

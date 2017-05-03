@@ -98,8 +98,16 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
             @Override
             public ClaimCodeResponse callApi(@NonNull ParticleCloud sparkCloud) throws ParticleCloudException {
                 Resources res = ctx.getResources();
-                if (res.getBoolean(R.bool.organization)) {
-                    return sparkCloud.generateClaimCodeForOrg(res.getInteger(R.integer.product_id));
+                if (res.getBoolean(R.bool.organization) && !res.getBoolean(R.bool.productMode)) {
+                    throw new ParticleCloudException(new Exception("Organization is deprecated, use productMode instead."));
+//                    return sparkCloud.generateClaimCodeForOrg(res.getString(R.string.organization_slug),
+//                            res.getString(R.string.product_slug));
+                } else if (res.getBoolean(R.bool.productMode)) {
+                    int productId = res.getInteger(R.integer.product_id);
+                    if (productId == 0) {
+                        throw new ParticleCloudException(new Exception("Product id must be set when productMode is in use."));
+                    }
+                    return sparkCloud.generateClaimCode(productId);
                 } else {
                     return sparkCloud.generateClaimCode();
                 }
