@@ -35,7 +35,7 @@ ext {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '25.0.3'
 
     dexOptions {
         javaMaxHeapSize "2g"
@@ -80,7 +80,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'io.particle:cloudsdk:0.4.4'
+    compile 'io.particle:cloudsdk:0.4.5'
 
     compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'com.google.code.gson:gson:2.7'

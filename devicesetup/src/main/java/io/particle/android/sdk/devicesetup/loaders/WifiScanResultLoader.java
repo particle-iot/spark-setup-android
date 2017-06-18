@@ -91,7 +91,7 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
 
 
     private final Predicate<ScanResult> ssidStartsWithProductName = input -> {
-        if (input == null || !truthy(input.SSID)) {
+        if (!truthy(input.SSID)) {
             return false;
         }
         String softApPrefix = (getContext().getString(R.string.network_name_prefix) + "-").toLowerCase(Locale.ROOT);

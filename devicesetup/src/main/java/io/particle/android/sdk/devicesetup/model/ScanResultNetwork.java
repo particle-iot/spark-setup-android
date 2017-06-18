@@ -48,10 +48,7 @@ public class ScanResultNetwork implements WifiNetwork {
 
         ScanResultNetwork that = (ScanResultNetwork) o;
 
-        if (getSsid() != null ? !getSsid().equals(that.getSsid()) : that.getSsid() != null)
-            return false;
-
-        return true;
+        return getSsid() != null ? getSsid().equals(that.getSsid()) : that.getSsid() == null;
     }
 
     @Override

@@ -40,10 +40,7 @@ public class ScanAPCommandResult implements WifiNetwork {
 
         ScanAPCommandResult that = (ScanAPCommandResult) o;
 
-        if (getSsid() != null ? !getSsid().equals(that.getSsid()) : that.getSsid() != null)
-            return false;
-
-        return true;
+        return getSsid() != null ? getSsid().equals(that.getSsid()) : that.getSsid() == null;
     }
 
     @Override
