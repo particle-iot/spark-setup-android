@@ -37,6 +37,7 @@ import io.particle.android.sdk.devicesetup.setupsteps.StepConfig;
 import io.particle.android.sdk.devicesetup.setupsteps.StepProgress;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForCloudConnectivityStep;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForDisconnectionFromDeviceStep;
+import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.CoreNameGenerator;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.Funcy;
@@ -222,16 +223,17 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                         .build(),
                 sparkCloud, deviceId, needToClaimDevice);
 
-        return list(
+        List<SetupStep> steps = list(
                 configureAPStep,
                 connectDeviceToNetworkStep,
                 waitForDisconnectionFromDeviceStep,
                 ensureSoftApNotVisible,
-                waitForLocalCloudConnectivityStep,
-                checkIfDeviceClaimedStep
-        );
+                waitForLocalCloudConnectivityStep);
+        if (!BaseActivity.setupOnly) {
+            steps.add(checkIfDeviceClaimedStep);
+        }
+        return steps;
     }
-
 
 
     private class ConnectingProcessWorkerTask extends SetupStepsRunnerTask {

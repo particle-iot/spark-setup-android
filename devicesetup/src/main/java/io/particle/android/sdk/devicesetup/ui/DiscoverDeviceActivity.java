@@ -30,6 +30,7 @@ import io.particle.android.sdk.devicesetup.commands.SetCommand;
 import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
+import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.ParticleDeviceSetupInternalStringUtils;
@@ -122,6 +123,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             );
         }
 
+        Ui.findView(this, R.id.action_log_out).setVisibility(BaseActivity.setupOnly ? View.GONE : View.VISIBLE);
         Ui.findView(this, R.id.action_log_out).setOnClickListener(view -> {
             sparkCloud.logOut();
             log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
@@ -295,17 +297,15 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             @Override
             protected void onPostExecute(SetupStepException error) {
                 connectToApTask = null;
-                if (error == null) {
+                if (error == null || (BaseActivity.setupOnly && error instanceof DeviceAlreadyClaimed)) {
                     // no exceptions thrown, huzzah
                     hideProgressDialog();
                     startActivity(SelectNetworkActivity.buildIntent(
                             DiscoverDeviceActivity.this, selectedSoftApSSID));
                     finish();
-
                 } else if (error instanceof DeviceAlreadyClaimed) {
                     hideProgressDialog();
                     onDeviceClaimedByOtherUser();
-
                 } else {
                     // nope, do it all over again.
                     // FIXME: this might be a good time to display some feedback...
