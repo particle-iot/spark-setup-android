@@ -1,10 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'me.tatarka.retrolambda'
-
-retrolambda {
-    jvmArgs '-noverify'
-}
+//
+//retrolambda {
+//    jvmArgs '-noverify'
+//}
 // This is the library version used when deploying the artifact
 version = '0.4.6'
 
