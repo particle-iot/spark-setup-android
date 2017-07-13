@@ -65,9 +65,8 @@ public class SoftAPConfigRemover {
 
     private Set<SSID> loadSSIDsWithKey(String key) {
 //        log.v("loadSSIDsWithKey(" + key + ")");
-        Set<SSID> ssids = Funcy.transformSet(prefs.getStringSet(key, set()), SSID::from);
-//        log.v("Loaded saved SSIDS: " + ssids);
-        return ssids;
+        //        log.v("Loaded saved SSIDS: " + ssids);
+        return Funcy.transformSet(prefs.getStringSet(key, set()), SSID::from);
     }
 
     @SuppressLint("CommitPrefEdits")

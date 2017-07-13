@@ -2,7 +2,6 @@ package io.particle.devicesetup.exampleapp;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -19,19 +18,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ParticleDeviceSetupLibrary.init(this.getApplicationContext());
 
-        Ui.findView(this, R.id.start_setup_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                invokeDeviceSetup();
-            }
-        });
-
-        Ui.findView(this, R.id.start_setup_custom_intent_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                invokeDeviceSetupWithCustomIntentBuilder();
-            }
-        });
+        Ui.findView(this, R.id.start_setup_button).setOnClickListener(view -> invokeDeviceSetup());
+        Ui.findView(this, R.id.start_setup_custom_intent_button).setOnClickListener(v -> invokeDeviceSetupWithCustomIntentBuilder());
 
         String setupLaunchTime = this.getIntent().getStringExtra(EXTRA_SETUP_LAUNCHED_TIME);
 
