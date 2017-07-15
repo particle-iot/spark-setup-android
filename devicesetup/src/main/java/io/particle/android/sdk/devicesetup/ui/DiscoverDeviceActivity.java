@@ -1,11 +1,15 @@
 package io.particle.android.sdk.devicesetup.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
@@ -140,8 +144,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         if (!wifiFacade.isWifiEnabled()) {
             onWifiDisabled();
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !canGetLocation()) {
+            onLocationDisabled();
+        }
     }
-
 
     @Override
     protected void onResume() {
@@ -159,6 +165,33 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         discoverProcessWorker = new DiscoverProcessWorker(
                 CommandClient.newClientUsingDefaultsForDevices(this, selectedSoftApSSID)
         );
+    }
+
+    private void onLocationDisabled() {
+        log.d("Location disabled; prompting user");
+        new AlertDialog.Builder(this).setTitle(R.string.location_required)
+                .setPositiveButton(R.string.enable_location, ((dialog, which) -> {
+                    dialog.dismiss();
+                    log.i("Sending user to enabling Location services.");
+                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                }))
+                .setNegativeButton(R.string.exit_setup, ((dialog, which) -> {
+                    dialog.dismiss();
+                    finish();
+                }))
+                .show();
+    }
+
+    private boolean canGetLocation() {
+        boolean gpsEnabled = false;
+        boolean networkEnabled = false;
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        try {
+            gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ignored) {
+        }
+        return gpsEnabled || networkEnabled;
     }
 
     private void onWifiDisabled() {
