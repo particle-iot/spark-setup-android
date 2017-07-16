@@ -1,3 +1,9 @@
+0.4.7
+=====
+* Adding 'initWithSetupOnly', allows customer to setup WiFi without claiming device.
+* Updating Android & Cloudsdk libraries
+* Workaround for bug where WiFi scanning requires enabled Location services, user will be alerted to enable location services on Android M and later versions.
+
 0.4.6
 =====
 * Adding organization customization options as deprecated, trying to use deprecated organization option will result in exception.
