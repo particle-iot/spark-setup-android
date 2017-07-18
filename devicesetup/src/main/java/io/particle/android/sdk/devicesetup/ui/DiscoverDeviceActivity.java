@@ -1,11 +1,15 @@
 package io.particle.android.sdk.devicesetup.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
@@ -30,6 +34,7 @@ import io.particle.android.sdk.devicesetup.commands.SetCommand;
 import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
+import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.ParticleDeviceSetupInternalStringUtils;
@@ -122,6 +127,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             );
         }
 
+        Ui.findView(this, R.id.action_log_out).setVisibility(BaseActivity.setupOnly ? View.GONE : View.VISIBLE);
         Ui.findView(this, R.id.action_log_out).setOnClickListener(view -> {
             sparkCloud.logOut();
             log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
@@ -138,8 +144,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         if (!wifiFacade.isWifiEnabled()) {
             onWifiDisabled();
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !canGetLocation()) {
+            onLocationDisabled();
+        }
     }
-
 
     @Override
     protected void onResume() {
@@ -157,6 +165,33 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         discoverProcessWorker = new DiscoverProcessWorker(
                 CommandClient.newClientUsingDefaultsForDevices(this, selectedSoftApSSID)
         );
+    }
+
+    private void onLocationDisabled() {
+        log.d("Location disabled; prompting user");
+        new AlertDialog.Builder(this).setTitle(R.string.location_required)
+                .setPositiveButton(R.string.enable_location, ((dialog, which) -> {
+                    dialog.dismiss();
+                    log.i("Sending user to enabling Location services.");
+                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                }))
+                .setNegativeButton(R.string.exit_setup, ((dialog, which) -> {
+                    dialog.dismiss();
+                    finish();
+                }))
+                .show();
+    }
+
+    private boolean canGetLocation() {
+        boolean gpsEnabled = false;
+        boolean networkEnabled = false;
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        try {
+            gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ignored) {
+        }
+        return gpsEnabled || networkEnabled;
     }
 
     private void onWifiDisabled() {
@@ -295,17 +330,15 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             @Override
             protected void onPostExecute(SetupStepException error) {
                 connectToApTask = null;
-                if (error == null) {
+                if (error == null || (BaseActivity.setupOnly && error instanceof DeviceAlreadyClaimed)) {
                     // no exceptions thrown, huzzah
                     hideProgressDialog();
                     startActivity(SelectNetworkActivity.buildIntent(
                             DiscoverDeviceActivity.this, selectedSoftApSSID));
                     finish();
-
                 } else if (error instanceof DeviceAlreadyClaimed) {
                     hideProgressDialog();
                     onDeviceClaimedByOtherUser();
-
                 } else {
                     // nope, do it all over again.
                     // FIXME: this might be a good time to display some feedback...

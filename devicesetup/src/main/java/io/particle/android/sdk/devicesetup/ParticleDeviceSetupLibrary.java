@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
+import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Preconditions;
 
 
@@ -25,10 +26,14 @@ public class ParticleDeviceSetupLibrary {
      */
     public interface DeviceSetupCompleteContract {
 
-        /** The BroadcastIntent action sent when the device setup process is complete. */
+        /**
+         * The BroadcastIntent action sent when the device setup process is complete.
+         */
         String ACTION_DEVICE_SETUP_COMPLETE = "ACTION_DEVICE_SETUP_COMPLETE";
 
-        /** A boolean extra indicating if the setup was successful */
+        /**
+         * A boolean extra indicating if the setup was successful
+         */
         String EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL = "EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL";
 
         /**
@@ -54,12 +59,16 @@ public class ParticleDeviceSetupLibrary {
         public abstract void onSetupFailure();
 
 
-        /** Optional convenience method for registering this receiver. */
+        /**
+         * Optional convenience method for registering this receiver.
+         */
         public void register(Context ctx) {
             LocalBroadcastManager.getInstance(ctx).registerReceiver(this, buildIntentFilter());
         }
 
-        /** Optional convenience method for registering this receiver. */
+        /**
+         * Optional convenience method for registering this receiver.
+         */
         public void unregister(Context ctx) {
             LocalBroadcastManager.getInstance(ctx).unregisterReceiver(this);
         }
@@ -86,7 +95,7 @@ public class ParticleDeviceSetupLibrary {
      * Start the device setup process.
      *
      * @deprecated Use {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, Class)}
-     *             or {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, SetupCompleteIntentBuilder)} instead.
+     * or {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, SetupCompleteIntentBuilder)} instead.
      */
     @Deprecated
     public static void startDeviceSetup(Context ctx) {
@@ -103,9 +112,7 @@ public class ParticleDeviceSetupLibrary {
     }
 
     public static void startDeviceSetup(Context ctx, final Class<? extends Activity> mainActivity) {
-        startDeviceSetup(ctx, (ctx1, result) -> {
-            return new Intent(ctx1, mainActivity);
-        });
+        startDeviceSetup(ctx, (ctx1, result) -> new Intent(ctx1, mainActivity));
     }
 
 
@@ -122,9 +129,9 @@ public class ParticleDeviceSetupLibrary {
      *                     Activity here)
      * @param mainActivity the class for your 'main" activity, i.e.: the class you want to
      *                     return to when the setup process is complete.
-     * @deprecated         Use {@link ParticleDeviceSetupLibrary#init(Context)} with
-     *                     {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, Class)}
-     *                     or {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, SetupCompleteIntentBuilder)} instead.
+     * @deprecated Use {@link ParticleDeviceSetupLibrary#init(Context)} with
+     * {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, Class)}
+     * or {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, SetupCompleteIntentBuilder)} instead.
      */
     @Deprecated
     public static void init(Context ctx, final Class<? extends Activity> mainActivity) {
@@ -136,9 +143,9 @@ public class ParticleDeviceSetupLibrary {
     /**
      * Initialize the device setup SDK
      *
-     * @param ctx          any Context (the application context will be accessed from whatever is
-     *                     passed in here, so leaks are not a concern even if you pass in an
-     *                     Activity here)
+     * @param ctx any Context (the application context will be accessed from whatever is
+     *            passed in here, so leaks are not a concern even if you pass in an
+     *            Activity here)
      */
     public static void init(Context ctx) {
         if (instance == null) {
@@ -146,6 +153,18 @@ public class ParticleDeviceSetupLibrary {
             ParticleCloudSDK.init(ctx);
             instance = new ParticleDeviceSetupLibrary();
         }
+    }
+
+    /**
+     * Initialize the device setup SDK for setup only (setup flow will bypass any authentication and device claiming)
+     *
+     * @param ctx any Context (the application context will be accessed from whatever is
+     *            passed in here, so leaks are not a concern even if you pass in an
+     *            Activity here)
+     */
+    public static void initWithSetupOnly(Context ctx) {
+        BaseActivity.setupOnly = true;
+        init(ctx);
     }
 
     public static ParticleDeviceSetupLibrary getInstance() {
