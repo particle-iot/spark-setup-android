@@ -1,2 +1,3 @@
 #!/bin/sh -e
+./gradlew prepareReleaseDependencies
 ./gradlew uploadArchives
