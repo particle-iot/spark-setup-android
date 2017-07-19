@@ -1,3 +1,4 @@
 #!/bin/sh -e
-./gradlew prepareReleaseDependencies
+./gradlew clean prepareReleaseDependencies
+./gradlew assembleRelease
 ./gradlew uploadArchives
