@@ -82,7 +82,10 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
 
-        if (sparkCloud.getAccessToken() == null) {
+//        if (BaseActivity.setupOnly) {
+//            moveToDeviceDiscovery();
+//        } else
+            if (sparkCloud.getAccessToken() == null && !BaseActivity.setupOnly) {
             startLoginActivity();
             finish();
         }
@@ -92,6 +95,10 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
     private void onReadyButtonClicked(View v) {
         // FIXME: check here that another of these tasks isn't already running
         DeviceSetupState.reset();
+        if (BaseActivity.setupOnly) {
+            moveToDeviceDiscovery();
+            return;
+        }
         showProgress(true);
         final Context ctx = this;
         claimCodeWorker = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, ClaimCodeResponse>() {
@@ -100,8 +107,6 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                 Resources res = ctx.getResources();
                 if (res.getBoolean(R.bool.organization) && !res.getBoolean(R.bool.productMode)) {
                     throw new ParticleCloudException(new Exception("Organization is deprecated, use productMode instead."));
-//                    return sparkCloud.generateClaimCodeForOrg(res.getString(R.string.organization_slug),
-//                            res.getString(R.string.product_slug));
                 } else if (res.getBoolean(R.bool.productMode)) {
                     int productId = res.getInteger(R.integer.product_id);
                     if (productId == 0) {
