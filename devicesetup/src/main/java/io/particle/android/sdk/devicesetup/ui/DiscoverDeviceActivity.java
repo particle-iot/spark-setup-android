@@ -136,7 +136,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
             Ui.findView(this, R.id.action_log_out).setVisibility(View.INVISIBLE);
         }
 
-        Ui.findView(this, R.id.action_log_out).setVisibility(BaseActivity.setupOnly ? View.GONE : View.VISIBLE);
+        //Ui.findView(this, R.id.action_log_out).setVisibility(BaseActivity.setupOnly ? View.GONE : View.VISIBLE);
         Ui.findView(this, R.id.action_log_out).setOnClickListener(view -> {
             sparkCloud.logOut();
             log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
