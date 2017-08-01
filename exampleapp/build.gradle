@@ -48,7 +48,7 @@ dependencies {
 //    compile 'io.particle:devicesetup:0.2.0'
 
     compile 'com.android.support:appcompat-v7:25.4.0'
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'
+    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.5.1'
 }
 
 repositories {
