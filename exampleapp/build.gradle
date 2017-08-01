@@ -57,4 +57,17 @@ repositories {
     }
 }
 
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.me.tatarka:gradle-retrolambda:3.7.0"
+    }
+}
+
+apply plugin: "me.tatarka.retrolambda"
+
 apply plugin: 'com.getkeepsafe.dexcount'
