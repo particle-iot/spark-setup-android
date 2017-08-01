@@ -2,8 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'me.tatarka.retrolambda'
 
-
-
 retrolambda {
     jvmArgs '-noverify'
 }
@@ -65,7 +63,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -127,19 +125,6 @@ repositories {
         url 'https://maven.google.com'
     }
 }
-
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "gradle.plugin.me.tatarka:gradle-retrolambda:3.7.0"
-    }
-}
-
-apply plugin: "me.tatarka.retrolambda"
 
 apply from: '../pom_generator_v1.gradle'
 apply from: '../bintray_upload_v1.gradle'
