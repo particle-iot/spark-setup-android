@@ -218,9 +218,10 @@ public class SuccessActivity extends BaseActivity {
 
             @Override
             public void onSuccess(@NonNull ParticleDevice particleDevice) {
-                deviceNameLabelView.setVisibility(View.VISIBLE);
-                deviceNameView.setVisibility(View.VISIBLE);
-                deviceNameView.setText(particleDevice.getName());
+                //Hiding device name label
+                deviceNameLabelView.setVisibility(View.GONE);
+                deviceNameView.setVisibility(View.GONE);
+                //deviceNameView.setText(particleDevice.getName());
             }
 
             @Override
