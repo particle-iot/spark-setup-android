@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Phrase-templated strings -->
-    <string name="msg_device_not_listed">{device_name} not listed here? (a) Remove the Hub dome (b) unplug the Hub and plug it back in (c) touch the center touchpad three times and (d) place the dome back on Hub base to put it in setup mode; the dome indicator light should turn blue</string>
+    <string name="msg_device_not_listed">{device_name} not listed here? (a) Remove the Hub dome (b) unplug the Hub and plug it back in (c) touch the center touchpad three times and (d) place the dome back on Hub base to put it in setup mode; the dome indicator light should blink blue</string>
     <string name="get_ready_title_text">Time to set up your {device_name}!</string>
     <string name="get_ready_text"><![CDATA[\n
 \u2022 Please power on your {device_name} by plugging it in.\n\n
