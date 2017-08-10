@@ -9,10 +9,16 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 import android.widget.EditText;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
-import io.particle.android.sdk.cloud.ParticleCloudSDK;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.R2;
+import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.SEGAnalytics;
@@ -27,12 +33,10 @@ public class PasswordResetActivity extends BaseActivity {
 
     private static final TLog log = TLog.get(PasswordResetActivity.class);
 
-
     public static final String EXTRA_EMAIL = "EXTRA_EMAIL";
 
-
-    private ParticleCloud sparkCloud;
-    private EditText emailView;
+    @Inject protected ParticleCloud sparkCloud;
+    @BindView(R2.id.email) protected EditText emailView;
     private Async.AsyncApiWorker<ParticleCloud, Void> resetTask = null;
 
 
@@ -44,18 +48,18 @@ public class PasswordResetActivity extends BaseActivity {
         return i;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_reset);
+        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
+                .build().inject(this);
+        ButterKnife.bind(this);
+
         SEGAnalytics.screen("Auth: Forgot password screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
-        sparkCloud = ParticleCloudSDK.getCloud();
-
         Ui.findView(this, R.id.action_cancel).setOnClickListener(view -> finish());
-        emailView = Ui.findView(this, R.id.email);
         emailView.setText(getIntent().getStringExtra(EXTRA_EMAIL));
     }
 
@@ -64,7 +68,6 @@ public class PasswordResetActivity extends BaseActivity {
         final String email = emailView.getText().toString();
         if (isEmailValid(email)) {
             performReset();
-
         } else {
             new Builder(this)
                     .setTitle(getString(R.string.reset_password_dialog_title))

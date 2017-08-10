@@ -7,16 +7,22 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
+import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
@@ -38,27 +44,28 @@ public class ManualNetworkEntryActivity extends BaseActivity
     private static final String EXTRA_SOFT_AP = "EXTRA_SOFT_AP";
 
 
-    private WifiFacade wifiFacade;
+    @Inject protected WifiFacade wifiFacade;
     private SSID softApSSID;
 
-    private final CompoundButton.OnCheckedChangeListener secureCheckListener = (buttonView, isChecked) -> {
+    @OnCheckedChanged(R2.id.network_requires_password)
+    protected void onSecureCheckedChange(boolean isChecked) {
         if (isChecked) {
             SEGAnalytics.track("Device Setup: Selected secured network");
         } else {
             SEGAnalytics.track("Device Setup: Selected open network");
         }
-    };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
+                .build().inject(this);
         SEGAnalytics.screen("Device Setup: Manual network entry screen");
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP);
-        wifiFacade = WifiFacade.get(this);
 
         setContentView(R.layout.activity_manual_network_entry);
-        CheckBox secureCheckbox = Ui.findView(this, R.id.network_requires_password);
-        secureCheckbox.setOnCheckedChangeListener(secureCheckListener);
+        ButterKnife.bind(this);
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
     }
 
@@ -69,7 +76,6 @@ public class ManualNetworkEntryActivity extends BaseActivity
         CheckBox requiresPassword = Ui.findView(this, R.id.network_requires_password);
         if (requiresPassword.isChecked()) {
             startActivity(PasswordEntryActivity.buildIntent(this, softApSSID, scan));
-
         } else {
             startActivity(ConnectingActivity.buildIntent(this, softApSSID, scan));
         }
@@ -83,7 +89,7 @@ public class ManualNetworkEntryActivity extends BaseActivity
     @Override
     public Loader<Set<ScanAPCommandResult>> onCreateLoader(int id, Bundle args) {
         return new ScanApCommandLoader(this,
-                CommandClient.newClientUsingDefaultsForDevices(this, softApSSID));
+                CommandClient.newClientUsingDefaultsForDevices(wifiFacade, softApSSID));
     }
 
     @Override

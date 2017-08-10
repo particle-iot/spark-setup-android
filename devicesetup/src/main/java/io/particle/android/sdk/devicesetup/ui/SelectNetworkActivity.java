@@ -9,11 +9,18 @@ import android.view.View;
 
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
+import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
 import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.WifiFacade;
@@ -34,22 +41,26 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
 
 
     private WifiListFragment wifiListFragment;
-    private WifiFacade wifiFacade;
+    @Inject protected WifiFacade wifiFacade;
     private SSID softApSSID;
+
+    @OnClick(R2.id.action_rescan)
+    protected void onRescanClick() {
+        ParticleUi.showParticleButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, true);
+        wifiListFragment.scanAsync();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
+                .build().inject(this);
         SEGAnalytics.screen("Device Setup: Select Network Screen");
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP);
         setContentView(R.layout.activity_select_network);
+        ButterKnife.bind(this);
 
-        wifiFacade = WifiFacade.get(this);
         wifiListFragment = Ui.findFrag(this, R.id.wifi_list_fragment);
-        Ui.findView(this, R.id.action_rescan).setOnClickListener(v -> {
-            ParticleUi.showParticleButtonProgress(SelectNetworkActivity.this, R.id.action_rescan, true);
-            wifiListFragment.scanAsync();
-        });
     }
 
     public void onManualNetworkEntryClicked(View view) {
@@ -82,7 +93,7 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
     @Override
     public Loader<Set<ScanAPCommandResult>> createLoader(int id, Bundle args) {
         // FIXME: make the address below use resources instead of hardcoding
-        CommandClient client = CommandClient.newClientUsingDefaultsForDevices(this, softApSSID);
+        CommandClient client = CommandClient.newClientUsingDefaultsForDevices(wifiFacade, softApSSID);
         return new ScanApCommandLoader(getApplicationContext(), client);
     }
 

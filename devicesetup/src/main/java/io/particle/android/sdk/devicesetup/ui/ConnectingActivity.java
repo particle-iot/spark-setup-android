@@ -18,11 +18,16 @@ import java.security.PublicKey;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.particle.android.sdk.cloud.ParticleCloud;
-import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.ParticleDevice;
 import io.particle.android.sdk.devicesetup.ApConnector;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.SetupProcessException;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
@@ -37,6 +42,8 @@ import io.particle.android.sdk.devicesetup.setupsteps.StepConfig;
 import io.particle.android.sdk.devicesetup.setupsteps.StepProgress;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForCloudConnectivityStep;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForDisconnectionFromDeviceStep;
+import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
+import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.CoreNameGenerator;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.Funcy;
@@ -67,16 +74,15 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
             MAX_RETRIES_CLAIM = 5;
 
     private static final TLog log = TLog.get(ConnectingActivity.class);
-    private static final Gson gson = new Gson();
 
 
     public static Intent buildIntent(Context ctx, SSID deviceSoftApSsid,
                                      ScanApCommand.Scan networkToConnectTo) {
         return new Intent(ctx, ConnectingActivity.class)
-                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, gson.toJson(networkToConnectTo))
+                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getApplicationComponent()
+                        .getGson().toJson(networkToConnectTo))
                 .putExtra(EXTRA_SOFT_AP_SSID, deviceSoftApSsid);
     }
-
 
     public static Intent buildIntent(Context ctx, SSID deviceSoftApSsid,
                                      ScanApCommand.Scan networkToConnectTo, String secret) {
@@ -84,30 +90,38 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                 .putExtra(EXTRA_NETWORK_SECRET, secret);
     }
 
-
     // FIXME: all this state needs to be configured and encapsulated better
     private ConnectingProcessWorkerTask connectingProcessWorkerTask;
-    private SoftAPConfigRemover softAPConfigRemover;
-    private ApConnector apConnector;
+    @Inject protected SoftAPConfigRemover softAPConfigRemover;
+    @Inject protected ApConnector apConnector;
+    @Inject protected WifiFacade wifiFacade;
 
     private ScanApCommand.Scan networkToConnectTo;
     private String networkSecretPlaintext;
     private PublicKey publicKey;
     private SSID deviceSoftApSsid;
-    private ParticleCloud sparkCloud;
+    @Inject protected ParticleCloud sparkCloud;
+    @Inject protected Gson gson;
     private String deviceId;
     private boolean needToClaimDevice;
 
     private Drawable tintedSpinner;
     private Drawable tintedCheckmark;
 
+    @OnClick(R2.id.action_cancel)
+    protected void onCancelClick() {
+        connectingProcessWorkerTask.cancel(false);
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
+        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
+                .build().inject(this);
+        ButterKnife.bind(this);
         SEGAnalytics.screen("Device Setup: Connecting progress screen");
-        sparkCloud = ParticleCloudSDK.getCloud();
         publicKey = DeviceSetupState.publicKey;
         deviceId = DeviceSetupState.deviceToBeSetUpId;
         needToClaimDevice = DeviceSetupState.deviceNeedsToBeClaimed;
@@ -120,16 +134,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
         log.d("Connecting to " + networkToConnectTo + ", with networkSecretPlaintext of size: "
                 + ((networkSecretPlaintext == null) ? 0 : networkSecretPlaintext.length()));
 
-        softAPConfigRemover = new SoftAPConfigRemover(this);
-        apConnector = new ApConnector(this);
-
         Ui.setText(this, R.id.network_name, networkToConnectTo.ssid);
-        Button cancelButton = Ui.findView(this, R.id.action_cancel);
-        cancelButton.setOnClickListener(v -> {
-            connectingProcessWorkerTask.cancel(false);
-            finish();
-        });
-
         Ui.setText(this, R.id.connecting_text,
                 Phrase.from(this, R.string.connecting_text)
                         .put("device_name", getString(R.string.device_name))
@@ -170,9 +175,9 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
 
     private List<SetupStep> buildSteps() {
         CommandClient commandClient = CommandClient.newClientUsingDefaultsForDevices(
-                this, deviceSoftApSsid);
+                wifiFacade, deviceSoftApSsid);
         SetupStepApReconnector reconnector = new SetupStepApReconnector(
-                WifiFacade.get(this), apConnector, new Handler(), deviceSoftApSsid);
+                wifiFacade, apConnector, new Handler(), deviceSoftApSsid);
 
         ConfigureAPStep configureAPStep = new ConfigureAPStep(
                 StepConfig.newBuilder()
@@ -196,7 +201,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                         .setResultCode(SuccessActivity.RESULT_FAILURE_NO_DISCONNECT)
                         .setStepId(R.id.reconnect_to_wifi_network)
                         .build(),
-                deviceSoftApSsid, this);
+                deviceSoftApSsid, wifiFacade);
 
         EnsureSoftApNotVisible ensureSoftApNotVisible = new EnsureSoftApNotVisible(
                 StepConfig.newBuilder()
@@ -204,7 +209,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                         .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
                         .setStepId(R.id.wait_for_device_cloud_connection)
                         .build(),
-                deviceSoftApSsid, this);
+                deviceSoftApSsid, wifiFacade);
 
         WaitForCloudConnectivityStep waitForLocalCloudConnectivityStep = new WaitForCloudConnectivityStep(
                 StepConfig.newBuilder()
@@ -222,16 +227,17 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                         .build(),
                 sparkCloud, deviceId, needToClaimDevice);
 
-        return list(
+        List<SetupStep> steps = list(
                 configureAPStep,
                 connectDeviceToNetworkStep,
                 waitForDisconnectionFromDeviceStep,
                 ensureSoftApNotVisible,
-                waitForLocalCloudConnectivityStep,
-                checkIfDeviceClaimedStep
-        );
+                waitForLocalCloudConnectivityStep);
+        if (!BaseActivity.setupOnly) {
+            steps.add(checkIfDeviceClaimedStep);
+        }
+        return steps;
     }
-
 
 
     private class ConnectingProcessWorkerTask extends SetupStepsRunnerTask {

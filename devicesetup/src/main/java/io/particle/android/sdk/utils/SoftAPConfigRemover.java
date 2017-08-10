@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import static io.particle.android.sdk.utils.Funcy.transformSet;
 import static io.particle.android.sdk.utils.Py.set;
 
@@ -18,7 +20,7 @@ public class SoftAPConfigRemover {
     private static final String
             PREFS_SOFT_AP_NETWORK_REMOVER = "PREFS_SOFT_AP_NETWORK_REMOVER",
 
-            KEY_SOFT_AP_SSIDS = "KEY_SOFT_AP_SSIDS",
+    KEY_SOFT_AP_SSIDS = "KEY_SOFT_AP_SSIDS",
             KEY_DISABLED_WIFI_SSIDS = "KEY_DISABLED_WIFI_SSIDS";
 
 
@@ -26,9 +28,10 @@ public class SoftAPConfigRemover {
     private final SharedPreferences prefs;
     private final WifiFacade wifiFacade;
 
-    public SoftAPConfigRemover(Context context) {
+    @Inject
+    public SoftAPConfigRemover(Context context, WifiFacade wifiFacade) {
+        this.wifiFacade = wifiFacade;
         this.ctx = context.getApplicationContext();
-        wifiFacade = WifiFacade.get(this.ctx);
         prefs = this.ctx.getSharedPreferences(PREFS_SOFT_AP_NETWORK_REMOVER, Context.MODE_PRIVATE);
     }
 
@@ -55,7 +58,6 @@ public class SoftAPConfigRemover {
 
     public void reenableWifiNetworks() {
         log.v("reenableWifiNetworks()");
-        WifiFacade wifiFacade = WifiFacade.get(ctx);
         for (SSID ssid : loadSSIDsWithKey(KEY_DISABLED_WIFI_SSIDS)) {
             wifiFacade.reenableNetwork(ssid);
         }

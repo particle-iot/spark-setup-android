@@ -14,12 +14,15 @@ import com.squareup.phrase.Phrase;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
-import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.Responses.ClaimCodeResponse;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.Async.AsyncApiWorker;
@@ -38,19 +41,18 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
     private static final TLog log = TLog.get(GetReadyActivity.class);
 
-    private ParticleCloud sparkCloud;
-    private SoftAPConfigRemover softAPConfigRemover;
+    @Inject protected ParticleCloud sparkCloud;
+    @Inject protected SoftAPConfigRemover softAPConfigRemover;
 
     private AsyncApiWorker<ParticleCloud, ClaimCodeResponse> claimCodeWorker;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_ready);
+        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
+                .build().inject(this);
         SEGAnalytics.screen("Device Setup: Get ready screen");
-        sparkCloud = ParticleCloudSDK.getCloud();
-        softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
 
@@ -82,7 +84,10 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
 
-        if (sparkCloud.getAccessToken() == null) {
+//        if (BaseActivity.setupOnly) {
+//            moveToDeviceDiscovery();
+//        } else
+        if (sparkCloud.getAccessToken() == null && !BaseActivity.setupOnly) {
             startLoginActivity();
             finish();
         }
@@ -92,6 +97,10 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
     private void onReadyButtonClicked(View v) {
         // FIXME: check here that another of these tasks isn't already running
         DeviceSetupState.reset();
+        if (BaseActivity.setupOnly) {
+            moveToDeviceDiscovery();
+            return;
+        }
         showProgress(true);
         final Context ctx = this;
         claimCodeWorker = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, ClaimCodeResponse>() {
@@ -100,8 +109,6 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                 Resources res = ctx.getResources();
                 if (res.getBoolean(R.bool.organization) && !res.getBoolean(R.bool.productMode)) {
                     throw new ParticleCloudException(new Exception("Organization is deprecated, use productMode instead."));
-//                    return sparkCloud.generateClaimCodeForOrg(res.getString(R.string.organization_slug),
-//                            res.getString(R.string.product_slug));
                 } else if (res.getBoolean(R.bool.productMode)) {
                     int productId = res.getInteger(R.integer.product_id);
                     if (productId == 0) {

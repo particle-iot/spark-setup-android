@@ -14,6 +14,7 @@ import javax.net.SocketFactory;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.TLog;
+import io.particle.android.sdk.utils.WifiFacade;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -26,15 +27,15 @@ public class CommandClient {
     private static final int DEFAULT_TIMEOUT_SECONDS = 10;
 
 
-    public static CommandClient newClient(Context ctx, SSID softApSSID, String ipAddress, int port) {
+    public static CommandClient newClient(WifiFacade wifiFacade, SSID softApSSID, String ipAddress, int port) {
         return new CommandClient(
                 ipAddress, port,
-                new NetworkBindingSocketFactory(ctx, softApSSID, DEFAULT_TIMEOUT_SECONDS * 1000));
+                new NetworkBindingSocketFactory(wifiFacade, softApSSID, DEFAULT_TIMEOUT_SECONDS * 1000));
     }
 
     // FIXME: set these defaults in a resource file?
-    public static CommandClient newClientUsingDefaultsForDevices(Context ctx, SSID softApSSID) {
-        return newClient(ctx, softApSSID, "192.168.0.1", 5609);
+    public static CommandClient newClientUsingDefaultsForDevices(WifiFacade wifiFacade, SSID softApSSID) {
+        return newClient(wifiFacade, softApSSID, "192.168.0.1", 5609);
     }
 
 

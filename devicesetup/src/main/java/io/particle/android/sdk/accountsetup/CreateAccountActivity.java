@@ -18,6 +18,10 @@ import android.widget.Switch;
 import com.segment.analytics.Properties;
 import com.squareup.phrase.Phrase;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
@@ -25,6 +29,7 @@ import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.models.AccountInfo;
 import io.particle.android.sdk.cloud.models.SignUpInfo;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
@@ -48,38 +53,45 @@ public class CreateAccountActivity extends BaseActivity {
     private Async.AsyncApiWorker<ParticleCloud, Void> createAccountTask = null;
 
     // UI references.
-    private EditText firstNameView;
-    private EditText lastNameView;
-    private EditText companyNameView;
-    private EditText emailView;
-    private EditText passwordView;
-    private EditText verifyPasswordView;
-    private Switch companyChoiceView;
+    @BindView(R2.id.first) protected EditText firstNameView;
+    @BindView(R2.id.last) protected EditText lastNameView;
+    @BindView(R2.id.company) protected EditText companyNameView;
+    @BindView(R2.id.email) protected EditText emailView;
+    @BindView(R2.id.password) protected EditText passwordView;
+    @BindView(R2.id.verify_password) protected EditText verifyPasswordView;
+    @BindView(R2.id.companyAccount) protected Switch companyChoiceView;
+
+    @OnClick(R2.id.already_have_an_account_text)
+    protected void onHasAccountClick(View view) {
+        startActivity(new Intent(view.getContext(), LoginActivity.class));
+        finish();
+    }
+
+    @OnCheckedChanged(R2.id.companyAccount)
+    protected void onCompanyCheckedChange(boolean isChecked) {
+        if (isChecked) {
+            int backgroundDefault = ContextCompat.getColor(CreateAccountActivity.this,
+                    R.color.register_field_background_color_enabled);
+            verifyPasswordView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            companyNameView.setBackgroundColor(backgroundDefault);
+            companyChoiceView.setText(R.string.prompt_company_account_enabled);
+        } else {
+            verifyPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            companyNameView.setBackgroundColor(ContextCompat.getColor(CreateAccountActivity.this,
+                    R.color.register_field_background_color_disabled));
+            companyChoiceView.setText(R.string.prompt_company_account_disabled);
+        }
+        companyNameView.setEnabled(isChecked);
+    }
 
     private boolean useOrganizationSignup;
     private boolean useProductionSignup;
-
-    private final CompoundButton.OnCheckedChangeListener companyAccountCheckedListener =
-            (CompoundButton buttonView, boolean isChecked) -> {
-                if (isChecked) {
-                    int backgroundDefault = ContextCompat.getColor(CreateAccountActivity.this,
-                            R.color.register_field_background_color_enabled);
-                    verifyPasswordView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-                    companyNameView.setBackgroundColor(backgroundDefault);
-                    companyChoiceView.setText(R.string.prompt_company_account_enabled);
-                } else {
-                    verifyPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                    companyNameView.setBackgroundColor(ContextCompat.getColor(CreateAccountActivity.this,
-                            R.color.register_field_background_color_disabled));
-                    companyChoiceView.setText(R.string.prompt_company_account_disabled);
-                }
-                companyNameView.setEnabled(isChecked);
-            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
+        ButterKnife.bind(this);
         SEGAnalytics.screen("Auth: Sign Up screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
@@ -89,26 +101,13 @@ public class CreateAccountActivity extends BaseActivity {
                         .format()
         );
 
-        firstNameView = Ui.findView(this, R.id.first);
-        lastNameView = Ui.findView(this, R.id.last);
-        companyNameView = Ui.findView(this, R.id.company);
-        companyChoiceView = Ui.findView(this, R.id.companyAccount);
-        emailView = Ui.findView(this, R.id.email);
-        passwordView = Ui.findView(this, R.id.password);
-        verifyPasswordView = Ui.findView(this, R.id.verify_password);
-
-        companyChoiceView.setOnCheckedChangeListener(companyAccountCheckedListener);
         useOrganizationSignup = getResources().getBoolean(R.bool.organization);
         useProductionSignup = getResources().getBoolean(R.bool.productMode);
 
         Button submit = Ui.findView(this, R.id.action_create_account);
         submit.setOnClickListener(view -> attemptCreateAccount());
 
-        Ui.setTextFromHtml(this, R.id.already_have_an_account_text, R.string.msg_user_already_has_account)
-                .setOnClickListener(v -> {
-                    startActivity(new Intent(v.getContext(), LoginActivity.class));
-                    finish();
-                });
+        Ui.setTextFromHtml(this, R.id.already_have_an_account_text, R.string.msg_user_already_has_account);
 
         if (getResources().getBoolean(R.bool.show_sign_up_page_fine_print)) {
             String tosUri = getString(R.string.terms_of_service_uri);

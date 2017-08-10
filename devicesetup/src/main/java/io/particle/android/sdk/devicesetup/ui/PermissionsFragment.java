@@ -52,12 +52,10 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
         return Ui.findFrag(callbacksActivity, TAG);
     }
 
-
     public static boolean hasPermission(@NonNull Context ctx, @NonNull String permission) {
         int result = ContextCompat.checkSelfPermission(ctx, permission);
         return (result == PackageManager.PERMISSION_GRANTED);
     }
-
 
     public void ensurePermission(final @NonNull String permission) {
         if (!haveShownPermissionDialog(getActivity(), permission)) {
@@ -121,7 +119,7 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
     }
 
     private void requestPermission(String permission) {
-        ActivityCompat.requestPermissions(getActivity(), new String[] {permission}, REQUEST_CODE);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{permission}, REQUEST_CODE);
     }
 
     private static final int REQUEST_CODE = 128;
