@@ -2,8 +2,6 @@ package io.particle.android.sdk.devicesetup.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -17,13 +15,12 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.util.Log;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.utils.WorkerFragment;
 import io.particle.android.sdk.utils.ui.Ui;
 
-import static io.particle.android.sdk.utils.Py.set;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 
 public class PermissionsFragment extends Fragment implements OnRequestPermissionsResultCallback {
@@ -55,23 +52,18 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
 
     public static boolean hasPermission(@NonNull Context ctx, @NonNull String permission) {
         int result = ContextCompat.checkSelfPermission(ctx, permission);
-        return (result == PackageManager.PERMISSION_GRANTED);
+        return (result == PERMISSION_GRANTED);
     }
 
 
     public void ensurePermission(final @NonNull String permission) {
-        if (!haveShownPermissionDialog(getActivity(), permission)) {
-            requestPermission(permission);
-            markPermissionDialogShown(getActivity(), permission);
-            return;
-        }
-
         Builder dialogBuilder = new AlertDialog.Builder(getActivity())
                 .setCancelable(false);
 
         // FIXME: stop referring to these location permission-specific strings here,
         // try to retrieve them from the client
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permission)) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), permission) != PERMISSION_GRANTED ||
+                ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permission)) {
             dialogBuilder.setTitle(R.string.location_permission_dialog_title)
                     .setMessage(R.string.location_permission_dialog_text)
                     .setPositiveButton(R.string.got_it, (dialog, which) -> {
@@ -121,30 +113,9 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
     }
 
     private void requestPermission(String permission) {
-        ActivityCompat.requestPermissions(getActivity(), new String[] {permission}, REQUEST_CODE);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{permission}, REQUEST_CODE);
     }
 
     private static final int REQUEST_CODE = 128;
-
-    private static final String
-            PREF_BUCKET_NAME = "permissionsFragmentPrefs",
-            PREF_KEY_PERMISSION_DIALOGS_SHOWN = "permissionsDialogsShown";
-
-    private static boolean haveShownPermissionDialog(Context ctx, String permission) {
-        SharedPreferences prefs = ctx.getSharedPreferences(PREF_BUCKET_NAME, Context.MODE_PRIVATE);
-        Set<String> permissions = set();
-        permissions = prefs.getStringSet(PREF_KEY_PERMISSION_DIALOGS_SHOWN, permissions);
-        return permissions.contains(permission);
-    }
-
-    private static void markPermissionDialogShown(Context ctx, String permission) {
-        Set<String> permissions = set();
-        SharedPreferences prefs = ctx.getSharedPreferences(PREF_BUCKET_NAME, Context.MODE_PRIVATE);
-
-        permissions = prefs.getStringSet(PREF_KEY_PERMISSION_DIALOGS_SHOWN, permissions);
-        permissions.add(permission);
-
-        prefs.edit().putStringSet(PREF_KEY_PERMISSION_DIALOGS_SHOWN, permissions).apply();
-    }
 
 }

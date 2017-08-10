@@ -1,3 +1,7 @@
+0.4.8
+=====
+* Permission and location service request messages.
+
 0.4.7
 =====
 * Adding 'initWithSetupOnly', allows customer to setup WiFi without claiming device.
