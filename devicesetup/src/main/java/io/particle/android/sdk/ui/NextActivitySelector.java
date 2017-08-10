@@ -50,12 +50,12 @@ public class NextActivitySelector {
     }
 
     Intent buildIntentForNextActivity(Context ctx, SetupResult result) {
-        if (!hasUserBeenLoggedInBefore()) {
+        if (!hasUserBeenLoggedInBefore() && !BaseActivity.setupOnly) {
             log.d("User has not been logged in before");
             return new Intent(ctx, CreateAccountActivity.class);
         }
 
-        if (!isOAuthTokenPresent()) {
+        if (!isOAuthTokenPresent() && !BaseActivity.setupOnly) {
             log.d("No auth token present");
             return new Intent(ctx, LoginActivity.class);
         }

@@ -91,7 +91,6 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
             startLoginActivity();
             finish();
         }
-
     }
 
     private void onReadyButtonClicked(View v) {

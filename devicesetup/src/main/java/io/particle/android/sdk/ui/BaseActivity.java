@@ -3,6 +3,7 @@ package io.particle.android.sdk.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.RestrictTo;
 import android.support.v7.app.AppCompatActivity;
 
 import io.particle.android.sdk.cloud.SDKGlobals;
@@ -20,7 +21,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 // this is a base activity, it shouldn't be registered.
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
-
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    public static boolean setupOnly = false;
     private static boolean customFontInitDone = false;
 
     @Override
