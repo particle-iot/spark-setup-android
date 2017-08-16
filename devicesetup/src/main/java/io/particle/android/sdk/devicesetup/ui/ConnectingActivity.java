@@ -127,7 +127,9 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
         Ui.setText(this, R.id.network_name, networkToConnectTo.ssid);
         Button cancelButton = Ui.findView(this, R.id.action_cancel);
         cancelButton.setOnClickListener(v -> {
-            connectingProcessWorkerTask.cancel(false);
+            if (connectingProcessWorkerTask != null) {
+                connectingProcessWorkerTask.cancel(false);
+            }
             finish();
         });
 
