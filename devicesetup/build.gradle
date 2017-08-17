@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 apply plugin: 'me.tatarka.retrolambda'
 
 // This is the library version used when deploying the artifact
@@ -38,7 +39,8 @@ android {
     buildToolsVersion '25.0.3'
 
     dexOptions {
-        javaMaxHeapSize "2g"
+        javaMaxHeapSize "4g"
+        preDexLibraries = false
     }
 
     defaultConfig {
@@ -64,6 +66,21 @@ android {
         abortOnError true
     }
 
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: "file://${System.env.HOME}/.m2/repository/")
+                pom.groupId = "pet.clever"
+                pom.artifactId = "devicesetup"
+                pom.version = version
+            }
+        }
+    }
 }
 
 // TESTING ONLY: to build against a locally built version of the cloud SDK, uncomment these
@@ -88,12 +105,11 @@ dependencies {
     compile 'com.squareup.phrase:phrase:1.0.3'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.segment.analytics.android:analytics:4.2.6'
-
+    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'
     compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:recyclerview-v7:25.4.0'
     compile 'com.android.support:support-annotations:25.4.0'
 
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'
 
     // TESTING ONLY (see other TESTING comments further up)
 //    compile(name: 'cloudsdk', ext: 'aar')
@@ -115,5 +131,4 @@ if (JavaVersion.current().isJava8Compatible()) {
         options.addStringOption('Xdoclint:none', '-quiet')
     }
 }
-
 apply plugin: 'com.getkeepsafe.dexcount'

@@ -66,8 +66,8 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         Ui.setText(this, R.id.get_ready_text,
                 Phrase.from(this, R.string.get_ready_text)
                         .put("device_name", getString(R.string.device_name))
-                        .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
-                        .put("setup_button_identifier", getString(R.string.mode_button_name))
+//                        .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
+//                        .put("setup_button_identifier", getString(R.string.mode_button_name))
                         .format());
 
         Ui.setText(this, R.id.get_ready_text_title,

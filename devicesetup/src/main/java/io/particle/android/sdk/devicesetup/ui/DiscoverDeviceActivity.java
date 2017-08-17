@@ -104,9 +104,9 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         Ui.setText(this, R.id.msg_device_not_listed,
                 Phrase.from(this, R.string.msg_device_not_listed)
                         .put("device_name", getString(R.string.device_name))
-                        .put("setup_button_identifier", getString(R.string.mode_button_name))
-                        .put("indicator_light", getString(R.string.indicator_light))
-                        .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
+//                        .put("setup_button_identifier", getString(R.string.mode_button_name))
+//                        .put("indicator_light", getString(R.string.indicator_light))
+//                        .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
                         .format()
         );
 
@@ -117,17 +117,26 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 }
         );
 
-        if (!truthy(sparkCloud.getLoggedInUsername())) {
-            Ui.findView(this, R.id.logged_in_as).setVisibility(View.GONE);
-        } else {
+        if (sparkCloud.getAccessToken()==null) {
             Ui.setText(this, R.id.logged_in_as,
                     Phrase.from(this, R.string.you_are_logged_in_as)
                             .put("username", sparkCloud.getLoggedInUsername())
                             .format()
             );
+            Ui.findView(this, R.id.action_log_out).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sparkCloud.logOut();
+                    log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
+                    startActivity(new Intent(DiscoverDeviceActivity.this, LoginActivity.class));
+                    finish();
+                }
+            });
+        } else {
+            Ui.findView(this, R.id.action_log_out).setVisibility(View.INVISIBLE);
         }
 
-        Ui.findView(this, R.id.action_log_out).setVisibility(BaseActivity.setupOnly ? View.GONE : View.VISIBLE);
+        //Ui.findView(this, R.id.action_log_out).setVisibility(BaseActivity.setupOnly ? View.GONE : View.VISIBLE);
         Ui.findView(this, R.id.action_log_out).setOnClickListener(view -> {
             sparkCloud.logOut();
             log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
