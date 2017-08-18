@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Phrase-templated strings -->
-    <string name="msg_device_not_listed">{device_name} not listed here? (a) Remove the Hub dome (b) unplug the Hub and plug it back in (c) touch the center touchpad three times and (d) place the dome back on Hub base to put it in setup mode; the dome indicator light should turn blue</string>
+    <string name="msg_device_not_listed">{device_name} not listed here? (a) Remove the Hub dome (b) unplug the Hub and plug it back in (c) touch the center touchpad three times and (d) place the dome back on Hub base to put it in setup mode; the dome indicator light should blink blue</string>
     <string name="get_ready_title_text">Time to set up your {device_name}!</string>
     <string name="get_ready_text"><![CDATA[\n
 \u2022 Please power on your {device_name} by plugging it in.\n\n
@@ -78,8 +78,10 @@
     <string name="ok">OK</string>
     <string name="access_denied">Access denied</string>
     <string name="wifi_required">Wi-Fi Required</string>
+    <string name="location_required">Location Required</string>
     <string name="setup_requires_wifi">Setting up devices requires Wi-Fi.  Enable it now?</string>
     <string name="enable_wifi">Enable Wi-Fi</string>
+    <string name="enable_location">Enable Location</string>
     <string name="exit_setup">Exit setup</string>
     <string name="location_permission_dialog_text">Setup needs to scan Wi-Fi to find your new device.\n\nBecause these scans could also reveal your location, setup requires the Location permission.\n\nSetup will continue after you press ALLOW on the next screen.</string>
     <string name="location_permission_dialog_title">Permission needed</string>

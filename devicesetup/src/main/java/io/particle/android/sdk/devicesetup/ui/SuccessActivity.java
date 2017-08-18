@@ -135,8 +135,8 @@ public class SuccessActivity extends BaseActivity {
 
         Ui.findView(this, R.id.action_done).setOnClickListener(v -> {
             deviceNameView.setError(null);
-            if (isSuccess) {
-                if (deviceNameView.getText().toString().isEmpty()) {
+            if (isSuccess && !BaseActivity.setupOnly) {
+                if (deviceNameView.getVisibility() == View.VISIBLE && deviceNameView.getText().toString().isEmpty()) {
                     deviceNameView.setError(getString(R.string.error_field_required));
                 } else {
                     finishSetup(v.getContext(), deviceNameView.getText().toString(), true);
@@ -218,9 +218,10 @@ public class SuccessActivity extends BaseActivity {
 
             @Override
             public void onSuccess(@NonNull ParticleDevice particleDevice) {
-                deviceNameLabelView.setVisibility(View.VISIBLE);
-                deviceNameView.setVisibility(View.VISIBLE);
-                deviceNameView.setText(particleDevice.getName());
+                //Hiding device name label
+                deviceNameLabelView.setVisibility(View.GONE);
+                deviceNameView.setVisibility(View.GONE);
+                //deviceNameView.setText(particleDevice.getName());
             }
 
             @Override
