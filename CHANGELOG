@@ -1,3 +1,7 @@
+0.4.9
+=====
+* Android library update, ConnectingActivity null exception fix.
+
 0.4.8
 =====
 * Permission and location service request messages.
