@@ -1,3 +1,7 @@
+0.4.8
+=====
+* Uniform error message from Community with hyperlink to CleverPet support page
+
 0.4.7
 =====
 * Adding 'initWithSetupOnly', allows customer to setup WiFi without claiming device.

@@ -13,8 +13,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
+
+import io.particle.android.sdk.devicesetup.R;
 
 public class Ui {
 
@@ -119,4 +122,7 @@ public class Ui {
     }
 
 
+    public static void makeLink(FragmentActivity activity, int viewId) {
+        ((TextView)findView(activity, R.id.result_details)).setMovementMethod(LinkMovementMethod.getInstance());
+    }
 }

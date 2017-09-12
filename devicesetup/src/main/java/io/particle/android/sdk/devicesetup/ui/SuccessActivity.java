@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.Pair;
+import android.text.method.LinkMovementMethod;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.EditText;
@@ -69,20 +70,20 @@ public class SuccessActivity extends BaseActivity {
                 R.string.setup_success_unknown_ownership_details));
 
         resultCodesToStringIds.put(RESULT_FAILURE_CLAIMING, Pair.create(
-                R.string.setup_failure_claiming_summary,
-                R.string.setup_failure_claiming_details));
+                R.string.setup_failure_summary,
+                R.string.setup_failure_details));
 
         resultCodesToStringIds.put(RESULT_FAILURE_CONFIGURE, Pair.create(
-                R.string.setup_failure_configure_summary,
-                R.string.setup_failure_configure_details));
+                R.string.setup_failure_summary,
+                R.string.setup_failure_details));
 
         resultCodesToStringIds.put(RESULT_FAILURE_NO_DISCONNECT, Pair.create(
-                R.string.setup_failure_no_disconnect_from_device_summary,
-                R.string.setup_failure_no_disconnect_from_device_details));
+                R.string.setup_failure_summary,
+                R.string.setup_failure_details));
 
         resultCodesToStringIds.put(RESULT_FAILURE_LOST_CONNECTION_TO_DEVICE, Pair.create(
-                R.string.setup_failure_configure_summary,
-                R.string.setup_failure_lost_connection_to_device));
+                R.string.setup_failure_summary,
+                R.string.setup_failure_details));
     }
 
     private EditText deviceNameView;
@@ -132,6 +133,9 @@ public class SuccessActivity extends BaseActivity {
         Pair<? extends CharSequence, CharSequence> resultStrings = buildUiStringPair(resultCode);
         Ui.setText(this, R.id.result_summary, resultStrings.first);
         Ui.setText(this, R.id.result_details, resultStrings.second);
+        Ui.makeLink(this, R.id.result_details);
+//        TextView link = Ui.findView(this, R.id.result_details);
+//        link.setMovementMethod(LinkMovementMethod.getInstance());
 
         Ui.findView(this, R.id.action_done).setOnClickListener(v -> {
             deviceNameView.setError(null);
