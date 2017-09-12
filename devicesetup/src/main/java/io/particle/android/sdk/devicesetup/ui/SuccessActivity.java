@@ -134,8 +134,6 @@ public class SuccessActivity extends BaseActivity {
         Ui.setText(this, R.id.result_summary, resultStrings.first);
         Ui.setText(this, R.id.result_details, resultStrings.second);
         Ui.makeLink(this, R.id.result_details);
-//        TextView link = Ui.findView(this, R.id.result_details);
-//        link.setMovementMethod(LinkMovementMethod.getInstance());
 
         Ui.findView(this, R.id.action_done).setOnClickListener(v -> {
             deviceNameView.setError(null);
