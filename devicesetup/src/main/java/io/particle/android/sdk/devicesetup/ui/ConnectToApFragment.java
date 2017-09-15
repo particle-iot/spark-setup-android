@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import io.particle.android.sdk.devicesetup.ApConnector;
 import io.particle.android.sdk.devicesetup.ApConnector.Client;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
-import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.WorkerFragment;
@@ -48,8 +48,8 @@ public class ConnectToApFragment extends WorkerFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
-                .build().inject(this);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
     }
 
     @Override

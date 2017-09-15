@@ -42,7 +42,7 @@ import io.particle.android.sdk.devicesetup.setupsteps.StepConfig;
 import io.particle.android.sdk.devicesetup.setupsteps.StepProgress;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForCloudConnectivityStep;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForDisconnectionFromDeviceStep;
-import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.CoreNameGenerator;
 import io.particle.android.sdk.utils.EZ;
@@ -79,8 +79,8 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     public static Intent buildIntent(Context ctx, SSID deviceSoftApSsid,
                                      ScanApCommand.Scan networkToConnectTo) {
         return new Intent(ctx, ConnectingActivity.class)
-                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getApplicationComponent()
-                        .getGson().toJson(networkToConnectTo))
+                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
+                        .getApplicationComponent().getGson().toJson(networkToConnectTo))
                 .putExtra(EXTRA_SOFT_AP_SSID, deviceSoftApSsid);
     }
 
@@ -118,8 +118,8 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
-        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
-                .build().inject(this);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
         ButterKnife.bind(this);
         SEGAnalytics.screen("Device Setup: Connecting progress screen");
         publicKey = DeviceSetupState.publicKey;

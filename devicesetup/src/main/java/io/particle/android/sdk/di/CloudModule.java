@@ -17,13 +17,13 @@ public class CloudModule {
 
     @Singleton
     @Provides
-    ParticleCloud providesParticleCloud() {
+    protected ParticleCloud providesParticleCloud() {
         return ParticleCloudSDK.getCloud();
     }
 
     @Singleton
     @Provides
-    Gson providesGson() {
+    protected Gson providesGson() {
         return new Gson();
     }
 }

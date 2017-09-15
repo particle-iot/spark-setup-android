@@ -18,7 +18,7 @@ import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
-import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.SEGAnalytics;
@@ -52,8 +52,8 @@ public class PasswordResetActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_reset);
-        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
-                .build().inject(this);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
         ButterKnife.bind(this);
 
         SEGAnalytics.screen("Auth: Forgot password screen");

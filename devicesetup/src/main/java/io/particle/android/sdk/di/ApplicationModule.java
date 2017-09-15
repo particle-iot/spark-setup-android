@@ -21,13 +21,13 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    Application providesApplication() {
+    protected Application providesApplication() {
         return application;
     }
 
     @Singleton
     @Provides
-    Context providesContext() {
+    protected Context providesContext() {
         return application;
     }
 

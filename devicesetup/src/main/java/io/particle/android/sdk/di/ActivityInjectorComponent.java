@@ -3,6 +3,7 @@ package io.particle.android.sdk.di;
 import android.support.annotation.RestrictTo;
 
 import dagger.Component;
+import dagger.Subcomponent;
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.accountsetup.PasswordResetActivity;
 import io.particle.android.sdk.devicesetup.ui.ConnectToApFragment;
@@ -15,7 +16,7 @@ import io.particle.android.sdk.devicesetup.ui.SelectNetworkActivity;
 import io.particle.android.sdk.devicesetup.ui.SuccessActivity;
 
 @PerActivity
-@Component(modules = {ApModule.class}, dependencies = ApplicationComponent.class)
+@Subcomponent(modules = {ApModule.class})
 @RestrictTo({RestrictTo.Scope.LIBRARY})
 public interface ActivityInjectorComponent {
     void inject(GetReadyActivity activity);
@@ -37,5 +38,12 @@ public interface ActivityInjectorComponent {
     void inject(SelectNetworkActivity selectNetworkActivity);
 
     void inject(ConnectToApFragment connectToApFragment);
+
+    @Subcomponent.Builder
+    interface Builder {
+        Builder apModule(ApModule module);
+
+        ActivityInjectorComponent build();
+    }
 
 }

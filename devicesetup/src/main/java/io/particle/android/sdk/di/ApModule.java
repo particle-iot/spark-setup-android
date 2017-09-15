@@ -14,17 +14,17 @@ import io.particle.android.sdk.utils.WifiFacade;
 public class ApModule {
 
     @Provides
-    SoftAPConfigRemover providesSoftApConfigRemover(Context context, WifiFacade wifiFacade) {
+    protected SoftAPConfigRemover providesSoftApConfigRemover(Context context, WifiFacade wifiFacade) {
         return new SoftAPConfigRemover(context, wifiFacade);
     }
 
     @Provides
-    ApConnector providesApConnector(Context context, SoftAPConfigRemover configRemover, WifiFacade wifiFacade) {
+    protected ApConnector providesApConnector(Context context, SoftAPConfigRemover configRemover, WifiFacade wifiFacade) {
         return new ApConnector(context, configRemover, wifiFacade);
     }
 
     @Provides
-    WifiFacade providesWifiFacade(Context context) {
+    protected WifiFacade providesWifiFacade(Context context) {
         return WifiFacade.get(context);
     }
 }

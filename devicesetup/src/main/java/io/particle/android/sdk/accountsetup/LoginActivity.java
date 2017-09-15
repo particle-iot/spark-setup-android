@@ -23,7 +23,7 @@ import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
-import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
@@ -73,8 +73,8 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.particle_activity_login);
-        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
-                .build().inject(this);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
         ButterKnife.bind(this);
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
         SEGAnalytics.screen("Auth: Login Screen");

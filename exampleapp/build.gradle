@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.1'
 
     defaultConfig {
         applicationId "io.particle.devicesetup.exampleapp"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
@@ -37,10 +37,19 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile "junit:junit:4.12"
+    testCompile 'com.github.fabioCollini:DaggerMock:0.7.0'
+    testCompile "org.mockito:mockito-core:2.8.8"
+    testCompile "com.google.dagger:dagger-compiler:2.11"
+
+    androidTestCompile 'com.android.support:support-annotations:26.0.2'
+    androidTestCompile "org.mockito:mockito-core:2.8.8"
+    androidTestCompile "org.mockito:mockito-android:2.8.8"
+    androidTestCompile "com.android.support.test:runner:0.5"
+    androidTestCompile "com.android.support.test:rules:0.5"
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     })
+    androidTestCompile 'com.github.fabioCollini:DaggerMock:0.7.0'
 
     // BY DEFAULT, BUILD APP AGAINST THE LOCAL SETUP LIB SOURCE REPO
     // (i.e.: you can make modifications to the device setup lib source in the local repo, and
@@ -53,7 +62,7 @@ dependencies {
     // UNCOMMENT THE FOLLOWING TO USE A PUBLISHED VERSION OF THE SDK:
 //    compile 'io.particle:devicesetup:0.2.0'
 
-    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:appcompat-v7:26.0.2'
     retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'
 }
 
@@ -61,6 +70,7 @@ repositories {
     maven {
         url 'https://maven.google.com'
     }
+    maven { url "https://jitpack.io" }
 }
 
 apply plugin: 'com.getkeepsafe.dexcount'

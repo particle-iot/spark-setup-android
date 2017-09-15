@@ -39,7 +39,7 @@ import io.particle.android.sdk.devicesetup.commands.SetCommand;
 import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
-import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
@@ -102,10 +102,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_device);
-        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
-                .build().inject(this);
         ButterKnife.bind(this);
         SEGAnalytics.screen("Device Setup: Device discovery screen");
 
@@ -238,7 +238,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     @Override
     public Loader<Set<ScanResultNetwork>> createLoader(int id, Bundle args) {
-        return new WifiScanResultLoader(this, WifiFacade.get(this));
+        return new WifiScanResultLoader(this, wifiFacade);
     }
 
     @Override

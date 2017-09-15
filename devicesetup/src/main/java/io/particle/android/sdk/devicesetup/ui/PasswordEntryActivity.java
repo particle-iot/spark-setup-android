@@ -19,7 +19,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
-import io.particle.android.sdk.di.DaggerActivityInjectorComponent;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
@@ -36,8 +36,8 @@ public class PasswordEntryActivity extends BaseActivity {
                                      ScanApCommand.Scan networkToConnectTo) {
         return new Intent(ctx, PasswordEntryActivity.class)
                 .putExtra(EXTRA_SOFT_AP_SSID, softApSSID)
-                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getApplicationComponent()
-                        .getGson().toJson(networkToConnectTo));
+                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
+                        .getApplicationComponent().getGson().toJson(networkToConnectTo));
     }
 
 
@@ -58,8 +58,8 @@ public class PasswordEntryActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_entry);
-        DaggerActivityInjectorComponent.builder().applicationComponent(ParticleDeviceSetupLibrary.getApplicationComponent())
-                .build().inject(this);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
         ButterKnife.bind(this);
         SEGAnalytics.screen("Device Setup: Password Entry Screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);

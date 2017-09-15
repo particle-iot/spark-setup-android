@@ -15,6 +15,8 @@ import io.particle.android.sdk.cloud.ParticleCloud;
 @Component(modules = {ApplicationModule.class, CloudModule.class})
 @RestrictTo({RestrictTo.Scope.LIBRARY})
 public interface ApplicationComponent {
+    ActivityInjectorComponent.Builder activityComponentBuilder();
+
     Application getApplication();
 
     Context getContext();
