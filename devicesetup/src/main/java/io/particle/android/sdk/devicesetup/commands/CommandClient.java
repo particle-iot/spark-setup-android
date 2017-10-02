@@ -1,6 +1,5 @@
 package io.particle.android.sdk.devicesetup.commands;
 
-import android.content.Context;
 import android.support.annotation.CheckResult;
 
 import com.google.gson.Gson;
@@ -12,9 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.SocketFactory;
 
 import io.particle.android.sdk.utils.EZ;
-import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.TLog;
-import io.particle.android.sdk.utils.WifiFacade;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -23,32 +20,16 @@ import static io.particle.android.sdk.utils.Py.truthy;
 
 
 public class CommandClient {
-
-    private static final int DEFAULT_TIMEOUT_SECONDS = 10;
-
-
-    public static CommandClient newClient(WifiFacade wifiFacade, SSID softApSSID, String ipAddress, int port) {
-        return new CommandClient(
-                ipAddress, port,
-                new NetworkBindingSocketFactory(wifiFacade, softApSSID, DEFAULT_TIMEOUT_SECONDS * 1000));
-    }
-
-    // FIXME: set these defaults in a resource file?
-    public static CommandClient newClientUsingDefaultsForDevices(WifiFacade wifiFacade, SSID softApSSID) {
-        return newClient(wifiFacade, softApSSID, "192.168.0.1", 5609);
-    }
-
+    static final int DEFAULT_TIMEOUT_SECONDS = 10;
 
     private static final TLog log = TLog.get(CommandClient.class);
     private static final Gson gson = new Gson();
-
 
     private final String ipAddress;
     private final int port;
     private final SocketFactory socketFactory;
 
-    // no public constructor; use the factory methods above
-    private CommandClient(String ipAddress, int port, SocketFactory socketFactory) {
+    CommandClient(String ipAddress, int port, SocketFactory socketFactory) {
         this.ipAddress = ipAddress;
         this.port = port;
         this.socketFactory = socketFactory;

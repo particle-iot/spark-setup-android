@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/devicesetup/devicesetup.iml" filepath="$PROJECT_DIR$/devicesetup/devicesetup.iml" />
       <module fileurl="file://$PROJECT_DIR$/exampleapp/exampleapp.iml" filepath="$PROJECT_DIR$/exampleapp/exampleapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/spark-setup-android.iml" filepath="$PROJECT_DIR$/spark-setup-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testapp/testapp.iml" filepath="$PROJECT_DIR$/testapp/testapp.iml" />
     </modules>
   </component>
 </project>

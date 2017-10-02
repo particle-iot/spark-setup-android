@@ -17,6 +17,7 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
+import io.particle.android.sdk.devicesetup.commands.CommandClientFactory;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
 import io.particle.android.sdk.devicesetup.model.ScanAPCommandResult;
@@ -42,6 +43,7 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
 
     private WifiListFragment wifiListFragment;
     @Inject protected WifiFacade wifiFacade;
+    @Inject protected CommandClientFactory commandClientFactory;
     private SSID softApSSID;
 
     @OnClick(R2.id.action_rescan)
@@ -93,8 +95,8 @@ public class SelectNetworkActivity extends RequiresWifiScansActivity
     @Override
     public Loader<Set<ScanAPCommandResult>> createLoader(int id, Bundle args) {
         // FIXME: make the address below use resources instead of hardcoding
-        CommandClient client = CommandClient.newClientUsingDefaultsForDevices(wifiFacade, softApSSID);
-        return new ScanApCommandLoader(getApplicationContext(), client);
+        CommandClient client = commandClientFactory.newClientUsingDefaultsForDevices(wifiFacade, softApSSID);
+        return new ScanApCommandLoader(this, client);
     }
 
     @Override

@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -30,6 +29,7 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.SetupProcessException;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
+import io.particle.android.sdk.devicesetup.commands.CommandClientFactory;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.setupsteps.CheckIfDeviceClaimedStep;
 import io.particle.android.sdk.devicesetup.setupsteps.ConfigureAPStep;
@@ -93,8 +93,9 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     // FIXME: all this state needs to be configured and encapsulated better
     private ConnectingProcessWorkerTask connectingProcessWorkerTask;
     @Inject protected SoftAPConfigRemover softAPConfigRemover;
-    @Inject protected ApConnector apConnector;
     @Inject protected WifiFacade wifiFacade;
+    protected ApConnector apConnector;
+    @Inject protected CommandClientFactory commandClientFactory;
 
     private ScanApCommand.Scan networkToConnectTo;
     private String networkSecretPlaintext;
@@ -126,6 +127,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
         deviceId = DeviceSetupState.deviceToBeSetUpId;
         needToClaimDevice = DeviceSetupState.deviceNeedsToBeClaimed;
         deviceSoftApSsid = getIntent().getParcelableExtra(EXTRA_SOFT_AP_SSID);
+        apConnector = new ApConnector(this, softAPConfigRemover, wifiFacade);
 
         String asJson = getIntent().getStringExtra(EXTRA_NETWORK_TO_CONFIGURE);
         networkToConnectTo = gson.fromJson(asJson, ScanApCommand.Scan.class);
@@ -174,7 +176,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     }
 
     private List<SetupStep> buildSteps() {
-        CommandClient commandClient = CommandClient.newClientUsingDefaultsForDevices(
+        CommandClient commandClient = commandClientFactory.newClientUsingDefaultsForDevices(
                 wifiFacade, deviceSoftApSsid);
         SetupStepApReconnector reconnector = new SetupStepApReconnector(
                 wifiFacade, apConnector, new Handler(), deviceSoftApSsid);

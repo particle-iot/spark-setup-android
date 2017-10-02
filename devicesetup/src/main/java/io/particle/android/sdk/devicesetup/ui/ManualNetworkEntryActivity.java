@@ -18,6 +18,7 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
+import io.particle.android.sdk.devicesetup.commands.CommandClientFactory;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
 import io.particle.android.sdk.devicesetup.loaders.ScanApCommandLoader;
@@ -45,6 +46,7 @@ public class ManualNetworkEntryActivity extends BaseActivity
 
 
     @Inject protected WifiFacade wifiFacade;
+    @Inject protected CommandClientFactory commandClientFactory;
     private SSID softApSSID;
 
     @OnCheckedChanged(R2.id.network_requires_password)
@@ -88,8 +90,7 @@ public class ManualNetworkEntryActivity extends BaseActivity
     // FIXME: loader not currently used, see note in onLoadFinished()
     @Override
     public Loader<Set<ScanAPCommandResult>> onCreateLoader(int id, Bundle args) {
-        return new ScanApCommandLoader(this,
-                CommandClient.newClientUsingDefaultsForDevices(wifiFacade, softApSSID));
+        return new ScanApCommandLoader(this, commandClientFactory.newClientUsingDefaultsForDevices(wifiFacade, softApSSID));
     }
 
     @Override

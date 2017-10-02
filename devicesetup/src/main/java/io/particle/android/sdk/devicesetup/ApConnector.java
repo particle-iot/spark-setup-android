@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
-
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
@@ -68,7 +66,6 @@ public class ApConnector {
     private SimpleReceiver wifiStateChangeListener;
     private Runnable onTimeoutRunnable;
 
-    @Inject
     public ApConnector(Context ctx, SoftAPConfigRemover softAPConfigRemover, WifiFacade wifiFacade) {
         this.appContext = ctx.getApplicationContext();
         this.client = new DecoratedClient();
@@ -236,9 +233,7 @@ public class ApConnector {
             wifiStateChangeListener = null;
         }
 
-        for (Runnable runnable : setupRunnables) {
-            mainThreadHandler.removeCallbacks(runnable);
-        }
+        setupRunnables.forEach(mainThreadHandler::removeCallbacks);
         setupRunnables.clear();
     }
 

@@ -2,7 +2,6 @@ package io.particle.android.sdk.di;
 
 import android.support.annotation.RestrictTo;
 
-import dagger.Component;
 import dagger.Subcomponent;
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.accountsetup.PasswordResetActivity;

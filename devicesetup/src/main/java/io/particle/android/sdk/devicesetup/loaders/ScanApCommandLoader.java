@@ -60,11 +60,9 @@ public class ScanApCommandLoader extends BetterAsyncTaskLoader<Set<ScanAPCommand
     @Override
     public Set<ScanAPCommandResult> loadInBackground() {
         try {
-            ScanApCommand.Response response = commandClient.sendCommand(
-                    new ScanApCommand(), ScanApCommand.Response.class);
-            accumulatedResults.addAll(
-                    Funcy.transformList(response.getScans(), ScanAPCommandResult::new)
-            );
+            ScanApCommand.Response response = commandClient.sendCommand(new ScanApCommand(),
+                    ScanApCommand.Response.class);
+            accumulatedResults.addAll(Funcy.transformList(response.getScans(), ScanAPCommandResult::new));
             log.d("Latest accumulated scan results: " + accumulatedResults);
             return set(accumulatedResults);
 

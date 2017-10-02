@@ -1,12 +1,8 @@
-package io.particle.devicesetup.exampleapp;
+package io.particle.devicesetup.testapp;
 
 import android.app.Application;
 
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
-
-/**
- * Created by Julius.
- */
 
 public class CustomApplication extends Application {
 

@@ -36,20 +36,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile "junit:junit:4.12"
-    testCompile 'com.github.fabioCollini:DaggerMock:0.7.0'
-    testCompile "org.mockito:mockito-core:2.8.8"
-    testCompile "com.google.dagger:dagger-compiler:2.11"
-
-    androidTestCompile 'com.android.support:support-annotations:26.0.2'
-    androidTestCompile "org.mockito:mockito-core:2.8.8"
-    androidTestCompile "org.mockito:mockito-android:2.8.8"
-    androidTestCompile "com.android.support.test:runner:0.5"
-    androidTestCompile "com.android.support.test:rules:0.5"
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.google.code.findbugs', module: 'jsr305'
-    })
-    androidTestCompile 'com.github.fabioCollini:DaggerMock:0.7.0'
 
     // BY DEFAULT, BUILD APP AGAINST THE LOCAL SETUP LIB SOURCE REPO
     // (i.e.: you can make modifications to the device setup lib source in the local repo, and
