@@ -1,7 +1,6 @@
 package io.particle.android.sdk.devicesetup.commands;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.net.Network;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;

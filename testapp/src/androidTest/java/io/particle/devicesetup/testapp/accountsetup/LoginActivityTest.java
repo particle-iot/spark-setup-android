@@ -1,9 +1,9 @@
 package io.particle.devicesetup.testapp.accountsetup;
 
+import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.filters.SmallTest;
@@ -17,19 +17,33 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
-import io.particle.android.sdk.devicesetup.commands.Command;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.CommandClientFactory;
+import io.particle.android.sdk.devicesetup.commands.ConfigureApCommand;
+import io.particle.android.sdk.devicesetup.commands.ConnectAPCommand;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
+import io.particle.android.sdk.devicesetup.setupsteps.CheckIfDeviceClaimedStep;
+import io.particle.android.sdk.devicesetup.setupsteps.ConfigureAPStep;
+import io.particle.android.sdk.devicesetup.setupsteps.ConnectDeviceToNetworkStep;
+import io.particle.android.sdk.devicesetup.setupsteps.EnsureSoftApNotVisible;
+import io.particle.android.sdk.devicesetup.setupsteps.SetupStep;
+import io.particle.android.sdk.devicesetup.setupsteps.SetupStepApReconnector;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
+import io.particle.android.sdk.devicesetup.setupsteps.SetupStepsFactory;
+import io.particle.android.sdk.devicesetup.setupsteps.StepConfig;
+import io.particle.android.sdk.devicesetup.setupsteps.WaitForCloudConnectivityStep;
+import io.particle.android.sdk.devicesetup.setupsteps.WaitForDisconnectionFromDeviceStep;
 import io.particle.android.sdk.devicesetup.ui.DiscoverProcessWorker;
 import io.particle.android.sdk.utils.SSID;
+import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.WifiFacade;
 import io.particle.devicesetup.testapp.EspressoDaggerMockRule;
 import io.particle.devicesetup.testapp.MainActivity;
@@ -43,6 +57,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,12 +78,106 @@ public class LoginActivityTest {
 
     @Mock CommandClientFactory commandClientFactory;
 
+    @Mock SetupStepsFactory setupStepsFactory;
+
     @Test
     public void testSetupFlow() {
         //create/mock photon device SSID
         String ssid = (InstrumentationRegistry.getInstrumentation().getTargetContext()
                 .getApplicationContext().getString(R.string.network_name_prefix) + "-") + "TestSSID";
         //mock scan results object to fake photon device SSID as scan result
+        mockDeviceDiscoveryResult(ssid);
+        //fake scan wifi screen results by creating mock wifi scan result
+        CommandClient commandClient = mock(CommandClient.class);
+        when(commandClientFactory.newClientUsingDefaultsForDevices(any(WifiFacade.class), any(SSID.class))).thenReturn(commandClient);
+        String wifiSSID = "fakeWifiToConnectTo";
+        mockWifiResult(wifiSSID, commandClient);
+        //fake configuration steps
+        mockSetupSteps();
+        mockConfigureApStep(commandClient);
+        mockConnectApStep(commandClient);
+        //launch test activity
+        activityRule.launchActivity(null);
+        //launch setup process
+        ParticleDeviceSetupLibrary.startDeviceSetup(activityRule.getActivity(), MainActivity.class);
+        try {
+            setupFlow(ssid, wifiSSID);
+        } catch (NoMatchingViewException e) {
+            loginFlow(ssid, wifiSSID);
+        }
+    }
+
+    public void setupFlow(String photonSSID, String wifiSSID) {
+        onView(withId(R.id.action_im_ready)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_im_ready)).perform(click());
+        onView(withText(R.string.enable_wifi)).perform(click());
+        onView(withText(photonSSID)).perform(click());
+        onView(withText(wifiSSID)).perform(click());
+    }
+
+    public void loginFlow(String photonSSID, String wifiSSID) {
+        onView(withId(R.id.email)).perform(typeText(""));
+        onView(withId(R.id.password)).perform(typeText(""));
+        closeSoftKeyboard();
+        onView(withId(R.id.action_log_in)).perform(click());
+        setupFlow(photonSSID, wifiSSID);
+    }
+
+    public String getNonHtmlString(int resId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(activityRule.getActivity().getString(resId), Html.FROM_HTML_MODE_LEGACY).toString();
+        } else {
+            return Html.fromHtml(activityRule.getActivity().getString(resId)).toString();
+        }
+    }
+
+    private void mockSetupSteps() {
+        ConfigureAPStep configureAPStep = mock(ConfigureAPStep.class);
+        ConnectDeviceToNetworkStep connectDeviceToNetworkStep = mock(ConnectDeviceToNetworkStep.class);
+        CheckIfDeviceClaimedStep checkIfDeviceClaimedStep = mock(CheckIfDeviceClaimedStep.class);
+        EnsureSoftApNotVisible ensureSoftApNotVisible = mock(EnsureSoftApNotVisible.class);
+        WaitForCloudConnectivityStep waitForCloudConnectivityStep = mock(WaitForCloudConnectivityStep.class);
+        WaitForDisconnectionFromDeviceStep waitForDisconnectionFromDeviceStep = mock(WaitForDisconnectionFromDeviceStep.class);
+        //step configuration for each step
+        mockStepConfig(configureAPStep, R.id.configure_device_wifi_credentials);
+        mockStepConfig(connectDeviceToNetworkStep, R.id.connect_to_wifi_network);
+        mockStepConfig(checkIfDeviceClaimedStep, R.id.verify_product_ownership);
+        mockStepConfig(ensureSoftApNotVisible, R.id.wait_for_device_cloud_connection);
+        mockStepConfig(waitForCloudConnectivityStep, R.id.check_for_internet_connectivity);
+        mockStepConfig(waitForDisconnectionFromDeviceStep, R.id.reconnect_to_wifi_network);
+
+        mockStep(configureAPStep, connectDeviceToNetworkStep, checkIfDeviceClaimedStep, ensureSoftApNotVisible,
+                waitForCloudConnectivityStep, waitForDisconnectionFromDeviceStep);
+        //return mocked setup steps from factory
+        when(setupStepsFactory.newConfigureApStep(any(CommandClient.class), any(SetupStepApReconnector.class),
+                any(ScanApCommand.Scan.class), (String) isNull(), (PublicKey) isNull()))
+                .thenReturn(configureAPStep);
+        when(setupStepsFactory.newConnectDeviceToNetworkStep(any(CommandClient.class), any(SetupStepApReconnector.class)))
+                .thenReturn(connectDeviceToNetworkStep);
+        when(setupStepsFactory.newCheckIfDeviceClaimedStep(any(ParticleCloud.class), (String) isNull(), anyBoolean()))
+                .thenReturn(checkIfDeviceClaimedStep);
+        when(setupStepsFactory.newEnsureSoftApNotVisible(any(SSID.class), any(WifiFacade.class)))
+                .thenReturn(ensureSoftApNotVisible);
+        when(setupStepsFactory.newWaitForCloudConnectivityStep(any(ParticleCloud.class), any(Context.class)))
+                .thenReturn(waitForCloudConnectivityStep);
+        when(setupStepsFactory.newWaitForDisconnectionFromDeviceStep(any(SSID.class), any(WifiFacade.class)))
+                .thenReturn(waitForDisconnectionFromDeviceStep);
+    }
+
+    private void mockStepConfig(SetupStep setupStep, int stepId) {
+        StepConfig setupConfig = mock(StepConfig.class);
+        when(setupConfig.getStepId()).thenReturn(stepId);
+        when(setupStep.getStepConfig()).thenReturn(setupConfig);
+    }
+
+    private void mockStep(SetupStep... setupStep) {
+        for (SetupStep step : setupStep) {
+            when(step.isStepFulfilled()).thenReturn(true);
+            when(step.getLog()).thenReturn(TLog.get(this.getClass()));
+        }
+    }
+
+    private void mockDeviceDiscoveryResult(String ssid) {
         ScanResult scanResult = mock(ScanResult.class);
         scanResult.SSID = ssid;
         scanResult.capabilities = "WEP";
@@ -89,51 +199,36 @@ public class LoginActivityTest {
         } catch (SetupStepException e) {
             e.printStackTrace();
         }
-        //fake scan wifi screen results by creating mock wifi scan result
-        String wifiSSID = "fakeWifiToConnectTo";
-        ScanApCommand.Scan scan = new ScanApCommand.Scan(wifiSSID, 0, 0);
-        CommandClient commandClient = mock(CommandClient.class);
-        ScanApCommand.Response response = mock(ScanApCommand.Response.class);
-        when(commandClientFactory.newClientUsingDefaultsForDevices(any(WifiFacade.class), any(SSID.class))).thenReturn(commandClient);
-        when(response.getScans()).thenReturn(Collections.singletonList(scan));
+    }
+
+    private void mockConnectApStep(CommandClient commandClient) {
+        ConnectAPCommand.Response response = mock(ConnectAPCommand.Response.class);
+        when(response.isOK()).thenReturn(true);
         try {
-            when(commandClient.sendCommand(any(Command.class), any(Class.class))).thenReturn(response);
+            when(commandClient.sendCommand(any(ConnectAPCommand.class), any(Class.class))).thenReturn(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //launch test activity
-        activityRule.launchActivity(null);
-        //launch setup process
-        ParticleDeviceSetupLibrary.startDeviceSetup(activityRule.getActivity(), MainActivity.class);
+    }
+
+    private void mockConfigureApStep(CommandClient commandClient) {
+        ConfigureApCommand.Response response = mock(ConfigureApCommand.Response.class);
+        when(response.isOk()).thenReturn(true);
         try {
-            setupFlow(ssid, wifiSSID);
-        } catch (NoMatchingViewException e) {
-            loginFlow(ssid, wifiSSID);
+            when(commandClient.sendCommand(any(ConfigureApCommand.class), any(Class.class))).thenReturn(response);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public void setupFlow(String photonSSID, String wifiSSID) {
-        onView(withId(R.id.action_im_ready)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_im_ready)).perform(click());
-        onView(withText(R.string.enable_wifi)).perform(click());
-        onView(withText(photonSSID)).perform(click());
-        onView(withText(wifiSSID)).perform(click());
-        SystemClock.sleep(30000);
-    }
-
-    public void loginFlow(String photonSSID, String wifiSSID) {
-        onView(withId(R.id.email)).perform(typeText(""));
-        onView(withId(R.id.password)).perform(typeText(""));
-        closeSoftKeyboard();
-        onView(withId(R.id.action_log_in)).perform(click());
-        setupFlow(photonSSID, wifiSSID);
-    }
-
-    public String getNonHtmlString(int resId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(activityRule.getActivity().getString(resId), Html.FROM_HTML_MODE_LEGACY).toString();
-        } else {
-            return Html.fromHtml(activityRule.getActivity().getString(resId)).toString();
+    private void mockWifiResult(String wifiSSID, CommandClient commandClient) {
+        ScanApCommand.Scan scan = new ScanApCommand.Scan(wifiSSID, 0, 0);
+        ScanApCommand.Response response = mock(ScanApCommand.Response.class);
+        when(response.getScans()).thenReturn(Collections.singletonList(scan));
+        try {
+            when(commandClient.sendCommand(any(ScanApCommand.class), any(Class.class))).thenReturn(response);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

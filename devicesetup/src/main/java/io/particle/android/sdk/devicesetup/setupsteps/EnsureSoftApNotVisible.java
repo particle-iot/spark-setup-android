@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
-import android.content.Context;
-
 import java.util.List;
 
 import io.particle.android.sdk.devicesetup.SetupProcessException;

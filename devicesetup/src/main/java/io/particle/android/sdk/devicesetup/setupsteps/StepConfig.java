@@ -6,13 +6,17 @@ import io.particle.android.sdk.utils.Preconditions;
 public class StepConfig {
 
     public final int maxAttempts;
-    public final int stepId;
+    private final int stepId;
     public final int resultCode;
 
     private StepConfig(int maxAttempts, int stepId, int resultCode) {
         this.maxAttempts = maxAttempts;
         this.stepId = stepId;
         this.resultCode = resultCode;
+    }
+
+    public int getStepId() {
+        return stepId;
     }
 
     public static Builder newBuilder() {

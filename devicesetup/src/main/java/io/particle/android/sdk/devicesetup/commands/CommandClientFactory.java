@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.commands;
 
-import android.util.Log;
-
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.WifiFacade;
 

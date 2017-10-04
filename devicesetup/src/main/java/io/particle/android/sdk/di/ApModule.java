@@ -6,6 +6,7 @@ import android.support.annotation.RestrictTo;
 import dagger.Module;
 import dagger.Provides;
 import io.particle.android.sdk.devicesetup.commands.CommandClientFactory;
+import io.particle.android.sdk.devicesetup.setupsteps.SetupStepsFactory;
 import io.particle.android.sdk.devicesetup.ui.DiscoverProcessWorker;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.WifiFacade;
@@ -32,5 +33,10 @@ public class ApModule {
     @Provides
     protected CommandClientFactory providesCommandClientFactory() {
         return new CommandClientFactory();
+    }
+
+    @Provides
+    protected SetupStepsFactory providesSetupStepsFactory() {
+        return new SetupStepsFactory();
     }
 }

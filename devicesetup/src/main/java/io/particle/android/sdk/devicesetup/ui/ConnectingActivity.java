@@ -37,8 +37,8 @@ import io.particle.android.sdk.devicesetup.setupsteps.ConnectDeviceToNetworkStep
 import io.particle.android.sdk.devicesetup.setupsteps.EnsureSoftApNotVisible;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStep;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepApReconnector;
+import io.particle.android.sdk.devicesetup.setupsteps.SetupStepsFactory;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepsRunnerTask;
-import io.particle.android.sdk.devicesetup.setupsteps.StepConfig;
 import io.particle.android.sdk.devicesetup.setupsteps.StepProgress;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForCloudConnectivityStep;
 import io.particle.android.sdk.devicesetup.setupsteps.WaitForDisconnectionFromDeviceStep;
@@ -67,14 +67,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
             EXTRA_NETWORK_SECRET = "EXTRA_NETWORK_SECRET",
             EXTRA_SOFT_AP_SSID = "EXTRA_SOFT_AP_SSID";
 
-    private static final int
-            MAX_RETRIES_CONFIGURE_AP = 5,
-            MAX_RETRIES_CONNECT_AP = 5,
-            MAX_RETRIES_DISCONNECT_FROM_DEVICE = 5,
-            MAX_RETRIES_CLAIM = 5;
-
     private static final TLog log = TLog.get(ConnectingActivity.class);
-
 
     public static Intent buildIntent(Context ctx, SSID deviceSoftApSsid,
                                      ScanApCommand.Scan networkToConnectTo) {
@@ -96,6 +89,7 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     @Inject protected WifiFacade wifiFacade;
     protected ApConnector apConnector;
     @Inject protected CommandClientFactory commandClientFactory;
+    @Inject protected SetupStepsFactory setupStepsFactory;
 
     private ScanApCommand.Scan networkToConnectTo;
     private String networkSecretPlaintext;
@@ -181,53 +175,23 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
         SetupStepApReconnector reconnector = new SetupStepApReconnector(
                 wifiFacade, apConnector, new Handler(), deviceSoftApSsid);
 
-        ConfigureAPStep configureAPStep = new ConfigureAPStep(
-                StepConfig.newBuilder()
-                        .setMaxAttempts(MAX_RETRIES_CONFIGURE_AP)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
-                        .setStepId(R.id.configure_device_wifi_credentials)
-                        .build(),
-                commandClient, reconnector, networkToConnectTo, networkSecretPlaintext, publicKey);
+        ConfigureAPStep configureAPStep = setupStepsFactory.newConfigureApStep(commandClient,
+                reconnector, networkToConnectTo, networkSecretPlaintext, publicKey);
 
-        ConnectDeviceToNetworkStep connectDeviceToNetworkStep = new ConnectDeviceToNetworkStep(
-                StepConfig.newBuilder()
-                        .setMaxAttempts(MAX_RETRIES_CONNECT_AP)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
-                        .setStepId(R.id.connect_to_wifi_network)
-                        .build(),
-                commandClient, reconnector);
+        ConnectDeviceToNetworkStep connectDeviceToNetworkStep = setupStepsFactory
+                .newConnectDeviceToNetworkStep(commandClient, reconnector);
 
-        WaitForDisconnectionFromDeviceStep waitForDisconnectionFromDeviceStep = new WaitForDisconnectionFromDeviceStep(
-                StepConfig.newBuilder()
-                        .setMaxAttempts(MAX_RETRIES_DISCONNECT_FROM_DEVICE)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_NO_DISCONNECT)
-                        .setStepId(R.id.reconnect_to_wifi_network)
-                        .build(),
-                deviceSoftApSsid, wifiFacade);
+        WaitForDisconnectionFromDeviceStep waitForDisconnectionFromDeviceStep = setupStepsFactory
+                .newWaitForDisconnectionFromDeviceStep(deviceSoftApSsid, wifiFacade);
 
-        EnsureSoftApNotVisible ensureSoftApNotVisible = new EnsureSoftApNotVisible(
-                StepConfig.newBuilder()
-                        .setMaxAttempts(MAX_RETRIES_DISCONNECT_FROM_DEVICE)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
-                        .setStepId(R.id.wait_for_device_cloud_connection)
-                        .build(),
-                deviceSoftApSsid, wifiFacade);
+        EnsureSoftApNotVisible ensureSoftApNotVisible = setupStepsFactory
+                .newEnsureSoftApNotVisible(deviceSoftApSsid, wifiFacade);
 
-        WaitForCloudConnectivityStep waitForLocalCloudConnectivityStep = new WaitForCloudConnectivityStep(
-                StepConfig.newBuilder()
-                        .setMaxAttempts(MAX_RETRIES_DISCONNECT_FROM_DEVICE)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_NO_DISCONNECT)
-                        .setStepId(R.id.check_for_internet_connectivity)
-                        .build(),
-                sparkCloud, getApplicationContext());
+        WaitForCloudConnectivityStep waitForLocalCloudConnectivityStep = setupStepsFactory
+                .newWaitForCloudConnectivityStep(sparkCloud, getApplicationContext());
 
-        CheckIfDeviceClaimedStep checkIfDeviceClaimedStep = new CheckIfDeviceClaimedStep(
-                StepConfig.newBuilder()
-                        .setMaxAttempts(MAX_RETRIES_CLAIM)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_CLAIMING)
-                        .setStepId(R.id.verify_product_ownership)
-                        .build(),
-                sparkCloud, deviceId, needToClaimDevice);
+        CheckIfDeviceClaimedStep checkIfDeviceClaimedStep = setupStepsFactory
+                .newCheckIfDeviceClaimedStep(sparkCloud, deviceId, needToClaimDevice);
 
         List<SetupStep> steps = list(
                 configureAPStep,
