@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import io.particle.android.sdk.cloud.ParticleCloud;
@@ -79,9 +80,6 @@ public class LoginActivity extends BaseActivity {
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
         SEGAnalytics.screen("Auth: Login Screen");
 
-        Button submit = Ui.findView(this, R.id.action_log_in);
-        submit.setOnClickListener(view -> attemptLogin());
-
         Ui.setText(this, R.id.log_in_header_text,
                 Phrase.from(this, R.string.log_in_header_text)
                         .put("brand_name", getString(R.string.brand_name))
@@ -108,6 +106,7 @@ public class LoginActivity extends BaseActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
+    @OnClick(R2.id.action_log_in)
     public void attemptLogin() {
         if (loginTask != null) {
             log.wtf("Login being attempted again even though the button isn't enabled?!");

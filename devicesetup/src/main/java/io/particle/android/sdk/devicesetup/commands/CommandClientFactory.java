@@ -5,10 +5,6 @@ import io.particle.android.sdk.utils.WifiFacade;
 
 import static io.particle.android.sdk.devicesetup.commands.CommandClient.DEFAULT_TIMEOUT_SECONDS;
 
-/**
- * Created by Julius.
- */
-
 public class CommandClientFactory {
 
     public CommandClient newClient(WifiFacade wifiFacade, SSID softApSSID, String ipAddress, int port) {

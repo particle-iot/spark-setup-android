@@ -19,11 +19,9 @@ public class SEGAnalytics {
 
     public static void initialize(Context context) {
         SEGAnalytics.context = context.getApplicationContext();
-        //FIXME need to find method call whether analytics are set or export this part to application class 
         try {
             Analytics.with(context);
         } catch (IllegalArgumentException exception) {
-            // Create an analytics client with the given context and Segment write key. 
             if (!analyticsKey.isEmpty()) {
                 Analytics analytics = new Analytics.Builder(context, analyticsKey).build();
                 analytics.optOut(analyticsOptOut);

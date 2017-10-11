@@ -187,7 +187,6 @@ public class WifiFacade {
         return wifiManager.startScan();
     }
 
-
     private List<WifiConfiguration> getConfiguredNetworks() {
         List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
         return (configuredNetworks == null)

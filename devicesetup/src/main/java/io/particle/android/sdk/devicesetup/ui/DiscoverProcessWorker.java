@@ -33,7 +33,7 @@ public class DiscoverProcessWorker {
     volatile boolean needToClaimDevice;
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public DiscoverProcessWorker withClient(CommandClient client) {
+    DiscoverProcessWorker withClient(CommandClient client) {
         this.client = client;
         return this;
     }
@@ -70,7 +70,7 @@ public class DiscoverProcessWorker {
         // 3. check ownership
         //
         // all cases:
-        // (1) device not claimed `c=0` — device should also not be in list from API => mobile
+        // (1) device not claimed `c=0` device should also not be in list from API => mobile
         //      app assumes user is claiming
         // (2) device claimed `c=1` and already in list from API => mobile app does not ask
         //      user about taking ownership because device already belongs to this user

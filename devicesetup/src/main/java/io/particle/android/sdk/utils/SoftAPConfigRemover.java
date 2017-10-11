@@ -17,19 +17,17 @@ public class SoftAPConfigRemover {
 
     private static final String
             PREFS_SOFT_AP_NETWORK_REMOVER = "PREFS_SOFT_AP_NETWORK_REMOVER",
-
-    KEY_SOFT_AP_SSIDS = "KEY_SOFT_AP_SSIDS",
+            KEY_SOFT_AP_SSIDS = "KEY_SOFT_AP_SSIDS",
             KEY_DISABLED_WIFI_SSIDS = "KEY_DISABLED_WIFI_SSIDS";
 
 
-    private final Context ctx;
     private final SharedPreferences prefs;
     private final WifiFacade wifiFacade;
 
     public SoftAPConfigRemover(Context context, WifiFacade wifiFacade) {
         this.wifiFacade = wifiFacade;
-        this.ctx = context.getApplicationContext();
-        prefs = this.ctx.getSharedPreferences(PREFS_SOFT_AP_NETWORK_REMOVER, Context.MODE_PRIVATE);
+        Context ctx = context.getApplicationContext();
+        prefs = ctx.getSharedPreferences(PREFS_SOFT_AP_NETWORK_REMOVER, Context.MODE_PRIVATE);
     }
 
     public void onSoftApConfigured(SSID newSsid) {

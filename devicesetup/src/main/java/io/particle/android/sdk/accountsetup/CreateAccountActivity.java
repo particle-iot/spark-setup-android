@@ -10,7 +10,6 @@ import android.util.Patterns;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 
@@ -103,9 +102,6 @@ public class CreateAccountActivity extends BaseActivity {
         useOrganizationSignup = getResources().getBoolean(R.bool.organization);
         useProductionSignup = getResources().getBoolean(R.bool.productMode);
 
-        Button submit = Ui.findView(this, R.id.action_create_account);
-        submit.setOnClickListener(view -> attemptCreateAccount());
-
         Ui.setTextFromHtml(this, R.id.already_have_an_account_text, R.string.msg_user_already_has_account);
 
         if (getResources().getBoolean(R.bool.show_sign_up_page_fine_print)) {
@@ -128,6 +124,7 @@ public class CreateAccountActivity extends BaseActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
+    @OnClick(R2.id.action_create_account)
     public void attemptCreateAccount() {
         if (createAccountTask != null) {
             log.wtf("Sign up being attempted again even though the sign up button isn't enabled?!");
@@ -219,7 +216,6 @@ public class CreateAccountActivity extends BaseActivity {
             public Void callApi(@NonNull ParticleCloud particleCloud) throws ParticleCloudException {
                 if (useOrganizationSignup && !useProductionSignup) {
                     throw new ParticleCloudException(new Exception("Organization is deprecated, use productMode instead."));
-//                    particleCloud.signUpAndLogInWithCustomer(signUpInfo, getString(R.string.organization_slug));
                 } else if (useProductionSignup) {
                     int productId = getResources().getInteger(R.integer.product_id);
                     if (productId == 0) {
@@ -312,8 +308,6 @@ public class CreateAccountActivity extends BaseActivity {
     }
 
     private boolean isPasswordValid(String password) {
-        // FIXME: we should probably fix this number...  just making sure
-        // there are no blank passwords.
         return (password.length() > 7);
     }
 

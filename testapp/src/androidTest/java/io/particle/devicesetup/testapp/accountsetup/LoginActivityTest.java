@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.filters.SmallTest;
@@ -108,11 +109,17 @@ public class LoginActivityTest {
     }
 
     public void setupFlow(String photonSSID, String wifiSSID) {
-        onView(withId(R.id.action_im_ready)).check(matches(isDisplayed()));
-        onView(withId(R.id.action_im_ready)).perform(click());
+        assertGetReadyScreen();
         onView(withText(R.string.enable_wifi)).perform(click());
-        onView(withText(photonSSID)).perform(click());
-        onView(withText(wifiSSID)).perform(click());
+        assertDeviceDiscoveryScreen(photonSSID);
+        assertNetworkScreen(wifiSSID);
+        //giving 15 sec for setup to finish
+        //TODO check for setup callback instead of random delay
+        SystemClock.sleep(15000);
+        onView(withId(R.id.result_image)).check(matches(isDisplayed()));
+        onView(withId(R.id.result_summary)).check(matches(isDisplayed()));
+        onView(withId(R.id.result_details)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_done)).check(matches(isDisplayed()));
     }
 
     public void loginFlow(String photonSSID, String wifiSSID) {
@@ -127,8 +134,40 @@ public class LoginActivityTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return Html.fromHtml(activityRule.getActivity().getString(resId), Html.FROM_HTML_MODE_LEGACY).toString();
         } else {
+            //noinspection deprecation
             return Html.fromHtml(activityRule.getActivity().getString(resId)).toString();
         }
+    }
+
+    private void assertNetworkScreen(String wifiSSID) {
+        onView(withText(wifiSSID)).check(matches(isDisplayed()));
+        onView(withId(R.id.brand_image_header)).check(matches(isDisplayed()));
+        onView(withText(R.string.select_your_wifi_network)).check(matches(isDisplayed()));
+        onView(withId(R.id.wifi_list_fragment)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_manual_network_entry)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_rescan)).check(matches(isDisplayed()));
+        onView(withText(wifiSSID)).perform(click());
+    }
+
+    private void assertDeviceDiscoveryScreen(String photonSSID) {
+        onView(withText(photonSSID)).check(matches(isDisplayed()));
+        onView(withId(R.id.brand_image_header)).check(matches(isDisplayed()));
+        onView(withId(R.id.imageView)).check(matches(isDisplayed()));
+        onView(withId(R.id.wifi_list_header)).check(matches(isDisplayed()));
+        onView(withId(R.id.wifi_list_fragment)).check(matches(isDisplayed()));
+        onView(withId(R.id.msg_device_not_listed)).check(matches(isDisplayed()));
+        onView(withId(R.id.logged_in_as)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_log_out)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_cancel)).check(matches(isDisplayed()));
+        onView(withText(photonSSID)).perform(click());
+    }
+
+    private void assertGetReadyScreen() {
+        onView(withId(R.id.action_im_ready)).check(matches(isDisplayed()));
+        onView(withId(R.id.get_ready_text)).check(matches(isDisplayed()));
+        onView(withId(R.id.get_ready_text_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.brand_image_header)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_im_ready)).perform(click());
     }
 
     private void mockSetupSteps() {

@@ -20,20 +20,6 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin">
 
-        <!--<FrameLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center_horizontal|top"-->
-        <!--android:gravity="center_horizontal|top">-->
-
-        <!--<VideoView-->
-        <!--android:id="@+id/get_ready_video"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="16dp"/>-->
-
-        <!--</FrameLayout>-->
-
         <TextView
             android:id="@+id/get_ready_text_title"
             style="@style/SectionHeader"

@@ -71,17 +71,9 @@
     <string name="product_slug">CHANGE_ME</string>
     <integer name="product_id">0</integer>
 
-    <!-- FIXME: unused, remove? -->
-    <!-- filename of the setup video, which should be placed under the src/main/res/raw folder -->
-    <!--<string name="get_ready_video_file_name">nope_nope_nope.mp4</string>-->
-
-    <!-- NOTE: there is no "discover video" path defined here because we're too awesome to need
-        that step on Android: we just take care of it on the user's behalf. -->
-
     <!-- FIXME: apparently these values aren't customizable on the iOS app? -->
     <string name="indicator_light">indicator light</string>
     <string name="power_on_action">plugging it in</string>
-
 
     <!-- FIXME: figure out how these should relate to the colors defined above -->
     <!-- primary_color is used for the default action bar background -->

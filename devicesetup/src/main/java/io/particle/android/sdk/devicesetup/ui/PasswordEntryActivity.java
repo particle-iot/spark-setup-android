@@ -94,7 +94,6 @@ public class PasswordEntryActivity extends BaseActivity {
 
     private String getSecurityTypeMsg() {
         WifiSecurity securityType = WifiSecurity.fromInteger(networkToConnectTo.wifiSecurityType);
-        // FIXME: turn into string resources
         switch (securityType) {
             case WEP_SHARED:
             case WEP_PSK:
