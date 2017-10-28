@@ -19,6 +19,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -30,15 +34,15 @@ dependencies {
 
     testCompile "junit:junit:4.12"
     testCompile 'com.github.fabioCollini:DaggerMock:0.7.0'
-    testCompile "org.mockito:mockito-core:2.8.8"
+    testCompile "org.mockito:mockito-core:2.8.9"
     testCompile "com.google.dagger:dagger-compiler:2.11"
 
     androidTestCompile 'com.android.support:support-annotations:26.1.0'
-    androidTestCompile "org.mockito:mockito-core:2.8.8"
+    androidTestCompile "org.mockito:mockito-core:2.8.9"
     androidTestCompile "org.mockito:mockito-android:2.8.8"
-    androidTestCompile "com.android.support.test:runner:0.5"
-    androidTestCompile "com.android.support.test:rules:0.5"
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestCompile "com.android.support.test:runner:1.0.1"
+    androidTestCompile "com.android.support.test:rules:1.0.1"
+    androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.0', {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     })
     androidTestCompile 'com.github.fabioCollini:DaggerMock:0.7.0'

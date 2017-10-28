@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.jakewharton.butterknife'
 
 // This is the library version used when deploying the artifact
@@ -81,11 +80,11 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'io.particle:cloudsdk:0.4.6'
+    compile 'io.particle:cloudsdk:0.4.7'
 
     compile 'com.google.code.findbugs:jsr305:3.0.1'
-    compile 'com.google.code.gson:gson:2.7'
-    compile 'com.squareup.okio:okio:1.9.0'
+    compile 'com.google.code.gson:gson:2.8.1'
+    compile 'com.squareup.okio:okio:1.13.0'
     compile 'com.squareup.phrase:phrase:1.0.3'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.segment.analytics.android:analytics:4.2.6'
@@ -101,8 +100,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:recyclerview-v7:26.1.0'
     compile 'com.android.support:support-annotations:26.1.0'
-
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'
 
     // TESTING ONLY (see other TESTING comments further up)
 //    compile(name: 'cloudsdk', ext: 'aar')

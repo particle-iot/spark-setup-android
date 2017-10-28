@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 26
@@ -49,7 +48,6 @@ dependencies {
 //    compile 'io.particle:devicesetup:0.2.0'
 
     compile 'com.android.support:appcompat-v7:26.1.0'
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.3.0'
 }
 
 repositories {

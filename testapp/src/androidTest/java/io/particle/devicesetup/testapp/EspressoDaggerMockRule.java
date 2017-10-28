@@ -15,12 +15,9 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 public class EspressoDaggerMockRule extends DaggerMockRule<ApplicationComponent> {
     public EspressoDaggerMockRule() {
         super(ApplicationComponent.class, new ApplicationModule(getApp()));
-        set(new DaggerMockRule.ComponentSetter<ApplicationComponent>() {
-            @Override
-            public void setComponent(ApplicationComponent component) {
-                ParticleDeviceSetupLibrary.init(getApp());
-                ParticleDeviceSetupLibrary.getInstance().setComponent(component);
-            }
+        set(component -> {
+            ParticleDeviceSetupLibrary.init(getApp());
+            ParticleDeviceSetupLibrary.getInstance().setComponent(component);
         });
     }
 

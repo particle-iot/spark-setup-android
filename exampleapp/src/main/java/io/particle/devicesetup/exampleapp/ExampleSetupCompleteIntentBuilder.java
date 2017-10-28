@@ -9,7 +9,7 @@ import io.particle.android.sdk.devicesetup.SetupResult;
 public class ExampleSetupCompleteIntentBuilder implements SetupCompleteIntentBuilder {
     private final String setupLaunchedTime;
 
-    public ExampleSetupCompleteIntentBuilder(String setupLaunchedTime) {
+    ExampleSetupCompleteIntentBuilder(String setupLaunchedTime) {
         this.setupLaunchedTime = setupLaunchedTime;
     }
 

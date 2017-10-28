@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.filters.SmallTest;
@@ -18,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import java.io.IOException;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,20 +64,20 @@ import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class LoginActivityTest {
+public class SetupFlowTest {
 
     @Rule public EspressoDaggerMockRule rule = new EspressoDaggerMockRule();
 
     @Rule
     public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, false, false);
 
-    @Mock WifiFacade wifiFacade;
+    @Mock private WifiFacade wifiFacade;
 
-    @Mock DiscoverProcessWorker discoverProcessWorker;
+    @Mock private DiscoverProcessWorker discoverProcessWorker;
 
-    @Mock CommandClientFactory commandClientFactory;
+    @Mock private CommandClientFactory commandClientFactory;
 
-    @Mock SetupStepsFactory setupStepsFactory;
+    @Mock private SetupStepsFactory setupStepsFactory;
 
     @Test
     public void testSetupFlow() {
@@ -113,13 +111,12 @@ public class LoginActivityTest {
         onView(withText(R.string.enable_wifi)).perform(click());
         assertDeviceDiscoveryScreen(photonSSID);
         assertNetworkScreen(wifiSSID);
-        //giving 15 sec for setup to finish
-        //TODO check for setup callback instead of random delay
-        SystemClock.sleep(15000);
+
         onView(withId(R.id.result_image)).check(matches(isDisplayed()));
         onView(withId(R.id.result_summary)).check(matches(isDisplayed()));
         onView(withId(R.id.result_details)).check(matches(isDisplayed()));
         onView(withId(R.id.action_done)).check(matches(isDisplayed()));
+        onView(withId(R.id.action_done)).perform(click());
     }
 
     public void loginFlow(String photonSSID, String wifiSSID) {
@@ -189,11 +186,11 @@ public class LoginActivityTest {
                 waitForCloudConnectivityStep, waitForDisconnectionFromDeviceStep);
         //return mocked setup steps from factory
         when(setupStepsFactory.newConfigureApStep(any(CommandClient.class), any(SetupStepApReconnector.class),
-                any(ScanApCommand.Scan.class), (String) isNull(), (PublicKey) isNull()))
+                any(ScanApCommand.Scan.class), isNull(), isNull()))
                 .thenReturn(configureAPStep);
         when(setupStepsFactory.newConnectDeviceToNetworkStep(any(CommandClient.class), any(SetupStepApReconnector.class)))
                 .thenReturn(connectDeviceToNetworkStep);
-        when(setupStepsFactory.newCheckIfDeviceClaimedStep(any(ParticleCloud.class), (String) isNull(), anyBoolean()))
+        when(setupStepsFactory.newCheckIfDeviceClaimedStep(any(ParticleCloud.class), isNull(), anyBoolean()))
                 .thenReturn(checkIfDeviceClaimedStep);
         when(setupStepsFactory.newEnsureSoftApNotVisible(any(SSID.class), any(WifiFacade.class)))
                 .thenReturn(ensureSoftApNotVisible);
@@ -244,6 +241,7 @@ public class LoginActivityTest {
         ConnectAPCommand.Response response = mock(ConnectAPCommand.Response.class);
         when(response.isOK()).thenReturn(true);
         try {
+            //noinspection unchecked
             when(commandClient.sendCommand(any(ConnectAPCommand.class), any(Class.class))).thenReturn(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -254,6 +252,7 @@ public class LoginActivityTest {
         ConfigureApCommand.Response response = mock(ConfigureApCommand.Response.class);
         when(response.isOk()).thenReturn(true);
         try {
+            //noinspection unchecked
             when(commandClient.sendCommand(any(ConfigureApCommand.class), any(Class.class))).thenReturn(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -265,6 +264,7 @@ public class LoginActivityTest {
         ScanApCommand.Response response = mock(ScanApCommand.Response.class);
         when(response.getScans()).thenReturn(Collections.singletonList(scan));
         try {
+            //noinspection unchecked
             when(commandClient.sendCommand(any(ScanApCommand.class), any(Class.class))).thenReturn(response);
         } catch (IOException e) {
             e.printStackTrace();
