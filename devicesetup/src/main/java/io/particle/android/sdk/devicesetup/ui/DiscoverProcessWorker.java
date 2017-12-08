@@ -103,7 +103,6 @@ public class DiscoverProcessWorker {
                 } else {
                     // Success: no exception thrown, this part of the process is complete.
                     // Let the caller continue on with the setup process.
-                    return;
                 }
             }
 
@@ -113,7 +112,6 @@ public class DiscoverProcessWorker {
             }
             // Success: no exception thrown, the part of the process is complete.  Let the caller
             // continue on with the setup process.
-            return;
         }
     }
 

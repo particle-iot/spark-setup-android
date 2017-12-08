@@ -47,13 +47,16 @@ public class ManualNetworkEntryActivity extends BaseActivity
     @Inject protected WifiFacade wifiFacade;
     @Inject protected CommandClientFactory commandClientFactory;
     private SSID softApSSID;
+    protected Integer wifiSecurityType = WifiSecurity.WPA2_AES_PSK.asInt();
 
     @OnCheckedChanged(R2.id.network_requires_password)
     protected void onSecureCheckedChange(boolean isChecked) {
         if (isChecked) {
             SEGAnalytics.track("Device Setup: Selected secured network");
+            wifiSecurityType = WifiSecurity.WPA2_AES_PSK.asInt();
         } else {
             SEGAnalytics.track("Device Setup: Selected open network");
+            wifiSecurityType = WifiSecurity.OPEN.asInt();
         }
     }
 
@@ -72,7 +75,7 @@ public class ManualNetworkEntryActivity extends BaseActivity
 
     public void onConnectClicked(View view) {
         String ssid = Ui.getText(this, R.id.network_name, true);
-        ScanApCommand.Scan scan = new ScanApCommand.Scan(ssid, WifiSecurity.WPA2_AES_PSK.asInt(), 0);
+        ScanApCommand.Scan scan = new ScanApCommand.Scan(ssid, wifiSecurityType, 0);
 
         CheckBox requiresPassword = Ui.findView(this, R.id.network_requires_password);
         if (requiresPassword.isChecked()) {

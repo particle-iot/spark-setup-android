@@ -98,7 +98,6 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
     @Inject protected ParticleCloud sparkCloud;
     @Inject protected Gson gson;
     private String deviceId;
-    private boolean needToClaimDevice;
 
     private Drawable tintedSpinner;
     private Drawable tintedCheckmark;
@@ -119,7 +118,6 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
         SEGAnalytics.screen("Device Setup: Connecting progress screen");
         publicKey = DeviceSetupState.publicKey;
         deviceId = DeviceSetupState.deviceToBeSetUpId;
-        needToClaimDevice = DeviceSetupState.deviceNeedsToBeClaimed;
         deviceSoftApSsid = getIntent().getParcelableExtra(EXTRA_SOFT_AP_SSID);
         apConnector = new ApConnector(this, softAPConfigRemover, wifiFacade);
 
@@ -188,10 +186,10 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
                 .newEnsureSoftApNotVisible(deviceSoftApSsid, wifiFacade);
 
         WaitForCloudConnectivityStep waitForLocalCloudConnectivityStep = setupStepsFactory
-                .newWaitForCloudConnectivityStep(sparkCloud, getApplicationContext());
+                .newWaitForCloudConnectivityStep(getApplicationContext());
 
         CheckIfDeviceClaimedStep checkIfDeviceClaimedStep = setupStepsFactory
-                .newCheckIfDeviceClaimedStep(sparkCloud, deviceId, needToClaimDevice);
+                .newCheckIfDeviceClaimedStep(sparkCloud, deviceId);
 
         List<SetupStep> steps = list(
                 configureAPStep,

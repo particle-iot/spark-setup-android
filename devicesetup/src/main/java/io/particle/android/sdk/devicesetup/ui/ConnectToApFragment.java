@@ -1,6 +1,6 @@
 package io.particle.android.sdk.devicesetup.ui;
 
-import android.app.Activity;
+import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -44,8 +44,8 @@ public class ConnectToApFragment extends WorkerFragment {
     private Client apConnectorClient;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         apConnectorClient = EZ.getCallbacksOrThrow(this, Client.class);
     }
 

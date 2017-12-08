@@ -391,7 +391,6 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                             discoverProcessWorker.needToClaimDevice = true;
                             discoverProcessWorker.gotOwnershipInfo = true;
                             discoverProcessWorker.isDetectedDeviceClaimed = false;
-                            DeviceSetupState.deviceNeedsToBeClaimed = true;
 
                             showProgressDialog();
                             startConnectWorker();

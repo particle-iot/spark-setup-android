@@ -233,7 +233,9 @@ public class ApConnector {
             wifiStateChangeListener = null;
         }
 
-        setupRunnables.forEach(mainThreadHandler::removeCallbacks);
+        for (Runnable runnable : setupRunnables) {
+            mainThreadHandler.removeCallbacks(runnable);
+        }
         setupRunnables.clear();
     }
 

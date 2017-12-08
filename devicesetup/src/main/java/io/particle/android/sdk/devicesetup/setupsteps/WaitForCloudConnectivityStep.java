@@ -5,7 +5,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.utils.EZ;
 
 
@@ -13,13 +12,10 @@ public class WaitForCloudConnectivityStep extends SetupStep {
 
     private static final int MAX_RETRIES_REACHABILITY = 1;
 
-
-    private final ParticleCloud cloud;
     private final Context ctx;
 
-    public WaitForCloudConnectivityStep(StepConfig stepConfig, ParticleCloud cloud, Context ctx) {
+    public WaitForCloudConnectivityStep(StepConfig stepConfig, Context ctx) {
         super(stepConfig);
-        this.cloud = cloud;
         this.ctx = ctx;
     }
 

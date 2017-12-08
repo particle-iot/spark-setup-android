@@ -136,6 +136,7 @@
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="12dp"
                 android:clickable="true"
+                android:focusable="true"
                 android:gravity="center"
                 android:text="@string/msg_create_account_disclaimer"
                 android:textAppearance="?android:attr/textAppearanceSmall"

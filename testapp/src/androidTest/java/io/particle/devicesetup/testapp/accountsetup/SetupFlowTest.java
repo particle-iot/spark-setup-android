@@ -56,7 +56,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -120,8 +119,8 @@ public class SetupFlowTest {
     }
 
     public void loginFlow(String photonSSID, String wifiSSID) {
-        onView(withId(R.id.email)).perform(typeText(""));
-        onView(withId(R.id.password)).perform(typeText(""));
+        onView(withId(R.id.email)).perform(typeText("julius.skripkauskas@gmail.com"));
+        onView(withId(R.id.password)).perform(typeText("Test123Photon"));
         closeSoftKeyboard();
         onView(withId(R.id.action_log_in)).perform(click());
         setupFlow(photonSSID, wifiSSID);
@@ -190,11 +189,11 @@ public class SetupFlowTest {
                 .thenReturn(configureAPStep);
         when(setupStepsFactory.newConnectDeviceToNetworkStep(any(CommandClient.class), any(SetupStepApReconnector.class)))
                 .thenReturn(connectDeviceToNetworkStep);
-        when(setupStepsFactory.newCheckIfDeviceClaimedStep(any(ParticleCloud.class), isNull(), anyBoolean()))
+        when(setupStepsFactory.newCheckIfDeviceClaimedStep(any(ParticleCloud.class), isNull()))
                 .thenReturn(checkIfDeviceClaimedStep);
         when(setupStepsFactory.newEnsureSoftApNotVisible(any(SSID.class), any(WifiFacade.class)))
                 .thenReturn(ensureSoftApNotVisible);
-        when(setupStepsFactory.newWaitForCloudConnectivityStep(any(ParticleCloud.class), any(Context.class)))
+        when(setupStepsFactory.newWaitForCloudConnectivityStep(any(Context.class)))
                 .thenReturn(waitForCloudConnectivityStep);
         when(setupStepsFactory.newWaitForDisconnectionFromDeviceStep(any(SSID.class), any(WifiFacade.class)))
                 .thenReturn(waitForDisconnectionFromDeviceStep);

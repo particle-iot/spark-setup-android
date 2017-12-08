@@ -1,7 +1,6 @@
 package io.particle.android.sdk.devicesetup.ui;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -72,8 +71,8 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         client = EZ.getCallbacksOrThrow(this, Client.class);
         if (aggroLoadingHandler == null) {
             aggroLoadingHandler = new Handler();
@@ -81,7 +80,7 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         adapter = new WifiNetworkAdapter(getActivity());
         setEmptyText(client.getListEmptyText());

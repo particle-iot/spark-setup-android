@@ -38,7 +38,9 @@ public class SoftAPConfigRemover {
     }
 
     public void removeAllSoftApConfigs() {
-        loadSSIDsWithKey(KEY_SOFT_AP_SSIDS).forEach(wifiFacade::removeNetwork);
+        for (SSID ssid : loadSSIDsWithKey(KEY_SOFT_AP_SSIDS)) {
+            wifiFacade.removeNetwork(ssid);
+        }
         saveWithKey(KEY_SOFT_AP_SSIDS, set());
     }
 
@@ -51,7 +53,9 @@ public class SoftAPConfigRemover {
 
     public void reenableWifiNetworks() {
         log.v("reenableWifiNetworks()");
-        loadSSIDsWithKey(KEY_DISABLED_WIFI_SSIDS).forEach(wifiFacade::reenableNetwork);
+        for (SSID ssid : loadSSIDsWithKey(KEY_DISABLED_WIFI_SSIDS)) {
+            wifiFacade.reenableNetwork(ssid);
+        }
         saveWithKey(KEY_DISABLED_WIFI_SSIDS, set());
     }
 
