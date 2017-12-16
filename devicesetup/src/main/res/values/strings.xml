@@ -107,5 +107,9 @@
     <string name="device_naming_hint">none</string>
     <string name="device_naming_label">Name your new device:</string>
     <string name="device_naming_failure">Failed to change device name</string>
+    <string name="location_required_message">This access allows you to pair your Android device with
+        your Photon to complete the setup process. Particle will not use location data for any other
+        purposes.
+    </string>
 
 </resources>
