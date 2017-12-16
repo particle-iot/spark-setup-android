@@ -7,6 +7,7 @@ import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.accountsetup.PasswordResetActivity;
 import io.particle.android.sdk.devicesetup.ui.ConnectToApFragment;
 import io.particle.android.sdk.devicesetup.ui.ConnectingActivity;
+import io.particle.android.sdk.devicesetup.ui.ConnectingProcessWorkerTask;
 import io.particle.android.sdk.devicesetup.ui.DiscoverDeviceActivity;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 import io.particle.android.sdk.devicesetup.ui.ManualNetworkEntryActivity;
@@ -37,6 +38,8 @@ public interface ActivityInjectorComponent {
     void inject(SelectNetworkActivity selectNetworkActivity);
 
     void inject(ConnectToApFragment connectToApFragment);
+
+    void inject(ConnectingProcessWorkerTask connectingProcessWorkerTask);
 
     @Subcomponent.Builder
     interface Builder {

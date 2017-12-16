@@ -21,7 +21,7 @@ public class EnsureSoftApNotVisible extends SetupStep {
 
     private boolean wasFulfilledOnce = false;
 
-    public EnsureSoftApNotVisible(StepConfig stepConfig, SSID softApSSID, WifiFacade wifiFacade) {
+    EnsureSoftApNotVisible(StepConfig stepConfig, SSID softApSSID, WifiFacade wifiFacade) {
         super(stepConfig);
         Preconditions.checkNotNull(softApSSID, "softApSSID cannot be null.");
         this.wifiFacade = wifiFacade;

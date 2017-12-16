@@ -14,7 +14,7 @@ public class WaitForCloudConnectivityStep extends SetupStep {
 
     private final Context ctx;
 
-    public WaitForCloudConnectivityStep(StepConfig stepConfig, Context ctx) {
+    WaitForCloudConnectivityStep(StepConfig stepConfig, Context ctx) {
         super(stepConfig);
         this.ctx = ctx;
     }
@@ -45,7 +45,10 @@ public class WaitForCloudConnectivityStep extends SetupStep {
     private boolean checkIsApiHostAvailable() {
         ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+        NetworkInfo activeNetworkInfo = null;
+        if (cm != null) {
+            activeNetworkInfo = cm.getActiveNetworkInfo();
+        }
         if (activeNetworkInfo == null || !activeNetworkInfo.isConnected()) {
             return false;
         }

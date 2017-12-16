@@ -101,7 +101,8 @@ public class SetupFlowTest {
         try {
             setupFlow(ssid, wifiSSID);
         } catch (NoMatchingViewException e) {
-            loginFlow(ssid, wifiSSID);
+//            loginFlow(ssid, wifiSSID);
+            loginFlow();
         }
     }
 
@@ -118,12 +119,12 @@ public class SetupFlowTest {
         onView(withId(R.id.action_done)).perform(click());
     }
 
-    public void loginFlow(String photonSSID, String wifiSSID) {
-        onView(withId(R.id.email)).perform(typeText("julius.skripkauskas@gmail.com"));
-        onView(withId(R.id.password)).perform(typeText("Test123Photon"));
+    public void loginFlow() {
+        onView(withId(R.id.email)).perform(typeText(""));
+        onView(withId(R.id.password)).perform(typeText(""));
         closeSoftKeyboard();
         onView(withId(R.id.action_log_in)).perform(click());
-        setupFlow(photonSSID, wifiSSID);
+//        setupFlow(photonSSID, wifiSSID);
     }
 
     public String getNonHtmlString(int resId) {

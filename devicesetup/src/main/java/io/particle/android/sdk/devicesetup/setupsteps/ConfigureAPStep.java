@@ -21,10 +21,10 @@ public class ConfigureAPStep extends SetupStep {
 
     private volatile boolean commandSent = false;
 
-    public ConfigureAPStep(StepConfig stepConfig, CommandClient commandClient,
-                           SetupStepApReconnector workerThreadApConnector,
-                           ScanApCommand.Scan networkToConnectTo, String networkSecretPlaintext,
-                           PublicKey publicKey) {
+    ConfigureAPStep(StepConfig stepConfig, CommandClient commandClient,
+                    SetupStepApReconnector workerThreadApConnector,
+                    ScanApCommand.Scan networkToConnectTo, String networkSecretPlaintext,
+                    PublicKey publicKey) {
         super(stepConfig);
         this.commandClient = commandClient;
         this.workerThreadApConnector = workerThreadApConnector;

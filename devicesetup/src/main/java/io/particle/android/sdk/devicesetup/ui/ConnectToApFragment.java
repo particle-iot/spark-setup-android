@@ -13,7 +13,6 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SSID;
-import io.particle.android.sdk.utils.SoftAPConfigRemover;
 import io.particle.android.sdk.utils.WifiFacade;
 import io.particle.android.sdk.utils.WorkerFragment;
 import io.particle.android.sdk.utils.ui.Ui;
@@ -38,8 +37,7 @@ public class ConnectToApFragment extends WorkerFragment {
         return frag;
     }
 
-    protected ApConnector apConnector;
-    @Inject protected SoftAPConfigRemover configRemover;
+    @Inject protected ApConnector apConnector;
     @Inject protected WifiFacade wifiFacade;
     private Client apConnectorClient;
 
@@ -54,7 +52,6 @@ public class ConnectToApFragment extends WorkerFragment {
         super.onCreate(savedInstanceState);
         ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
                 .apModule(new ApModule()).build().inject(this);
-        apConnector = new ApConnector(getActivity(), configRemover, wifiFacade);
     }
 
     @Override

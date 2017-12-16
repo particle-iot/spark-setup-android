@@ -83,7 +83,7 @@ dependencies {
     compile 'io.particle:cloudsdk:0.4.8'
 
     compile 'com.squareup.phrase:phrase:1.0.3'
-    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+    compile 'uk.co.chrisjenx:calligraphy:2.3.0'
     compile 'com.segment.analytics.android:analytics:4.2.6'
 
     compile 'com.google.dagger:dagger:2.13'

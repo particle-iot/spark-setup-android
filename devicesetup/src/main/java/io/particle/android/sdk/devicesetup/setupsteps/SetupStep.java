@@ -25,7 +25,7 @@ public abstract class SetupStep {
 
     public abstract boolean isStepFulfilled();
 
-    public final void runStep() throws SetupStepException, SetupProcessException {
+    final void runStep() throws SetupStepException, SetupProcessException {
         if (isStepFulfilled()) {
             getLog().i("Step " + getStepName() + " already fulfilled, skipping...");
             return;

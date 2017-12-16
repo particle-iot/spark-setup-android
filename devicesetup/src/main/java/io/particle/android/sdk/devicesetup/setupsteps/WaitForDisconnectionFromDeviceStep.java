@@ -15,7 +15,7 @@ public class WaitForDisconnectionFromDeviceStep extends SetupStep {
 
     private boolean wasDisconnected = false;
 
-    public WaitForDisconnectionFromDeviceStep(StepConfig stepConfig, SSID softApSSID, WifiFacade wifiFacade) {
+    WaitForDisconnectionFromDeviceStep(StepConfig stepConfig, SSID softApSSID, WifiFacade wifiFacade) {
         super(stepConfig);
         Preconditions.checkNotNull(softApSSID, "softApSSID cannot be null.");
         this.softApName = softApSSID;

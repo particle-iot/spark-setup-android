@@ -14,7 +14,7 @@ public class CheckIfDeviceClaimedStep extends SetupStep {
     private final String deviceBeingConfiguredId;
     private boolean needToClaimDevice = true;
 
-    public CheckIfDeviceClaimedStep(StepConfig stepConfig, ParticleCloud sparkCloud,
+    CheckIfDeviceClaimedStep(StepConfig stepConfig, ParticleCloud sparkCloud,
                                     String deviceBeingConfiguredId) {
         super(stepConfig);
         this.sparkCloud = sparkCloud;
