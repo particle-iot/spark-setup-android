@@ -1,3 +1,21 @@
+0.5.0
+=====
+* Code Refactoring - exporting tasks and steps to separate classes, removing dependencies and public access where it isn't needed.
+* Updating Android & Cloudsdk libraries
+* Initial test flow - tests go through setup flow automatically, minimal amount of assertions and mocks added, environment ready for further testing.
+* Removing retrolambda, native Java 8 support.
+* Dependency injection through dagger.
+* Moving view bindings to ButterKnife.
+* Manifest definitions inside setup library (no need to define in users manifest).
+
+0.4.9
+=====
+* Android library update, ConnectingActivity null exception fix.
+
+0.4.8
+=====
+* Permission and location service request messages.
+
 0.4.7
 =====
 * Adding 'initWithSetupOnly', allows customer to setup WiFi without claiming device.
