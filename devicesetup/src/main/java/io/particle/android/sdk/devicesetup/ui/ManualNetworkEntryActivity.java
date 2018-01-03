@@ -89,7 +89,7 @@ public class ManualNetworkEntryActivity extends BaseActivity
     @Override
     public void onLoadFinished(Loader<Set<ScanAPCommandResult>> loader, Set<ScanAPCommandResult> data) {
         // FIXME: perform process described here?:
-        // https://github.com/spark/mobile-sdk-ios/issues/56
+        // https://github.com/particle-iot/mobile-sdk-ios/issues/56
     }
 
     @Override
