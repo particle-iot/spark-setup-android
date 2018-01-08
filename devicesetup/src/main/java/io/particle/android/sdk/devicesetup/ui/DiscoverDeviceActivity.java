@@ -170,7 +170,8 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     private void onLocationDisabled() {
         log.d("Location disabled; prompting user");
-        new AlertDialog.Builder(this).setTitle(R.string.location_required)
+        new Builder(this).setTitle(R.string.location_required)
+                .setMessage(R.string.location_required_message)
                 .setPositiveButton(R.string.enable_location, ((dialog, which) -> {
                     dialog.dismiss();
                     log.i("Sending user to enabling Location services.");
