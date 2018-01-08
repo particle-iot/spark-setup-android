@@ -61,14 +61,11 @@ public class SoftAPConfigRemover {
 
 
     private Set<SSID> loadSSIDsWithKey(String key) {
-//        log.v("loadSSIDsWithKey(" + key + ")");
-        //        log.v("Loaded saved SSIDS: " + ssids);
         return Funcy.transformSet(prefs.getStringSet(key, set()), SSID::from);
     }
 
     @SuppressLint("CommitPrefEdits")
     private void saveWithKey(String key, Set<SSID> ssids) {
-//        log.v("saveWithKey() " + key + ", " + ssids);
         Set<String> asStrings = transformSet(ssids, SSID::toString);
         prefs.edit()
                 .putStringSet(key, asStrings)

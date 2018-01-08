@@ -37,8 +37,6 @@ public class PasswordResetActivity extends BaseActivity {
 
     @Inject protected ParticleCloud sparkCloud;
     @BindView(R2.id.email) protected EditText emailView;
-    private Async.AsyncApiWorker<ParticleCloud, Void> resetTask = null;
-
 
     public static Intent buildIntent(Context context, String email) {
         Intent i = new Intent(context, PasswordResetActivity.class);
@@ -83,7 +81,7 @@ public class PasswordResetActivity extends BaseActivity {
     private void performReset() {
         ParticleUi.showParticleButtonProgress(this, R.id.action_reset_password, true);
 
-        resetTask = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, Void>() {
+        Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
             public Void callApi(@NonNull ParticleCloud sparkCloud) throws ParticleCloudException {
                 sparkCloud.requestPasswordReset(emailView.getText().toString());
@@ -92,7 +90,6 @@ public class PasswordResetActivity extends BaseActivity {
 
             @Override
             public void onTaskFinished() {
-                resetTask = null;
                 ParticleUi.showParticleButtonProgress(PasswordResetActivity.this, R.id.action_reset_password, false);
             }
 

@@ -35,7 +35,7 @@ ext {
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.3'
 
     dexOptions {
         javaMaxHeapSize "2g"
@@ -85,6 +85,7 @@ dependencies {
     compile 'com.squareup.phrase:phrase:1.0.3'
     compile 'uk.co.chrisjenx:calligraphy:2.3.0'
     compile 'com.segment.analytics.android:analytics:4.2.6'
+    compile 'com.madgag.spongycastle:core:1.58.0.0'
 
     compile 'com.google.dagger:dagger:2.13'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.13'

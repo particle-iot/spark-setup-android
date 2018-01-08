@@ -188,8 +188,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         boolean networkEnabled = false;
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try {
-            gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            if (lm != null) {
+                gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            }
         } catch (Exception ignored) {
         }
         return gpsEnabled || networkEnabled;
@@ -324,7 +326,6 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 } catch (SetupStepException e) {
                     log.d("Setup exception thrown: ", e);
                     return e;
-
                 }
             }
 

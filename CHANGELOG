@@ -7,6 +7,7 @@
 * Dependency injection through dagger.
 * Moving view bindings to ButterKnife.
 * Manifest definitions inside setup library (no need to define in users manifest).
+* Replacing X509EncodedKeySpec with implementation from Spongycastle due to "generatePublic()" ParseException in 8.1.
 
 0.4.9
 =====
