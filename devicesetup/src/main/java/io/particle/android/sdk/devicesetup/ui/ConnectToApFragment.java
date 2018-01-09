@@ -1,14 +1,19 @@
 package io.particle.android.sdk.devicesetup.ui;
 
-import android.app.Activity;
+import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import javax.inject.Inject;
+
 import io.particle.android.sdk.devicesetup.ApConnector;
 import io.particle.android.sdk.devicesetup.ApConnector.Client;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SSID;
+import io.particle.android.sdk.utils.WifiFacade;
 import io.particle.android.sdk.utils.WorkerFragment;
 import io.particle.android.sdk.utils.ui.Ui;
 
@@ -32,19 +37,21 @@ public class ConnectToApFragment extends WorkerFragment {
         return frag;
     }
 
-    private ApConnector apConnector;
+    @Inject protected ApConnector apConnector;
+    @Inject protected WifiFacade wifiFacade;
     private Client apConnectorClient;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         apConnectorClient = EZ.getCallbacksOrThrow(this, Client.class);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        apConnector = new ApConnector(getActivity());
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
     }
 
     @Override

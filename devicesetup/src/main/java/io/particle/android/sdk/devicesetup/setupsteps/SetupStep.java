@@ -25,9 +25,9 @@ public abstract class SetupStep {
 
     public abstract boolean isStepFulfilled();
 
-    public final void runStep() throws SetupStepException, SetupProcessException {
+    final void runStep() throws SetupStepException, SetupProcessException {
         if (isStepFulfilled()) {
-            log.i("Step " + getStepName() + " already fulfilled, skipping...");
+            getLog().i("Step " + getStepName() + " already fulfilled, skipping...");
             return;
         }
         if (numAttempts > stepConfig.maxAttempts) {
@@ -36,10 +36,14 @@ public abstract class SetupStep {
                     stepConfig.maxAttempts, getStepName());
             throw new SetupProcessException(msg, this);
         } else {
-            log.i("Running step " + getStepName());
+            getLog().i("Running step " + getStepName());
             numAttempts++;
             onRunStep();
         }
+    }
+
+    public TLog getLog() {
+        return log;
     }
 
     @AnyThread

@@ -1,4 +1,4 @@
-package io.particle.devicesetup.exampleapp;
+package io.particle.devicesetup.testapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

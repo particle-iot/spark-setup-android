@@ -14,12 +14,15 @@ import com.squareup.phrase.Phrase;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
-import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.Responses.ClaimCodeResponse;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.Async.AsyncApiWorker;
@@ -38,19 +41,18 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
     private static final TLog log = TLog.get(GetReadyActivity.class);
 
-    private ParticleCloud sparkCloud;
-    private SoftAPConfigRemover softAPConfigRemover;
+    @Inject protected ParticleCloud sparkCloud;
+    @Inject protected SoftAPConfigRemover softAPConfigRemover;
 
     private AsyncApiWorker<ParticleCloud, ClaimCodeResponse> claimCodeWorker;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_ready);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
         SEGAnalytics.screen("Device Setup: Get ready screen");
-        sparkCloud = ParticleCloudSDK.getCloud();
-        softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
 
@@ -82,18 +84,16 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
 
-//        if (BaseActivity.setupOnly) {
-//            moveToDeviceDiscovery();
-//        } else
-            if (sparkCloud.getAccessToken() == null && !BaseActivity.setupOnly) {
+        if (sparkCloud.getAccessToken() == null && !BaseActivity.setupOnly) {
             startLoginActivity();
             finish();
         }
-
     }
 
     private void onReadyButtonClicked(View v) {
-        // FIXME: check here that another of these tasks isn't already running
+        if (claimCodeWorker != null && !claimCodeWorker.isCancelled()) {
+            return;
+        }
         DeviceSetupState.reset();
         if (BaseActivity.setupOnly) {
             moveToDeviceDiscovery();
@@ -104,18 +104,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         claimCodeWorker = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, ClaimCodeResponse>() {
             @Override
             public ClaimCodeResponse callApi(@NonNull ParticleCloud sparkCloud) throws ParticleCloudException {
-                Resources res = ctx.getResources();
-                if (res.getBoolean(R.bool.organization) && !res.getBoolean(R.bool.productMode)) {
-                    throw new ParticleCloudException(new Exception("Organization is deprecated, use productMode instead."));
-                } else if (res.getBoolean(R.bool.productMode)) {
-                    int productId = res.getInteger(R.integer.product_id);
-                    if (productId == 0) {
-                        throw new ParticleCloudException(new Exception("Product id must be set when productMode is in use."));
-                    }
-                    return sparkCloud.generateClaimCode(productId);
-                } else {
-                    return sparkCloud.generateClaimCode();
-                }
+                return generateClaimCode(ctx);
             }
 
             @Override
@@ -126,64 +115,89 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
             @Override
             public void onSuccess(@NonNull ClaimCodeResponse result) {
-                log.d("Claim code generated: " + result.claimCode);
-
-                DeviceSetupState.claimCode = result.claimCode;
-                if (truthy(result.deviceIds)) {
-                    DeviceSetupState.claimedDeviceIds.addAll(Arrays.asList(result.deviceIds));
-                }
-
-                if (isFinishing()) {
-                    return;
-                }
-
-                moveToDeviceDiscovery();
+                handleClaimCode(result);
             }
 
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
-                log.d("Generating claim code failed");
-                ParticleCloudException.ResponseErrorData errorData = error.getResponseData();
-                if (errorData != null && errorData.getHttpStatusCode() == 401) {
-
-                    if (isFinishing()) {
-                        sparkCloud.logOut();
-                        startLoginActivity();
-                        return;
-                    }
-
-                    String errorMsg = getString(R.string.get_ready_must_be_logged_in_as_customer,
-                            getString(R.string.brand_name));
-                    new AlertDialog.Builder(GetReadyActivity.this)
-                            .setTitle(R.string.access_denied)
-                            .setMessage(errorMsg)
-                            .setPositiveButton(R.string.ok, (dialog, which) -> {
-                                dialog.dismiss();
-                                log.i("Logging out user");
-                                sparkCloud.logOut();
-                                startLoginActivity();
-                                finish();
-                            })
-                            .show();
-
-                } else {
-                    if (isFinishing()) {
-                        return;
-                    }
-
-                    // FIXME: we could just check the internet connection here ourselves...
-                    String errorMsg = getString(R.string.get_ready_could_not_connect_to_cloud);
-                    if (error.getMessage() != null) {
-                        errorMsg = errorMsg + "\n\n" + error.getMessage();
-                    }
-                    new AlertDialog.Builder(GetReadyActivity.this)
-                            .setTitle(R.string.error)
-                            .setMessage(errorMsg)
-                            .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
-                            .show();
-                }
+                onGenerateClaimCodeFail(error);
             }
         });
+    }
+
+    private void onGenerateClaimCodeFail(@NonNull ParticleCloudException error) {
+        log.d("Generating claim code failed");
+        ParticleCloudException.ResponseErrorData errorData = error.getResponseData();
+        if (errorData != null && errorData.getHttpStatusCode() == 401) {
+            onUnauthorizedError();
+        } else {
+            if (isFinishing()) {
+                return;
+            }
+
+            // FIXME: we could just check the internet connection here ourselves...
+            String errorMsg = getString(R.string.get_ready_could_not_connect_to_cloud);
+            if (error.getMessage() != null) {
+                errorMsg = errorMsg + "\n\n" + error.getMessage();
+            }
+            new AlertDialog.Builder(GetReadyActivity.this)
+                    .setTitle(R.string.error)
+                    .setMessage(errorMsg)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .show();
+        }
+    }
+
+    private void onUnauthorizedError() {
+        if (isFinishing()) {
+            sparkCloud.logOut();
+            startLoginActivity();
+            return;
+        }
+
+        String errorMsg = getString(R.string.get_ready_must_be_logged_in_as_customer,
+                getString(R.string.brand_name));
+        new AlertDialog.Builder(GetReadyActivity.this)
+                .setTitle(R.string.access_denied)
+                .setMessage(errorMsg)
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    dialog.dismiss();
+                    log.i("Logging out user");
+                    sparkCloud.logOut();
+                    startLoginActivity();
+                    finish();
+                })
+                .show();
+    }
+
+    private void handleClaimCode(@NonNull ClaimCodeResponse result) {
+        log.d("Claim code generated: " + result.claimCode);
+
+        DeviceSetupState.claimCode = result.claimCode;
+        if (truthy(result.deviceIds)) {
+            DeviceSetupState.claimedDeviceIds.addAll(Arrays.asList(result.deviceIds));
+        }
+
+        if (isFinishing()) {
+            return;
+        }
+
+        moveToDeviceDiscovery();
+    }
+
+    private ClaimCodeResponse generateClaimCode(Context ctx) throws ParticleCloudException {
+        Resources res = ctx.getResources();
+        if (res.getBoolean(R.bool.organization) && !res.getBoolean(R.bool.productMode)) {
+            throw new ParticleCloudException(new Exception("Organization is deprecated, use productMode instead."));
+        } else if (res.getBoolean(R.bool.productMode)) {
+            int productId = res.getInteger(R.integer.product_id);
+            if (productId == 0) {
+                throw new ParticleCloudException(new Exception("Product id must be set when productMode is in use."));
+            }
+            return sparkCloud.generateClaimCode(productId);
+        } else {
+            return sparkCloud.generateClaimCode();
+        }
     }
 
     private void startLoginActivity() {

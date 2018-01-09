@@ -17,27 +17,25 @@ import android.view.View;
 
 import com.squareup.phrase.Phrase;
 
-import java.io.IOException;
-import java.security.PublicKey;
-import java.util.Locale;
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
-import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.ApConnector;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
-import io.particle.android.sdk.devicesetup.commands.CommandClient;
-import io.particle.android.sdk.devicesetup.commands.DeviceIdCommand;
-import io.particle.android.sdk.devicesetup.commands.PublicKeyCommand;
-import io.particle.android.sdk.devicesetup.commands.SetCommand;
+import io.particle.android.sdk.devicesetup.R2;
+import io.particle.android.sdk.devicesetup.commands.CommandClientFactory;
 import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
-import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
-import io.particle.android.sdk.utils.ParticleDeviceSetupInternalStringUtils;
 import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
@@ -60,10 +58,11 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     private static final TLog log = TLog.get(DiscoverDeviceActivity.class);
 
 
-    private WifiFacade wifiFacade;
-    private ParticleCloud sparkCloud;
-    private DiscoverProcessWorker discoverProcessWorker;
-    private SoftAPConfigRemover softAPConfigRemover;
+    @Inject protected WifiFacade wifiFacade;
+    @Inject protected ParticleCloud sparkCloud;
+    @Inject protected DiscoverProcessWorker discoverProcessWorker;
+    @Inject protected SoftAPConfigRemover softAPConfigRemover;
+    @Inject protected CommandClientFactory commandClientFactory;
 
     private WifiListFragment wifiListFragment;
     private ProgressDialog connectToApSpinnerDialog;
@@ -75,24 +74,41 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     private SSID selectedSoftApSSID;
 
+    @OnClick(R2.id.action_troubleshooting)
+    protected void onTroubleshootingClick(View v) {
+        Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
+        startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
+    }
+
+    @OnClick(R2.id.action_log_out)
+    protected void onLogoutClick() {
+        sparkCloud.logOut();
+        log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
+        startActivity(new Intent(DiscoverDeviceActivity.this, LoginActivity.class));
+        finish();
+    }
+
+    @OnClick(R2.id.action_cancel)
+    protected void onCancelClick() {
+        finish();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_device);
+        ButterKnife.bind(this);
         SEGAnalytics.screen("Device Setup: Device discovery screen");
-        wifiFacade = WifiFacade.get(this);
 
-        softAPConfigRemover = new SoftAPConfigRemover(this);
         softAPConfigRemover.removeAllSoftApConfigs();
         softAPConfigRemover.reenableWifiNetworks();
 
         DeviceSetupState.previouslyConnectedWifiNetwork = wifiFacade.getCurrentlyConnectedSSID();
 
-        sparkCloud = ParticleCloudSDK.getCloud();
-
         wifiListFragment = Ui.findFrag(this, R.id.wifi_list_fragment);
         ConnectToApFragment.ensureAttached(this);
-
         resetWorker();
 
         Ui.setText(this, R.id.wifi_list_header,
@@ -110,12 +126,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                         .format()
         );
 
-        Ui.setTextFromHtml(this, R.id.action_troubleshooting, R.string.troubleshooting).setOnClickListener(
-                v -> {
-                    Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
-                    startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
-                }
-        );
+        Ui.setTextFromHtml(this, R.id.action_troubleshooting, R.string.troubleshooting);
 
         if (!truthy(sparkCloud.getLoggedInUsername())) {
             Ui.findView(this, R.id.logged_in_as).setVisibility(View.GONE);
@@ -128,14 +139,6 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         }
 
         Ui.findView(this, R.id.action_log_out).setVisibility(BaseActivity.setupOnly ? View.GONE : View.VISIBLE);
-        Ui.findView(this, R.id.action_log_out).setOnClickListener(view -> {
-            sparkCloud.logOut();
-            log.i("logged out, username is: " + sparkCloud.getLoggedInUsername());
-            startActivity(new Intent(DiscoverDeviceActivity.this, LoginActivity.class));
-            finish();
-        });
-
-        Ui.findView(this, R.id.action_cancel).setOnClickListener(view -> finish());
     }
 
     @Override
@@ -162,9 +165,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     }
 
     private void resetWorker() {
-        discoverProcessWorker = new DiscoverProcessWorker(
-                CommandClient.newClientUsingDefaultsForDevices(this, selectedSoftApSSID)
-        );
+        discoverProcessWorker.withClient(commandClientFactory.newClientUsingDefaultsForDevices(wifiFacade, selectedSoftApSSID));
     }
 
     private void onLocationDisabled() {
@@ -188,8 +189,10 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         boolean networkEnabled = false;
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try {
-            gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            if (lm != null) {
+                gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            }
         } catch (Exception ignored) {
         }
         return gpsEnabled || networkEnabled;
@@ -229,7 +232,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
 
     @Override
     public Loader<Set<ScanResultNetwork>> createLoader(int id, Bundle args) {
-        return new WifiScanResultLoader(this);
+        return new WifiScanResultLoader(this, wifiFacade);
     }
 
     @Override
@@ -324,7 +327,6 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 } catch (SetupStepException e) {
                     log.d("Setup exception thrown: ", e);
                     return e;
-
                 }
             }
 
@@ -385,13 +387,12 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                         (dialog, which) -> {
                             dialog.dismiss();
                             log.i("Changing owner to " + sparkCloud.getLoggedInUsername());
-//                        // FIXME: state mutation from another class.  Not pretty.
-//                        // Fix this by breaking DiscoverProcessWorker down into Steps
+                            // FIXME: state mutation from another class.  Not pretty.
+                            // Fix this by breaking DiscoverProcessWorker down into Steps
                             resetWorker();
                             discoverProcessWorker.needToClaimDevice = true;
                             discoverProcessWorker.gotOwnershipInfo = true;
                             discoverProcessWorker.isDetectedDeviceClaimed = false;
-                            DeviceSetupState.deviceNeedsToBeClaimed = true;
 
                             showProgressDialog();
                             startConnectWorker();
@@ -405,135 +406,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
                 .show();
     }
 
-
-    // FIXME: Even before it's done, I am pretty sure this will need
-    // to go through a round of "solve et coagula" before it's
-    // really right, at least maintenance-wise.
-    // FIXME: this naming is no longer really applicable.
-    static class DiscoverProcessWorker {
-
-        private final CommandClient client;
-
-        private volatile String detectedDeviceID;
-
-        private volatile boolean isDetectedDeviceClaimed;
-        private volatile boolean gotOwnershipInfo;
-        private volatile boolean needToClaimDevice;
-
-        DiscoverProcessWorker(CommandClient client) {
-            this.client = client;
-        }
-
-        // FIXME: all this should probably become a list of commands to run in a queue,
-        // each with shortcut conditions for when they've already been fulfilled, instead of
-        // this if-else/try-catch ladder.
-        public void doTheThing() throws SetupStepException {
-            // 1. get device ID
-            if (!truthy(detectedDeviceID)) {
-                try {
-                    DeviceIdCommand.Response response = client.sendCommand(
-                            new DeviceIdCommand(), DeviceIdCommand.Response.class);
-                    detectedDeviceID = response.deviceIdHex.toLowerCase(Locale.ROOT);
-                    DeviceSetupState.deviceToBeSetUpId = detectedDeviceID;
-                    isDetectedDeviceClaimed = truthy(response.isClaimed);
-                } catch (IOException e) {
-                    throw new SetupStepException("Process died while trying to get the device ID", e);
-                }
-            }
-
-            // 2. Get public key
-            if (DeviceSetupState.publicKey == null) {
-                try {
-                    DeviceSetupState.publicKey = getPublicKey();
-                } catch (Crypto.CryptoException e) {
-                    throw new SetupStepException("Unable to get public key: ", e);
-
-                } catch (IOException e) {
-                    throw new SetupStepException("Error while fetching public key: ", e);
-                }
-            }
-
-            // 3. check ownership
-            //
-            // all cases:
-            // (1) device not claimed `c=0` — device should also not be in list from API => mobile
-            //      app assumes user is claiming
-            // (2) device claimed `c=1` and already in list from API => mobile app does not ask
-            //      user about taking ownership because device already belongs to this user
-            // (3) device claimed `c=1` and NOT in the list from the API => mobile app asks whether
-            //      use would like to take ownership
-            if (!gotOwnershipInfo) {
-                needToClaimDevice = false;
-
-                // device was never claimed before - so we need to claim it anyways
-                if (!isDetectedDeviceClaimed) {
-                    setClaimCode();
-                    needToClaimDevice = true;
-
-                } else {
-                    boolean deviceClaimedByUser = false;
-                    for (String deviceId : DeviceSetupState.claimedDeviceIds) {
-                        if (deviceId.equalsIgnoreCase(detectedDeviceID)) {
-                            deviceClaimedByUser = true;
-                            break;
-                        }
-                    }
-                    gotOwnershipInfo = true;
-
-                    if (isDetectedDeviceClaimed && !deviceClaimedByUser) {
-                        // This device is already claimed by someone else. Ask the user if we should
-                        // change ownership to the current logged in user, and if so, set the claim code.
-
-                        throw new DeviceAlreadyClaimed("Device already claimed by another user");
-
-                    } else {
-                        // Success: no exception thrown, this part of the process is complete.
-                        // Let the caller continue on with the setup process.
-                        return;
-                    }
-                }
-
-            } else {
-                if (needToClaimDevice) {
-                    setClaimCode();
-                }
-                // Success: no exception thrown, the part of the process is complete.  Let the caller
-                // continue on with the setup process.
-                return;
-            }
-        }
-
-        private void setClaimCode() throws SetupStepException {
-            try {
-                log.d("Setting claim code using code: " + DeviceSetupState.claimCode);
-
-                String claimCodeNoBackslashes = ParticleDeviceSetupInternalStringUtils.remove(
-                        DeviceSetupState.claimCode, "\\");
-                SetCommand.Response response = client.sendCommand(
-                        new SetCommand("cc", claimCodeNoBackslashes), SetCommand.Response.class);
-
-                if (truthy(response.responseCode)) {
-                    // a non-zero response indicates an error, ala UNIX return codes
-                    throw new SetupStepException("Received non-zero return code from set command: "
-                            + response.responseCode);
-                }
-
-                log.d("Successfully set claim code");
-
-            } catch (IOException e) {
-                throw new SetupStepException(e);
-            }
-        }
-
-        private PublicKey getPublicKey() throws Crypto.CryptoException, IOException {
-            PublicKeyCommand.Response response = this.client.sendCommand(
-                    new PublicKeyCommand(), PublicKeyCommand.Response.class);
-            return Crypto.readPublicKeyFromHexEncodedDerString(response.publicKey);
-        }
-    }
-
-
-    // FIXME: remove this if we break down the worker above into Steps
+    // FIXME: remove this if we break down discover process worker into Steps
     // no data to pass along with this at the moment, I just want to specify
     // that this isn't an error which should necessarily count against retries.
     static class DeviceAlreadyClaimed extends SetupStepException {

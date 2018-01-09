@@ -18,19 +18,26 @@ import com.squareup.phrase.Phrase;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
 import io.particle.android.sdk.cloud.ParticleDevice;
-import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.SDKGlobals;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary.DeviceSetupCompleteContract;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.SetupResult;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
-import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.SEGAnalytics;
+import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
@@ -85,23 +92,43 @@ public class SuccessActivity extends BaseActivity {
                 R.string.setup_failure_lost_connection_to_device));
     }
 
-    private EditText deviceNameView;
-    private TextView deviceNameLabelView;
-    private ParticleCloud particleCloud;
+    @BindView(R2.id.device_name) protected EditText deviceNameView;
+    @BindView(R2.id.device_name_label) protected TextView deviceNameLabelView;
+    @Inject protected ParticleCloud particleCloud;
+    boolean isSuccess = false;
+
+    @OnClick(R2.id.action_done)
+    protected void onDoneClick(View v) {
+        deviceNameView.setError(null);
+        if (isSuccess && !BaseActivity.setupOnly) {
+            if (deviceNameView.getVisibility() == View.VISIBLE && deviceNameView.getText().toString().isEmpty()) {
+                deviceNameView.setError(getString(R.string.error_field_required));
+            } else {
+                finishSetup(v.getContext(), deviceNameView.getText().toString(), true);
+            }
+        } else {
+            leaveActivity(v.getContext(), false);
+        }
+    }
+
+    @OnClick(R2.id.action_troubleshooting)
+    protected void onTroubleshootingClick(View v) {
+        Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
+        startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_success);
-
-        deviceNameView = Ui.findView(this, R.id.device_name);
-        deviceNameLabelView = Ui.findView(this, R.id.device_name_label);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
+        ButterKnife.bind(this);
         SEGAnalytics.screen("Device Setup: Setup Result Screen");
-        particleCloud = ParticleCloudSDK.getCloud();
 
         int resultCode = getIntent().getIntExtra(EXTRA_RESULT_CODE, -1);
+        isSuccess = list(RESULT_SUCCESS, RESULT_SUCCESS_UNKNOWN_OWNERSHIP).contains(resultCode);
 
-        final boolean isSuccess = list(RESULT_SUCCESS, RESULT_SUCCESS_UNKNOWN_OWNERSHIP).contains(resultCode);
         if (!isSuccess) {
             ImageView image = Ui.findView(this, R.id.result_image);
             image.setImageResource(R.drawable.fail);
@@ -132,26 +159,7 @@ public class SuccessActivity extends BaseActivity {
         Pair<? extends CharSequence, CharSequence> resultStrings = buildUiStringPair(resultCode);
         Ui.setText(this, R.id.result_summary, resultStrings.first);
         Ui.setText(this, R.id.result_details, resultStrings.second);
-
-        Ui.findView(this, R.id.action_done).setOnClickListener(v -> {
-            deviceNameView.setError(null);
-            if (isSuccess && !BaseActivity.setupOnly) {
-                if (deviceNameView.getVisibility() == View.VISIBLE && deviceNameView.getText().toString().isEmpty()) {
-                    deviceNameView.setError(getString(R.string.error_field_required));
-                } else {
-                    finishSetup(v.getContext(), deviceNameView.getText().toString(), true);
-                }
-            } else {
-                leaveActivity(v.getContext(), false);
-            }
-        });
-
-        Ui.setTextFromHtml(this, R.id.action_troubleshooting, R.string.troubleshooting)
-                .setOnClickListener(v -> {
-                    Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
-                    startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
-                });
-
+        Ui.setTextFromHtml(this, R.id.action_troubleshooting, R.string.troubleshooting);
     }
 
     private void finishSetup(Context context, String deviceName, boolean isSuccess) {

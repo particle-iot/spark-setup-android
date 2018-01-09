@@ -13,7 +13,7 @@ public class ConnectDeviceToNetworkStep extends SetupStep {
 
     private volatile boolean commandSent = false;
 
-    public ConnectDeviceToNetworkStep(StepConfig stepConfig, CommandClient commandClient,
+    ConnectDeviceToNetworkStep(StepConfig stepConfig, CommandClient commandClient,
                                       SetupStepApReconnector workerThreadApConnector) {
         super(stepConfig);
         this.commandClient = commandClient;

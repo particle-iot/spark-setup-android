@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
-import android.content.Context;
-
 import io.particle.android.sdk.devicesetup.SetupProcessException;
 import io.particle.android.sdk.devicesetup.ui.DeviceSetupState;
 import io.particle.android.sdk.utils.EZ;
@@ -17,11 +15,11 @@ public class WaitForDisconnectionFromDeviceStep extends SetupStep {
 
     private boolean wasDisconnected = false;
 
-    public WaitForDisconnectionFromDeviceStep(StepConfig stepConfig, SSID softApSSID, Context ctx) {
+    WaitForDisconnectionFromDeviceStep(StepConfig stepConfig, SSID softApSSID, WifiFacade wifiFacade) {
         super(stepConfig);
         Preconditions.checkNotNull(softApSSID, "softApSSID cannot be null.");
         this.softApName = softApSSID;
-        this.wifiFacade = WifiFacade.get(ctx);
+        this.wifiFacade = wifiFacade;
     }
 
     @Override

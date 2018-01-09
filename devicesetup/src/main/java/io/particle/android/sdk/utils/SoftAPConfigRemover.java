@@ -17,19 +17,17 @@ public class SoftAPConfigRemover {
 
     private static final String
             PREFS_SOFT_AP_NETWORK_REMOVER = "PREFS_SOFT_AP_NETWORK_REMOVER",
-
             KEY_SOFT_AP_SSIDS = "KEY_SOFT_AP_SSIDS",
             KEY_DISABLED_WIFI_SSIDS = "KEY_DISABLED_WIFI_SSIDS";
 
 
-    private final Context ctx;
     private final SharedPreferences prefs;
     private final WifiFacade wifiFacade;
 
-    public SoftAPConfigRemover(Context context) {
-        this.ctx = context.getApplicationContext();
-        wifiFacade = WifiFacade.get(this.ctx);
-        prefs = this.ctx.getSharedPreferences(PREFS_SOFT_AP_NETWORK_REMOVER, Context.MODE_PRIVATE);
+    public SoftAPConfigRemover(Context context, WifiFacade wifiFacade) {
+        this.wifiFacade = wifiFacade;
+        Context ctx = context.getApplicationContext();
+        prefs = ctx.getSharedPreferences(PREFS_SOFT_AP_NETWORK_REMOVER, Context.MODE_PRIVATE);
     }
 
     public void onSoftApConfigured(SSID newSsid) {
@@ -55,7 +53,6 @@ public class SoftAPConfigRemover {
 
     public void reenableWifiNetworks() {
         log.v("reenableWifiNetworks()");
-        WifiFacade wifiFacade = WifiFacade.get(ctx);
         for (SSID ssid : loadSSIDsWithKey(KEY_DISABLED_WIFI_SSIDS)) {
             wifiFacade.reenableNetwork(ssid);
         }
@@ -64,14 +61,11 @@ public class SoftAPConfigRemover {
 
 
     private Set<SSID> loadSSIDsWithKey(String key) {
-//        log.v("loadSSIDsWithKey(" + key + ")");
-        //        log.v("Loaded saved SSIDS: " + ssids);
         return Funcy.transformSet(prefs.getStringSet(key, set()), SSID::from);
     }
 
     @SuppressLint("CommitPrefEdits")
     private void saveWithKey(String key, Set<SSID> ssids) {
-//        log.v("saveWithKey() " + key + ", " + ssids);
         Set<String> asStrings = transformSet(ssids, SSID::toString);
         prefs.edit()
                 .putStringSet(key, asStrings)

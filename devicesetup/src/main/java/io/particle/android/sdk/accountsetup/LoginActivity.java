@@ -3,21 +3,27 @@ package io.particle.android.sdk.accountsetup;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.squareup.phrase.Phrase;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnEditorAction;
+import butterknife.OnTextChanged;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
-import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.SDKGlobals;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.R2;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
@@ -26,7 +32,6 @@ import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
 
-import static io.particle.android.sdk.utils.Py.list;
 import static io.particle.android.sdk.utils.Py.truthy;
 
 
@@ -41,54 +46,38 @@ public class LoginActivity extends BaseActivity {
     private Async.AsyncApiWorker<ParticleCloud, Void> loginTask = null;
 
     // UI references.
-    private EditText emailView;
-    private EditText passwordView;
+    @BindView(R2.id.email)
+    protected EditText emailView;
+    @BindView(R2.id.password)
+    protected EditText passwordView;
 
-    private ParticleCloud sparkCloud;
+    @OnEditorAction(R2.id.password)
+    protected boolean onPasswordEditorAction(int id) {
+        if (id == R.id.action_log_in || id == EditorInfo.IME_NULL) {
+            attemptLogin();
+            return true;
+        }
+        return false;
+    }
 
+    @OnTextChanged(value = {R2.id.email, R2.id.password}, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    protected void afterInput() {
+        emailView.setError(null);
+        passwordView.setError(null);
+    }
+
+    @Inject
+    protected ParticleCloud sparkCloud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.particle_activity_login);
-
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
+        ButterKnife.bind(this);
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
         SEGAnalytics.screen("Auth: Login Screen");
-        sparkCloud = ParticleCloudSDK.getCloud();
-
-        // Set up the login form.
-        emailView = Ui.findView(this, R.id.email);
-        passwordView = Ui.findView(this, R.id.password);
-        passwordView.setOnEditorActionListener((textView, id, keyEvent) -> {
-            if (id == R.id.action_log_in || id == EditorInfo.IME_NULL) {
-                attemptLogin();
-                return true;
-            }
-            return false;
-        });
-
-        for (EditText tv : list(emailView, passwordView)) {
-            tv.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    emailView.setError(null);
-                    passwordView.setError(null);
-                }
-            });
-        }
-
-        Button submit = Ui.findView(this, R.id.action_log_in);
-        submit.setOnClickListener(view -> attemptLogin());
 
         Ui.setText(this, R.id.log_in_header_text,
                 Phrase.from(this, R.string.log_in_header_text)
@@ -116,6 +105,7 @@ public class LoginActivity extends BaseActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
+    @OnClick(R2.id.action_log_in)
     public void attemptLogin() {
         if (loginTask != null) {
             log.wtf("Login being attempted again even though the button isn't enabled?!");

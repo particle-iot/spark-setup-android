@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.setupsteps;
 
-import android.content.Context;
-
 import java.util.List;
 
 import io.particle.android.sdk.devicesetup.SetupProcessException;
@@ -23,10 +21,10 @@ public class EnsureSoftApNotVisible extends SetupStep {
 
     private boolean wasFulfilledOnce = false;
 
-    public EnsureSoftApNotVisible(StepConfig stepConfig, SSID softApSSID, Context ctx) {
+    EnsureSoftApNotVisible(StepConfig stepConfig, SSID softApSSID, WifiFacade wifiFacade) {
         super(stepConfig);
         Preconditions.checkNotNull(softApSSID, "softApSSID cannot be null.");
-        wifiFacade = WifiFacade.get(ctx);
+        this.wifiFacade = wifiFacade;
         this.softApName = softApSSID;
         this.matchesSoftApSSID = softApName::equals;
     }
@@ -86,8 +84,8 @@ public class EnsureSoftApNotVisible extends SetupStep {
 
         scansPlusConnectedSsid.addAll(
                 Funcy.transformList(wifiFacade.getScanResults(),
-                Funcy.notNull(),
-                SSID::from)
+                        Funcy.notNull(),
+                        SSID::from)
         );
 
         log.d("scansPlusConnectedSsid: " + scansPlusConnectedSsid);

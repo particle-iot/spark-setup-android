@@ -49,12 +49,10 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
         return Ui.findFrag(callbacksActivity, TAG);
     }
 
-
     public static boolean hasPermission(@NonNull Context ctx, @NonNull String permission) {
         int result = ContextCompat.checkSelfPermission(ctx, permission);
         return (result == PERMISSION_GRANTED);
     }
-
 
     public void ensurePermission(final @NonNull String permission) {
         Builder dialogBuilder = new AlertDialog.Builder(getActivity())

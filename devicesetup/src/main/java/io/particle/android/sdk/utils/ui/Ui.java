@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
@@ -111,9 +110,8 @@ public class Ui {
     // http://blog.danlew.net/2014/08/18/fast-android-asset-theming-with-colorfilter/
     public static Drawable getTintedDrawable(Context ctx, @DrawableRes int drawableResId,
                                              @ColorRes int colorResId) {
-        Resources res = ctx.getResources();
         Drawable drawable = ContextCompat.getDrawable(ctx, drawableResId);
-        int color = res.getColor(colorResId);
+        int color = ContextCompat.getColor(ctx, colorResId);
         drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         return drawable;
     }

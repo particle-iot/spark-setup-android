@@ -51,7 +51,7 @@ public abstract class SetupStepsRunnerTask extends
             throwIfCancelled();
 
             publishProgress(new StepProgress(
-                    step.getStepConfig().stepId,
+                    step.getStepConfig().getStepId(),
                     StepProgress.STARTING));
 
             try {
@@ -67,7 +67,7 @@ public abstract class SetupStepsRunnerTask extends
             }
 
             publishProgress(new StepProgress(
-                    step.getStepConfig().stepId,
+                    step.getStepConfig().getStepId(),
                     StepProgress.SUCCEEDED));
         }
     }

@@ -1,7 +1,6 @@
 package io.particle.android.sdk.devicesetup.commands;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.net.Network;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -30,8 +29,8 @@ public class NetworkBindingSocketFactory extends SocketFactory {
     // used as connection timeout and read timeout
     private final int timeoutMillis;
 
-    public NetworkBindingSocketFactory(Context ctx, SSID softAPSSID, int timeoutMillis) {
-        this.wifiFacade = WifiFacade.get(ctx);
+    public NetworkBindingSocketFactory(WifiFacade wifiFacade, SSID softAPSSID, int timeoutMillis) {
+        this.wifiFacade = wifiFacade;
         this.softAPSSID = softAPSSID;
         this.timeoutMillis = timeoutMillis;
     }

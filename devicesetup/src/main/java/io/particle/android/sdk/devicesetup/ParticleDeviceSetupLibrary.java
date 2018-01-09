@@ -1,20 +1,27 @@
 package io.particle.android.sdk.devicesetup;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
+import android.support.annotation.RestrictTo;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
+import io.particle.android.sdk.di.ApplicationComponent;
+import io.particle.android.sdk.di.ApplicationModule;
+import io.particle.android.sdk.di.DaggerApplicationComponent;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Preconditions;
 
 
 public class ParticleDeviceSetupLibrary {
+    private ApplicationComponent applicationComponent;
 
     /**
      * The contract for the broadcast sent upon device setup completion.
@@ -152,6 +159,10 @@ public class ParticleDeviceSetupLibrary {
             // ensure the cloud SDK is initialized
             ParticleCloudSDK.init(ctx);
             instance = new ParticleDeviceSetupLibrary();
+            instance.setComponent(DaggerApplicationComponent
+                    .builder()
+                    .applicationModule(new ApplicationModule((Application) ctx.getApplicationContext()))
+                    .build());
         }
     }
 
@@ -188,5 +199,15 @@ public class ParticleDeviceSetupLibrary {
     }
 
     private ParticleDeviceSetupLibrary() {
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    public ApplicationComponent getApplicationComponent() {
+        return applicationComponent;
+    }
+
+    @VisibleForTesting
+    public void setComponent(ApplicationComponent applicationComponent) {
+        this.applicationComponent = applicationComponent;
     }
 }

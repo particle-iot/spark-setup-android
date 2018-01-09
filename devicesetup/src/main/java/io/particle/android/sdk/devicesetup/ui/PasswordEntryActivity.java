@@ -10,9 +10,16 @@ import android.widget.EditText;
 
 import com.google.gson.Gson;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
+import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.commands.data.WifiSecurity;
+import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.SSID;
@@ -29,7 +36,8 @@ public class PasswordEntryActivity extends BaseActivity {
                                      ScanApCommand.Scan networkToConnectTo) {
         return new Intent(ctx, PasswordEntryActivity.class)
                 .putExtra(EXTRA_SOFT_AP_SSID, softApSSID)
-                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, gson.toJson(networkToConnectTo));
+                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
+                        .getApplicationComponent().getGson().toJson(networkToConnectTo));
     }
 
 
@@ -39,17 +47,20 @@ public class PasswordEntryActivity extends BaseActivity {
 
 
     private static final TLog log = TLog.get(PasswordEntryActivity.class);
-    private static final Gson gson = new Gson();
 
-    private CheckBox showPwdBox;
-    private EditText passwordBox;
+    @BindView(R2.id.show_password) protected CheckBox showPwdBox;
+    @BindView(R2.id.password) protected EditText passwordBox;
     private ScanApCommand.Scan networkToConnectTo;
     private SSID softApSSID;
+    @Inject protected Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_entry);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
+        ButterKnife.bind(this);
         SEGAnalytics.screen("Device Setup: Password Entry Screen");
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
@@ -57,12 +68,7 @@ public class PasswordEntryActivity extends BaseActivity {
                 getIntent().getStringExtra(EXTRA_NETWORK_TO_CONFIGURE),
                 ScanApCommand.Scan.class);
         softApSSID = getIntent().getParcelableExtra(EXTRA_SOFT_AP_SSID);
-
-        passwordBox = Ui.findView(this, R.id.password);
         passwordBox.requestFocus();
-
-        showPwdBox = Ui.findView(this, R.id.show_password);
-
         initViews();
     }
 
@@ -88,7 +94,6 @@ public class PasswordEntryActivity extends BaseActivity {
 
     private String getSecurityTypeMsg() {
         WifiSecurity securityType = WifiSecurity.fromInteger(networkToConnectTo.wifiSecurityType);
-        // FIXME: turn into string resources
         switch (securityType) {
             case WEP_SHARED:
             case WEP_PSK:

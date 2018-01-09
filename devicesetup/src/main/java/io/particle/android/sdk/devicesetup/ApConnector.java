@@ -66,11 +66,11 @@ public class ApConnector {
     private SimpleReceiver wifiStateChangeListener;
     private Runnable onTimeoutRunnable;
 
-    public ApConnector(Context ctx) {
+    public ApConnector(Context ctx, SoftAPConfigRemover softAPConfigRemover, WifiFacade wifiFacade) {
         this.appContext = ctx.getApplicationContext();
         this.client = new DecoratedClient();
-        this.wifiFacade = WifiFacade.get(appContext);
-        this.softAPConfigRemover = new SoftAPConfigRemover(appContext);
+        this.wifiFacade = wifiFacade;
+        this.softAPConfigRemover = softAPConfigRemover;
         this.mainThreadHandler = new Handler(Looper.getMainLooper());
         this.wifiLogger = SimpleReceiver.newReceiver(
                 appContext, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION),

@@ -97,20 +97,6 @@
                 android:layout_marginTop="12dp"
                 android:text="@string/prompt_company_account_disabled"/>
 
-            <!-- FIXME: remove later -->
-            <EditText
-                android:id="@+id/activation_code"
-                style="@style/SparkEditText"
-                android:layout_width="match_parent"
-                android:hint="@string/activation_code"
-                android:imeActionId="@+id/action_create_account"
-                android:imeActionLabel="@string/action_create_account"
-                android:imeOptions="actionUnspecified"
-                android:inputType="text"
-                android:maxLength="4"
-                android:textAllCaps="true"
-                android:visibility="gone"/>
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -150,6 +136,7 @@
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="12dp"
                 android:clickable="true"
+                android:focusable="true"
                 android:gravity="center"
                 android:text="@string/msg_create_account_disclaimer"
                 android:textAppearance="?android:attr/textAppearanceSmall"

@@ -1,11 +1,11 @@
 package io.particle.android.sdk.devicesetup.ui;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -71,8 +71,8 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         client = EZ.getCallbacksOrThrow(this, Client.class);
         if (aggroLoadingHandler == null) {
             aggroLoadingHandler = new Handler();
@@ -80,7 +80,7 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         adapter = new WifiNetworkAdapter(getActivity());
         setEmptyText(client.getListEmptyText());
@@ -195,12 +195,13 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
 
     private class WifiNetworkAdapter extends ArrayAdapter<T> {
 
-        public WifiNetworkAdapter(Context context) {
+        WifiNetworkAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.row_wifi_scan_result, parent, false);
@@ -220,9 +221,11 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
             }
 
             T wifiNetwork = getItem(position);
-            Ui.setText(convertView, android.R.id.text1, wifiNetwork.getSsid().toString());
-            Ui.findView(convertView, R.id.wifi_security_indicator_icon)
-                    .setVisibility(wifiNetwork.isSecured() ? View.VISIBLE : View.GONE);
+            if (wifiNetwork != null) {
+                Ui.setText(convertView, android.R.id.text1, wifiNetwork.getSsid().toString());
+                Ui.findView(convertView, R.id.wifi_security_indicator_icon)
+                        .setVisibility(wifiNetwork.isSecured() ? View.VISIBLE : View.GONE);
+            }
             return convertView;
         }
 
