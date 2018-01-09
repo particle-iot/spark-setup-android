@@ -57,7 +57,8 @@
                 android:imeActionId="@+id/action_log_in"
                 android:imeActionLabel="@string/action_log_in_short"
                 android:imeOptions="actionUnspecified"
-                android:inputType="textPassword"/>
+                android:inputType="textPassword"
+                tools:ignore="InvalidImeActionId"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"

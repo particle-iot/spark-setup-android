@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="ParticleSetupTheme" parent="Theme.AppCompat">
@@ -32,7 +32,7 @@
     </style>
 
     <style name="PopupMenu" parent="PopupMenuParent">
-        <item name="android:dropDownSelector">@drawable/abc_list_selector_holo_dark</item>
+        <item name="android:dropDownSelector" tools:ignore="PrivateResource">@drawable/abc_list_selector_holo_dark</item>
         <!--<item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>-->
         <item name="android:popupBackground">@android:color/white</item>
     </style>

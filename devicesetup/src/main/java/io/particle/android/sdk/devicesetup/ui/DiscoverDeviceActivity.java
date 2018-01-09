@@ -1,5 +1,6 @@
 package io.particle.android.sdk.devicesetup.ui;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -292,6 +293,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void startConnectWorker() {
         // first, make sure we haven't actually been called twice...
         if (connectToApTask != null) {
