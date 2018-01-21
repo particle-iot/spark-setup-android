@@ -85,7 +85,9 @@ public class ConnectingActivity extends RequiresWifiScansActivity {
 
     @OnClick(R2.id.action_cancel)
     protected void onCancelClick() {
-        connectingProcessWorkerTask.cancel(false);
+        if (connectingProcessWorkerTask != null && !connectingProcessWorkerTask.isCancelled()) {
+            connectingProcessWorkerTask.cancel(false);
+        }
         finish();
     }
 
