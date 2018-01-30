@@ -1,3 +1,7 @@
+0.5.1
+=====
+* NullPointerException fix on setup cancelation.
+
 0.5.0
 =====
 * Code Refactoring - exporting tasks and steps to separate classes, removing dependencies and public access where it isn't needed.
