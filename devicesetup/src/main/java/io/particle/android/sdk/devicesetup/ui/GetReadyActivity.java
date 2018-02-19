@@ -188,7 +188,8 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
     private ClaimCodeResponse generateClaimCode(Context ctx) throws ParticleCloudException {
         Resources res = ctx.getResources();
         if (res.getBoolean(R.bool.organization) && !res.getBoolean(R.bool.productMode)) {
-            throw new ParticleCloudException(new Exception("Organization is deprecated, use productMode instead."));
+            return sparkCloud.generateClaimCodeForOrg(res.getString(R.string.organization_slug),
+                    res.getString(R.string.product_slug));
         } else if (res.getBoolean(R.bool.productMode)) {
             int productId = res.getInteger(R.integer.product_id);
             if (productId == 0) {

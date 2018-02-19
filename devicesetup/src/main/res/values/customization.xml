@@ -12,7 +12,7 @@
     <drawable name="screen_background">@drawable/trianglifybackground</drawable>
     <color name="brand_image_background_color">#641A1A1A</color>
 
-    <string name="mode_button_name">Mode button</string>
+    <string name="mode_button_name">Setup button</string>
     <string name="listen_mode_led_color_name">blue</string>
     <string name="network_name_prefix">@string/device_name</string>
 
@@ -45,6 +45,7 @@
     <color name="element_background_color">#00BAEC</color>
     <color name="element_background_color_dark">#0083A6</color>
     <color name="element_text_color">@android:color/white</color>
+    <color name="element_tint_color">@android:color/white</color>
     <color name="element_text_disabled_color">#E0E0E0</color>
 
     <!-- The font names below are the paths to the font you want to use, relative to the assets

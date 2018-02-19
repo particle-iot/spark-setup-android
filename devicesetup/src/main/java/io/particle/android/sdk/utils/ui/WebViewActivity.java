@@ -41,9 +41,8 @@ public class WebViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_web_view);
         SEGAnalytics.track("Device Setup: Webview Screen");
         Toolbar toolbar = Ui.findView(this, R.id.toolbar);
-        // FIXME: that color probably shouldn't be hardcoded, it should use a theme attr.
         toolbar.setNavigationIcon(
-                Ui.getTintedDrawable(this, R.drawable.ic_clear_black_24dp, android.R.color.white));
+                Ui.getTintedDrawable(this, R.drawable.ic_clear_black_24dp, R.color.element_tint_color));
 
         toolbar.setNavigationOnClickListener(view -> finish());
 
