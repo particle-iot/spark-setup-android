@@ -1,6 +1,12 @@
+0.5.2
+=====
+* Default name for mode button changed to "Setup".
+* Brought back generateClaimCode for organizations.
+* Adding customization option for tinting views (spinners, checkmarks, etc.) called element_tint_color.
+
 0.5.1
 =====
-* NullPointerException fix on setup cancelation.
+* NullPointerException fix on setup cancellation.
 
 0.5.0
 =====

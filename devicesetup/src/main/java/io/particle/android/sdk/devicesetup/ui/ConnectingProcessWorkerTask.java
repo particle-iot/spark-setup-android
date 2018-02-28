@@ -50,8 +50,8 @@ public class ConnectingProcessWorkerTask extends SetupStepsRunnerTask {
                 .build().inject(this);
         this.deviceId = DeviceSetupState.deviceToBeSetUpId;
         this.activityReference = new WeakReference<>(activity);
-        this.tintedSpinner = Ui.getTintedDrawable(activity, R.drawable.progress_spinner, R.color.element_text_color);
-        this.tintedCheckmark = Ui.getTintedDrawable(activity, R.drawable.checkmark, R.color.element_text_color);
+        this.tintedSpinner = Ui.getTintedDrawable(activity, R.drawable.progress_spinner, R.color.element_tint_color);
+        this.tintedCheckmark = Ui.getTintedDrawable(activity, R.drawable.checkmark, R.color.element_tint_color);
     }
 
     @Override

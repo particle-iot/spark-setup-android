@@ -206,17 +206,14 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
                 convertView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.row_wifi_scan_result, parent, false);
 
-                // FIXME: remove for branded app, make this tinting configurable or just set it
-                // to white or black automatically, based on whether we're using a light or dark
-                // theme?  Or base it on the color of the text to the left in this row?
                 ImageView theWifi = Ui.findView(convertView, R.id.the_wifi);
                 Drawable whiteWifi = Ui.getTintedDrawable(getContext(), R.drawable.the_wifi,
-                        android.R.color.white);
+                        R.color.element_tint_color);
                 theWifi.setImageDrawable(whiteWifi);
 
                 ImageView securityIcon = Ui.findView(convertView, R.id.wifi_security_indicator_icon);
                 Drawable whiteLock = Ui.getTintedDrawable(getContext(), R.drawable.lock,
-                        android.R.color.white);
+                        R.color.element_tint_color);
                 securityIcon.setImageDrawable(whiteLock);
             }
 

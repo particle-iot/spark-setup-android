@@ -8,11 +8,6 @@
         <item name="android:layout_width">256dp</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_gravity">center</item>
-        <!-- FIXME: looks like we got rid of the issue described below.  Verify fix, remove comment-->
-        <!-- Normally it's sort of evil to set margins in a style like this, but thanks to
-            what seems like a bug in the AppCompat theme, the button won't show the
-            touch feedback shadow: it gets clipped by the surrounding view(s) -->
-        <!--        <item name="android:layout_margin">4dp</item>-->
     </style>
 
     <!-- button style to use for our "cram a spinner inside the button's layout bounds" trick -->
