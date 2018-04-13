@@ -24,6 +24,29 @@ public class ParticleDeviceSetupLibrary {
     private ApplicationComponent applicationComponent;
 
     /**
+     * The injected access token
+     */
+    protected static String accessToken = null;
+
+    /**
+     * The method for getting a set access token
+     */
+    public static String GetAccessToken()
+    {
+        return accessToken;
+    }
+
+    /**
+     * The method for injecting the access token
+     * <p/>
+     * When the access token is set, the login page is skipped
+     */
+    public static void SetAccessToken(String token)
+    {
+        ParticleDeviceSetupLibrary.accessToken = token;
+    }
+
+    /**
      * The contract for the broadcast sent upon device setup completion.
      * <p/>
      * <em>NOTE: this broadcast will be sent via the LocalBroadcastManager</em>

@@ -85,8 +85,13 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         softAPConfigRemover.reenableWifiNetworks();
 
         if (sparkCloud.getAccessToken() == null && !BaseActivity.setupOnly) {
-            startLoginActivity();
-            finish();
+            if(ParticleDeviceSetupLibrary.GetAccessToken() != null) {
+                sparkCloud.setAccessToken(ParticleDeviceSetupLibrary.GetAccessToken());
+            }
+            else {
+                startLoginActivity();
+                finish();
+            }
         }
     }
 
