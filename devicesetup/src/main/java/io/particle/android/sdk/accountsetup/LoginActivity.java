@@ -25,7 +25,6 @@ import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
-import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
@@ -179,11 +178,10 @@ public class LoginActivity extends BaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                startActivity(NextActivitySelector.getNextActivityIntent(
-                        LoginActivity.this,
-                        sparkCloud,
-                        SDKGlobals.getSensitiveDataStorage(),
-                        null));
+
+                Intent intent = ParticleDeviceSetupLibrary.getInstance()
+                        .buildIntentForNextActivity(LoginActivity.this, sparkCloud, SDKGlobals.getSensitiveDataStorage());
+                startActivity(intent);
                 finish();
             }
 

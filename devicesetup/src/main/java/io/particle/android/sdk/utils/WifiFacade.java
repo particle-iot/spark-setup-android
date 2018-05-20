@@ -106,7 +106,7 @@ public class WifiFacade {
 
     @Nullable
     @RequiresApi(api = VERSION_CODES.LOLLIPOP)
-    public Network getNetworkForSSID(SSID ssid) {
+    public Network getNetworkForSSID(SSID ssid) throws NullPointerException {
         // Android doesn't have any means of directly asking
         // "I want the Network obj for the Wi-Fi network with SSID <foo>".
         // Instead, you have to infer it based on a field.  Let's hope that

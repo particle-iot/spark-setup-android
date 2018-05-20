@@ -1,5 +1,6 @@
 package io.particle.devicesetup.exampleapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
@@ -37,8 +38,10 @@ public class MainActivity extends AppCompatActivity {
     private void invokeDeviceSetupWithCustomIntentBuilder() {
         final String setupLaunchedTime = new Date().toString();
 
-        // Important: don't use an anonymous inner class to implement SetupCompleteIntentBuilder, otherwise you will cause a memory leak.
-        ParticleDeviceSetupLibrary.startDeviceSetup(this, new ExampleSetupCompleteIntentBuilder(setupLaunchedTime));
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MainActivity.EXTRA_SETUP_LAUNCHED_TIME, setupLaunchedTime);
+
+        ParticleDeviceSetupLibrary.startDeviceSetup(this, intent);
     }
 
 }

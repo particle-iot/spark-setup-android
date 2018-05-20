@@ -34,7 +34,6 @@ import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.devicesetup.SetupResult;
 import io.particle.android.sdk.di.ApModule;
 import io.particle.android.sdk.ui.BaseActivity;
-import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.ui.ParticleUi;
@@ -48,6 +47,7 @@ public class SuccessActivity extends BaseActivity {
 
     public static final String EXTRA_RESULT_CODE = "EXTRA_RESULT_CODE";
     public static final String EXTRA_DEVICE_ID = "EXTRA_DEVICE_ID";
+    public static final String EXTRA_SETUP_RESULT = "EXTRA_SETUP_REUSLT";
 
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_SUCCESS_UNKNOWN_OWNERSHIP = 2;
@@ -186,11 +186,9 @@ public class SuccessActivity extends BaseActivity {
     }
 
     private void leaveActivity(Context context, boolean isSuccess) {
-        Intent intent = NextActivitySelector.getNextActivityIntent(
-                context,
-                particleCloud,
-                SDKGlobals.getSensitiveDataStorage(),
-                new SetupResult(isSuccess, isSuccess ? DeviceSetupState.deviceToBeSetUpId : null));
+        Intent intent = ParticleDeviceSetupLibrary.getInstance()
+                .buildIntentForNextActivity(this, particleCloud, SDKGlobals.getSensitiveDataStorage());
+        intent.putExtra(EXTRA_SETUP_RESULT, new SetupResult(isSuccess, isSuccess ? DeviceSetupState.deviceToBeSetUpId : null));
 
         // FIXME: we shouldn't do this in the lib.  looks like another argument for Fragments.
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP

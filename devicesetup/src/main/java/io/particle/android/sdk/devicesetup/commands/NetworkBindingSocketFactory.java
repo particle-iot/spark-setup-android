@@ -82,15 +82,19 @@ public class NetworkBindingSocketFactory extends SocketFactory {
 
     @TargetApi(VERSION_CODES.LOLLIPOP)
     private void bindSocketToSoftAp(Socket socket) throws IOException {
-        Network softAp = wifiFacade.getNetworkForSSID(softAPSSID);
+        try {
+            Network softAp = wifiFacade.getNetworkForSSID(softAPSSID);
 
-        if (softAp == null) {
-            // If this ever fails, fail VERY LOUDLY to make sure we hear about it...
-            // FIXME: report this error via analytics
+            if (softAp == null) {
+                // If this ever fails, fail VERY LOUDLY to make sure we hear about it...
+                // FIXME: report this error via analytics
+                throw new SocketBindingException("Could not find Network for SSID " + softAPSSID);
+            }
+
+            softAp.bindSocket(socket);
+        }catch (NullPointerException ex){
             throw new SocketBindingException("Could not find Network for SSID " + softAPSSID);
         }
-
-        softAp.bindSocket(socket);
     }
 
 

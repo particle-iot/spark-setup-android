@@ -29,20 +29,24 @@ public class WaitForDisconnectionFromDeviceStep extends SetupStep {
 
     @Override
     protected void onRunStep() throws SetupStepException, SetupProcessException {
-        for (int i = 0; i <= 5; i++) {
-            if (isConnectedToSoftAp()) {
-                // wait and try again
-                EZ.threadSleep(200);
-            } else {
-                EZ.threadSleep(1000);
-                // success, no longer connected.
-                wasDisconnected = true;
-                if (EZ.isUsingOlderWifiStack()) {
-                    // for some reason Lollipop doesn't need this??
-                    reenablePreviousWifi();
+        try {
+            for (int i = 0; i <= 5; i++) {
+                if (isConnectedToSoftAp()) {
+                    // wait and try again
+                    EZ.threadSleep(200);
+                } else {
+                    EZ.threadSleep(1000);
+                    // success, no longer connected.
+                    wasDisconnected = true;
+                    if (EZ.isUsingOlderWifiStack()) {
+                        // for some reason Lollipop doesn't need this??
+                        reenablePreviousWifi();
+                    }
+                    return;
                 }
-                return;
             }
+        }catch (NullPointerException ignore){
+            // exception thrown below
         }
 
         // Still connected after the above completed: fail

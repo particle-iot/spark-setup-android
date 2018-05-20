@@ -11,17 +11,26 @@ import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 
+import io.particle.android.sdk.accountsetup.CreateAccountActivity;
+import io.particle.android.sdk.accountsetup.LoginActivity;
+import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 import io.particle.android.sdk.di.ApplicationComponent;
 import io.particle.android.sdk.di.ApplicationModule;
 import io.particle.android.sdk.di.DaggerApplicationComponent;
+import io.particle.android.sdk.persistance.SensitiveDataStorage;
 import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Preconditions;
+import io.particle.android.sdk.utils.TLog;
 
+import static io.particle.android.sdk.utils.Py.any;
+import static io.particle.android.sdk.utils.Py.truthy;
 
 public class ParticleDeviceSetupLibrary {
+    private static final TLog log = TLog.get(ParticleDeviceSetupLibrary.class);
     private ApplicationComponent applicationComponent;
+    private Intent completeIntent;
 
     /**
      * The contract for the broadcast sent upon device setup completion.
@@ -97,31 +106,14 @@ public class ParticleDeviceSetupLibrary {
         }
     }
 
-
-    /**
-     * Start the device setup process.
-     *
-     * @deprecated Use {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, Class)}
-     * or {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, SetupCompleteIntentBuilder)} instead.
-     */
-    @Deprecated
-    public static void startDeviceSetup(Context ctx) {
-        Preconditions.checkNotNull(instance.setupCompleteIntentBuilder,
-                "SetupCompleteIntentBuilder instance is null");
-
+    public static void startDeviceSetup(Context ctx, @NonNull Intent completeIntent) {
+        instance.completeIntent = completeIntent;
         ctx.startActivity(new Intent(ctx, GetReadyActivity.class));
     }
 
-    public static void startDeviceSetup(Context ctx, SetupCompleteIntentBuilder setupCompleteIntentBuilder) {
-        instance.setupCompleteIntentBuilder = setupCompleteIntentBuilder;
-
-        startDeviceSetup(ctx);
+    public static void startDeviceSetup(Context ctx, @NonNull final Class<? extends Activity> mainActivity) {
+        startDeviceSetup(ctx, new Intent(ctx, mainActivity));
     }
-
-    public static void startDeviceSetup(Context ctx, final Class<? extends Activity> mainActivity) {
-        startDeviceSetup(ctx, (ctx1, result) -> new Intent(ctx1, mainActivity));
-    }
-
 
     // FIXME: allow the SDK consumer to optionally pass in some kind of dynamic intent builder here
     // instead of a static class
@@ -138,13 +130,12 @@ public class ParticleDeviceSetupLibrary {
      *                     return to when the setup process is complete.
      * @deprecated Use {@link ParticleDeviceSetupLibrary#init(Context)} with
      * {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, Class)}
-     * or {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, SetupCompleteIntentBuilder)} instead.
+     * or {@link ParticleDeviceSetupLibrary#startDeviceSetup(Context, Intent)} instead.
      */
     @Deprecated
-    public static void init(Context ctx, final Class<? extends Activity> mainActivity) {
+    public static void init(Context ctx, @NonNull final Class<? extends Activity> mainActivity) {
         init(ctx);
-
-        instance.setupCompleteIntentBuilder = (ctx1, result) -> new Intent(ctx1, mainActivity);
+        instance.completeIntent = new Intent(ctx, mainActivity);
     }
 
     /**
@@ -186,18 +177,6 @@ public class ParticleDeviceSetupLibrary {
 
     private static ParticleDeviceSetupLibrary instance;
 
-    private SetupCompleteIntentBuilder setupCompleteIntentBuilder;
-
-    /**
-     * @deprecated This exists only because {@link io.particle.android.sdk.ui.NextActivitySelector}
-     * is in a different package, and the plan is to remove that class soon.
-     * As soon as {@link io.particle.android.sdk.ui.NextActivitySelector} is removed, this will be removed.
-     */
-    @Deprecated
-    public SetupCompleteIntentBuilder getSetupCompleteIntentBuilder() {
-        return setupCompleteIntentBuilder;
-    }
-
     private ParticleDeviceSetupLibrary() {
     }
 
@@ -209,5 +188,32 @@ public class ParticleDeviceSetupLibrary {
     @VisibleForTesting
     public void setComponent(ApplicationComponent applicationComponent) {
         this.applicationComponent = applicationComponent;
+    }
+
+    public Intent buildIntentForNextActivity(Context ctx, ParticleCloud cloud,
+                                             SensitiveDataStorage sensitiveDataStorage) {
+        if (!hasUserBeenLoggedInBefore(sensitiveDataStorage) && !BaseActivity.setupOnly) {
+            log.d("User has not been logged in before");
+            return new Intent(ctx, CreateAccountActivity.class);
+        }
+
+        if (!isOAuthTokenPresent(cloud) && !BaseActivity.setupOnly) {
+            log.d("No auth token present");
+            return new Intent(ctx, LoginActivity.class);
+        }
+
+        log.d("Building setup complete activity...");
+        Intent successActivity = completeIntent;
+
+        log.d("Returning setup complete activity");
+        return successActivity;
+    }
+
+    private static boolean hasUserBeenLoggedInBefore(SensitiveDataStorage credStorage) {
+        return any(credStorage.getUser(), credStorage.getToken());
+    }
+
+    private static boolean isOAuthTokenPresent(ParticleCloud cloud) {
+        return truthy(cloud.getAccessToken());
     }
 }

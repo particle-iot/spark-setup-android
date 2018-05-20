@@ -21,15 +21,15 @@ import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
-import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.models.AccountInfo;
 import io.particle.android.sdk.cloud.models.SignUpInfo;
+import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.ui.BaseActivity;
-import io.particle.android.sdk.ui.NextActivitySelector;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
@@ -258,7 +258,7 @@ public class CreateAccountActivity extends BaseActivity {
         }
         if (useOrganizationSignup || useProductionSignup) {
             // with org setup, we're already logged in upon successful account creation
-            onLoginSuccess(cloud);
+            onLoginSuccess();
             SEGAnalytics.track("Auth: Signed Up New Customer");
         } else {
             SEGAnalytics.track("Auth: Signed Up New User");
@@ -311,12 +311,13 @@ public class CreateAccountActivity extends BaseActivity {
         return (password.length() > 7);
     }
 
-    private void onLoginSuccess(ParticleCloud cloud) {
-        startActivity(NextActivitySelector.getNextActivityIntent(
-                CreateAccountActivity.this,
-                cloud,
-                SDKGlobals.getSensitiveDataStorage(),
-                null));
+    private void onLoginSuccess() {
+        Intent intent = ParticleDeviceSetupLibrary.getInstance()
+                .buildIntentForNextActivity(this,
+                        ParticleCloudSDK.getCloud(),
+                        SDKGlobals.getSensitiveDataStorage());
+
+        startActivity(intent);
         finish();
     }
 
@@ -335,7 +336,7 @@ public class CreateAccountActivity extends BaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                onLoginSuccess(cloud);
+                onLoginSuccess();
             }
 
             @Override
