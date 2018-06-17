@@ -125,13 +125,14 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
         }
     }
 
+    @NonNull
     @Override
     public Loader<Set<T>> onCreateLoader(int id, Bundle args) {
         return client.createLoader(id, args);
     }
 
     @Override
-    public void onLoadFinished(Loader<Set<T>> loader, Set<T> data) {
+    public void onLoadFinished(@NonNull Loader<Set<T>> loader, Set<T> data) {
         log.d("new scan results: " + data);
 
         data = (data == null) ? Collections.emptySet() : data;
@@ -159,7 +160,7 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Set<T>> loader) {
+    public void onLoaderReset(@NonNull Loader<Set<T>> loader) {
         adapter.clear();
     }
 

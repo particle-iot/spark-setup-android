@@ -108,7 +108,7 @@ public class ParticleDeviceSetupLibrary {
 
     public static void startDeviceSetup(Context ctx, @NonNull Intent completeIntent) {
         instance.completeIntent = completeIntent;
-        ctx.startActivity(new Intent(ctx, GetReadyActivity.class));
+        ctx.startActivity(new Intent(ctx, BaseActivity.class));
     }
 
     public static void startDeviceSetup(Context ctx, @NonNull final Class<? extends Activity> mainActivity) {

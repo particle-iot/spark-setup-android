@@ -30,6 +30,14 @@ public class WorkerFragment extends Fragment {
                 .commit();
     }
 
+    // Syntactic sugar for simply adding a WorkerFragment
+    public static void addFragment(Fragment parent, Fragment frag, String tag) {
+        parent.getChildFragmentManager()
+                .beginTransaction()
+                .add(frag, tag)
+                .commit();
+    }
+
 
     @Override
     public void onAttach(Context context) {

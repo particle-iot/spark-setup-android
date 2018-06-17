@@ -12,6 +12,11 @@
 
     <application>
         <activity
+            android:name="io.particle.android.sdk.ui.BaseActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ParticleSetupTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity
             android:name="io.particle.android.sdk.devicesetup.ui.DiscoverDeviceActivity"
             android:label="@string/title_activity_discover_device"
             android:screenOrientation="portrait"

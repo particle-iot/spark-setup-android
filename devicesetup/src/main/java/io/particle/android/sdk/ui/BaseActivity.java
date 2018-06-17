@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.RestrictTo;
 import android.support.v7.app.AppCompatActivity;
 
+import androidx.navigation.Navigation;
 import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.utils.SEGAnalytics;
@@ -29,6 +30,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SEGAnalytics.initialize(getApplicationContext());
+        setContentView(R.layout.activity_base);
     }
 
     @Override
@@ -45,6 +47,11 @@ public class BaseActivity extends AppCompatActivity {
         }
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
         SDKGlobals.init(this);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        return Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp();
     }
 
 }

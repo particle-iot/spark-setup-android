@@ -23,6 +23,11 @@ public class ParticleUi {
         detectingLayout.setOnSoftKeyboardVisibilityChangeListener(new BrandImageHeaderHider(activity));
     }
 
+    public static void enableBrandLogoInverseVisibilityAgainstSoftKeyboard(View view) {
+        SoftKeyboardVisibilityDetectingLinearLayout detectingLayout;
+        detectingLayout = Ui.findView(view, R.id.keyboard_change_detector_layout);
+        detectingLayout.setOnSoftKeyboardVisibilityChangeListener(new BrandImageHeaderHider(view));
+    }
 
     public static class BrandImageHeaderHider
             implements SoftKeyboardVisibilityDetectingLinearLayout.SoftKeyboardVisibilityChangeListener {
@@ -31,6 +36,10 @@ public class ParticleUi {
 
         public BrandImageHeaderHider(FragmentActivity activity) {
             logoView = Ui.findView(activity, R.id.brand_image_header);
+        }
+
+        public BrandImageHeaderHider(View view) {
+            logoView = Ui.findView(view, R.id.brand_image_header);
         }
 
         @Override

@@ -45,8 +45,22 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
         return frag;
     }
 
+    public static <T extends Fragment & Client> PermissionsFragment ensureAttached(
+            T callbacksFragment) {
+        PermissionsFragment frag = get(callbacksFragment);
+        if (frag == null) {
+            frag = new PermissionsFragment();
+            WorkerFragment.addFragment(callbacksFragment, frag, TAG);
+        }
+        return frag;
+    }
+
     public static <T extends FragmentActivity & Client> PermissionsFragment get(T callbacksActivity) {
         return Ui.findFrag(callbacksActivity, TAG);
+    }
+
+    public static <T extends Fragment & Client> PermissionsFragment get(T callbackFragment) {
+        return Ui.findFrag(callbackFragment, TAG);
     }
 
     public static boolean hasPermission(@NonNull Context ctx, @NonNull String permission) {

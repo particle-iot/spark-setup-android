@@ -43,8 +43,18 @@ public class Ui {
     }
 
     @SuppressWarnings("unchecked")
+    public static <T extends Fragment> T findFrag(Fragment fragment, int id) {
+        return (T) fragment.getChildFragmentManager().findFragmentById(id);
+    }
+
+    @SuppressWarnings("unchecked")
     public static <T extends Fragment> T findFrag(FragmentActivity activity, String tag) {
         return (T) activity.getSupportFragmentManager().findFragmentByTag(tag);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Fragment> T findFrag(Fragment fragment, String tag) {
+        return (T) fragment.getChildFragmentManager().findFragmentByTag(tag);
     }
 
     public static TextView setText(FragmentActivity activity, int textViewId, CharSequence text) {
@@ -87,6 +97,15 @@ public class Ui {
         return tv;
     }
 
+    public static TextView setTextFromHtml(View view, int textViewId, int htmlStringId) {
+        return setTextFromHtml(view, textViewId, view.getContext().getString(htmlStringId));
+    }
+
+    public static TextView setTextFromHtml(View view, int textViewId, String htmlString) {
+        TextView tv = Ui.findView(view, textViewId);
+        tv.setText(Html.fromHtml(htmlString), TextView.BufferType.SPANNABLE);
+        return tv;
+    }
 
     public static void fadeViewVisibility(FragmentActivity activity, int viewId, final boolean show) {
         // Fade-in the progress spinner.

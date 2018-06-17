@@ -3,6 +3,7 @@ package io.particle.android.sdk.devicesetup.ui;
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import javax.inject.Inject;
@@ -28,11 +29,24 @@ public class ConnectToApFragment extends WorkerFragment {
         return Ui.findFrag(activity, TAG);
     }
 
+    public static ConnectToApFragment get(Fragment fragment) {
+        return Ui.findFrag(fragment, TAG);
+    }
+
     public static ConnectToApFragment ensureAttached(FragmentActivity activity) {
         ConnectToApFragment frag = get(activity);
         if (frag == null) {
             frag = new ConnectToApFragment();
             WorkerFragment.addFragment(activity, frag, TAG);
+        }
+        return frag;
+    }
+
+    public static ConnectToApFragment ensureAttached(Fragment fragment) {
+        ConnectToApFragment frag = get(fragment);
+        if (frag == null) {
+            frag = new ConnectToApFragment();
+            WorkerFragment.addFragment(fragment, frag, TAG);
         }
         return frag;
     }
