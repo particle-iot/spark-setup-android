@@ -2,7 +2,6 @@ package io.particle.android.sdk.devicesetup.ui;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,8 +17,6 @@ import java.util.Arrays;
 
 import javax.inject.Inject;
 
-import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.Responses;

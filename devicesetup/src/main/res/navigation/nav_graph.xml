@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             app:startDestination="@id/getReadyFragment">
 
@@ -27,12 +27,25 @@
         <action
             android:id="@+id/action_discoverDeviceFragment_to_getReadyFragment"
             app:destination="@id/getReadyFragment"/>
+        <action
+            android:id="@+id/action_discoverDeviceFragment_to_selectNetworkFragment"
+            app:destination="@id/selectNetworkFragment"/>
     </fragment>
     <fragment
         android:id="@+id/selectNetworkFragment"
         android:name="io.particle.android.sdk.devicesetup.ui.SelectNetworkFragment"
         android:label="SelectNetworkFragment"
-        tools:layout="@layout/activity_select_network"/>
+        tools:layout="@layout/activity_select_network">
+        <action
+            android:id="@+id/action_selectNetworkFragment_to_connectingFragment"
+            app:destination="@id/connectingFragment"/>
+        <action
+            android:id="@+id/action_selectNetworkFragment_to_passwordEntryFragment"
+            app:destination="@id/passwordEntryFragment"/>
+        <argument
+            android:name="deviceSoftAP"
+            app:type="reference"/>
+    </fragment>
     <fragment
         android:id="@+id/connectToApFragment"
         android:name="io.particle.android.sdk.devicesetup.ui.ConnectToApFragment"
@@ -50,6 +63,16 @@
         <action
             android:id="@+id/action_passwordEntryFragment_to_connectToApFragment"
             app:destination="@id/connectToApFragment"/>
+        <action
+            android:id="@+id/action_passwordEntryFragment_to_connectingFragment"
+            app:destination="@id/connectingFragment"/>
+
+        <argument
+            android:name="softApSSID"
+            app:type="reference"/>
+        <argument
+            android:name="networkToConnectTo"
+            app:type="string"/>
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -74,7 +97,11 @@
         android:id="@+id/createAccountFragment"
         android:name="io.particle.android.sdk.accountsetup.CreateAccountFragment"
         android:label="CreateAccountFragment"
-        tools:layout="@layout/activity_create_account"/>
+        tools:layout="@layout/activity_create_account">
+        <action
+            android:id="@+id/action_createAccountFragment_to_loginFragment"
+            app:destination="@id/loginFragment"/>
+    </fragment>
     <fragment
         android:id="@+id/manualNetworkEntryFragment"
         android:name="io.particle.android.sdk.devicesetup.ui.ManualNetworkEntryFragment"
@@ -86,5 +113,22 @@
         <action
             android:id="@+id/action_manualNetworkEntryFragment_to_connectToApFragment"
             app:destination="@id/connectToApFragment"/>
+        <action
+            android:id="@+id/action_manualNetworkEntryFragment_to_connectingFragment"
+            app:destination="@id/connectingFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/connectingFragment"
+        android:name="io.particle.android.sdk.devicesetup.ui.ConnectingFragment"
+        android:label="ConnectingFragment">
+        <argument
+            android:name="deviceSoftApSsid"
+            app:type="reference"/>
+        <argument
+            android:name="networkToConnectTo"
+            app:type="string"/>
+        <argument
+            android:name="secret"
+            app:type="string"/>
     </fragment>
 </navigation>

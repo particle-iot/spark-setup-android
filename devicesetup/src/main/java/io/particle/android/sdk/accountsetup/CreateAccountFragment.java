@@ -19,6 +19,7 @@ import android.widget.Switch;
 import com.segment.analytics.Properties;
 import com.squareup.phrase.Phrase;
 
+import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -64,7 +65,7 @@ public class CreateAccountFragment extends BaseFragment {
 
     @OnClick(R2.id.already_have_an_account_text)
     protected void onHasAccountClick(View view) {
-        startActivity(new Intent(view.getContext(), LoginActivity.class));
+        Navigation.findNavController(view).navigate(R.id.action_createAccountFragment_to_loginFragment);
     }
 
     private final CompoundButton.OnCheckedChangeListener onCompanyCheckedChange = (CompoundButton buttonView, boolean isChecked) -> {

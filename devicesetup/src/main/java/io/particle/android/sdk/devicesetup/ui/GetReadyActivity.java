@@ -2,7 +2,6 @@ package io.particle.android.sdk.devicesetup.ui;
 
 import android.Manifest.permission;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,10 +15,9 @@ import java.util.Arrays;
 
 import javax.inject.Inject;
 
-import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
-import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.cloud.Responses.ClaimCodeResponse;
+import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.di.ApModule;
@@ -35,6 +33,8 @@ import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
 import static io.particle.android.sdk.utils.Py.truthy;
+
+//import io.particle.android.sdk.accountsetup.LoginActivity;
 
 
 public class GetReadyActivity extends BaseActivity implements PermissionsFragment.Client {
@@ -202,7 +202,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
     }
 
     private void startLoginActivity() {
-        startActivity(new Intent(this, LoginActivity.class));
+//        startActivity(new Intent(this, LoginActivity.class));
     }
 
     private void showProgress(boolean show) {
@@ -211,7 +211,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
     private void moveToDeviceDiscovery() {
         if (PermissionsFragment.hasPermission(this, permission.ACCESS_COARSE_LOCATION)) {
-            startActivity(new Intent(GetReadyActivity.this, DiscoverDeviceActivity.class));
+//            startActivity(new Intent(GetReadyActivity.this, DiscoverDeviceActivity.class));
         } else {
             PermissionsFragment.get(this).ensurePermission(permission.ACCESS_COARSE_LOCATION);
         }

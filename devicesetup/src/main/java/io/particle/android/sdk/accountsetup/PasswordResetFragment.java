@@ -26,7 +26,6 @@ import io.particle.android.sdk.utils.SEGAnalytics;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
-import retrofit.http.GET;
 
 import static io.particle.android.sdk.utils.Py.truthy;
 

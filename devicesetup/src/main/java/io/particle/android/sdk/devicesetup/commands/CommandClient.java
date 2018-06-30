@@ -109,6 +109,7 @@ public class CommandClient {
         } while (truthy(line));
 
         String responseData = buffer.readUtf8();
+
         log.d("Command response (raw): " + CommandClientUtils.escapeJava(responseData));
         T tee = gson.fromJson(responseData, responseType);
         log.d("Command response: " + tee);

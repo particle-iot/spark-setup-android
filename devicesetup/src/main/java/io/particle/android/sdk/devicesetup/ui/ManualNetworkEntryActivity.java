@@ -81,7 +81,7 @@ public class ManualNetworkEntryActivity extends BaseActivity
         if (requiresPassword.isChecked()) {
             startActivity(PasswordEntryActivity.buildIntent(this, softApSSID, scan));
         } else {
-            startActivity(ConnectingActivity.buildIntent(this, softApSSID, scan));
+//            startActivity(ConnectingActivity.buildIntent(this, softApSSID, scan));
         }
     }
 

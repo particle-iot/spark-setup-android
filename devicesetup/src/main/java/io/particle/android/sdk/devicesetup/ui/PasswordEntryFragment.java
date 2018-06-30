@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.ui;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.InputType;
@@ -15,8 +13,10 @@ import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
+import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
@@ -29,22 +29,11 @@ import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
-import retrofit.http.GET;
 
 // FIXME: password validation -- check for correct length based on security type?
 // at least check for minimum.
 public class PasswordEntryFragment extends BaseFragment {
-
-    public static Intent buildIntent(Context ctx, SSID softApSSID,
-                                     ScanApCommand.Scan networkToConnectTo) {
-        return new Intent(ctx, PasswordEntryActivity.class)
-                .putExtra(EXTRA_SOFT_AP_SSID, softApSSID)
-                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
-                        .getApplicationComponent().getGson().toJson(networkToConnectTo));
-    }
-
-
-    private static final String
+    public static final String
             EXTRA_NETWORK_TO_CONFIGURE = "EXTRA_NETWORK_TO_CONFIGURE",
             EXTRA_SOFT_AP_SSID = "EXTRA_SOFT_AP_SSID";
 
@@ -60,20 +49,25 @@ public class PasswordEntryFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.activity_password_entry, container, true);
+        View view = inflater.inflate(R.layout.activity_password_entry, container, false);
         ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
                 .apModule(new ApModule()).build().inject(this);
         ButterKnife.bind(this, view);
         SEGAnalytics.screen("Device Setup: Password Entry Screen");
-        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(getActivity());
+        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(view);
 
         networkToConnectTo = gson.fromJson(
-                getActivity().getIntent().getStringExtra(EXTRA_NETWORK_TO_CONFIGURE),
+                getArguments().getString(EXTRA_NETWORK_TO_CONFIGURE),
                 ScanApCommand.Scan.class);
-        softApSSID = getActivity().getIntent().getParcelableExtra(EXTRA_SOFT_AP_SSID);
+        softApSSID = getArguments().getParcelable(EXTRA_SOFT_AP_SSID);
         passwordBox.requestFocus();
-        initViews();
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
+        initViews();
     }
 
     private void initViews() {
@@ -116,15 +110,22 @@ public class PasswordEntryFragment extends BaseFragment {
         return "";
     }
 
+    @OnClick(R2.id.action_cancel)
     public void onCancelClicked(View view) {
-        startActivity(SelectNetworkActivity.buildIntent(getActivity(), softApSSID));
-//        finish();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(SelectNetworkFragment.EXTRA_SOFT_AP, softApSSID);
+        Navigation.findNavController(view).navigate(R.id.action_passwordEntryFragment_to_selectNetworkFragment, bundle);
     }
 
+    @OnClick(R2.id.action_connect)
     public void onConnectClicked(View view) {
         String secret = passwordBox.getText().toString().trim();
-        startActivity(ConnectingActivity.buildIntent(
-                getActivity(), softApSSID, networkToConnectTo, secret));
-//        finish();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(ConnectingFragment.EXTRA_SOFT_AP_SSID, softApSSID);
+        bundle.putString(ConnectingFragment.EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
+                .getApplicationComponent().getGson().toJson(networkToConnectTo));
+        bundle.putString(ConnectingFragment.EXTRA_NETWORK_SECRET, secret);
+        Navigation.findNavController(view).navigate(R.id.action_passwordEntryFragment_to_connectingFragment, bundle);
     }
 }

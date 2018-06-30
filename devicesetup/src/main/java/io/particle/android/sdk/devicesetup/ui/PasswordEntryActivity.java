@@ -113,14 +113,14 @@ public class PasswordEntryActivity extends BaseActivity {
     }
 
     public void onCancelClicked(View view) {
-        startActivity(SelectNetworkActivity.buildIntent(this, softApSSID));
+//        startActivity(SelectNetworkActivity.buildIntent(this, softApSSID));
         finish();
     }
 
     public void onConnectClicked(View view) {
         String secret = passwordBox.getText().toString().trim();
-        startActivity(ConnectingActivity.buildIntent(
-                this, softApSSID, networkToConnectTo, secret));
+//        startActivity(ConnectingActivity.buildIntent(
+//                this, softApSSID, networkToConnectTo, secret));
         finish();
     }
 }

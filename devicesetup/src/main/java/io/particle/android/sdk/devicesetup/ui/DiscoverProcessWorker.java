@@ -98,7 +98,7 @@ public class DiscoverProcessWorker {
                     // This device is already claimed by someone else. Ask the user if we should
                     // change ownership to the current logged in user, and if so, set the claim code.
 
-                    throw new DiscoverDeviceActivity.DeviceAlreadyClaimed("Device already claimed by another user");
+                    throw new DiscoverDeviceFragment.DeviceAlreadyClaimed("Device already claimed by another user");
 
                 } else {
                     // Success: no exception thrown, this part of the process is complete.

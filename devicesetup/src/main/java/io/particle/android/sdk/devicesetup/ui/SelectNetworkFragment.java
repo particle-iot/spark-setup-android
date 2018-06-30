@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.ui;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.Loader;
@@ -14,6 +12,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.navigation.Navigation;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
@@ -34,14 +33,7 @@ import io.particle.android.sdk.utils.ui.Ui;
 public class SelectNetworkFragment extends RequiresWifiScansFragment
         implements WifiListFragment.Client<ScanAPCommandResult> {
 
-    private static final String EXTRA_SOFT_AP = "EXTRA_SOFT_AP";
-
-
-    public static Intent buildIntent(Context ctx, SSID deviceSoftAP) {
-        return new Intent(ctx, SelectNetworkActivity.class)
-                .putExtra(EXTRA_SOFT_AP, deviceSoftAP);
-    }
-
+    public static final String EXTRA_SOFT_AP = "deviceSoftAP";
 
     private WifiListFragment wifiListFragment;
     @Inject protected WifiFacade wifiFacade;
@@ -60,12 +52,13 @@ public class SelectNetworkFragment extends RequiresWifiScansFragment
         ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
                 .apModule(new ApModule()).build().inject(this);
         SEGAnalytics.screen("Device Setup: Select Network Screen");
-        softApSSID = getActivity().getIntent().getParcelableExtra(EXTRA_SOFT_AP);
 
-        View view = inflater.inflate(R.layout.activity_select_network, container, true);
+        softApSSID = getArguments().getParcelable(EXTRA_SOFT_AP);
+
+        View view = inflater.inflate(R.layout.activity_select_network, container, false);
         ButterKnife.bind(this, view);
 
-        wifiListFragment = Ui.findFrag(getActivity(), R.id.wifi_list_fragment);
+        wifiListFragment = Ui.findFrag(this, R.id.wifi_list_fragment);
         return view;
     }
 
@@ -87,13 +80,22 @@ public class SelectNetworkFragment extends RequiresWifiScansFragment
 
         if (selectedNetwork.isSecured()) {
             SEGAnalytics.track("Device Setup: Selected secured network");
-            startActivity(PasswordEntryActivity.buildIntent(getActivity(), softApSSID, selectedNetwork.scan));
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(PasswordEntryFragment.EXTRA_SOFT_AP_SSID, softApSSID);
+            bundle.putString(PasswordEntryFragment.EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
+                    .getApplicationComponent().getGson().toJson(selectedNetwork.scan));
+            Navigation.findNavController(getView()).navigate(R.id.action_selectNetworkFragment_to_passwordEntryFragment, bundle);
         } else {
             SEGAnalytics.track("Device Setup: Selected open network");
             SSID softApSSID = wifiFacade.getCurrentlyConnectedSSID();
-            startActivity(ConnectingActivity.buildIntent(getActivity(), softApSSID, selectedNetwork.scan));
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(ConnectingFragment.EXTRA_SOFT_AP_SSID, softApSSID);
+            bundle.putString(ConnectingFragment.EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
+                    .getApplicationComponent().getGson().toJson(selectedNetwork.scan));
+            Navigation.findNavController(getView()).navigate(R.id.action_selectNetworkFragment_to_connectingFragment, bundle);
         }
-//        finish();
     }
 
     @Override

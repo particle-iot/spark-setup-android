@@ -21,7 +21,6 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import io.particle.android.sdk.cloud.ParticleCloud;
-import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
@@ -41,7 +40,7 @@ import static io.particle.android.sdk.utils.Py.truthy;
  */
 public class LoginFragment extends BaseFragment {
 
-    private static final TLog log = TLog.get(LoginActivity.class);
+    private static final TLog log = TLog.get(LoginFragment.class);
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested, ensure against

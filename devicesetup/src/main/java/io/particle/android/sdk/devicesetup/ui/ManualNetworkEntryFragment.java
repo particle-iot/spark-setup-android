@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.navigation.Navigation;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
@@ -84,7 +85,11 @@ public class ManualNetworkEntryFragment extends BaseFragment
         if (requiresPassword.isChecked()) {
             startActivity(PasswordEntryActivity.buildIntent(getActivity(), softApSSID, scan));
         } else {
-            startActivity(ConnectingActivity.buildIntent(getActivity(), softApSSID, scan));
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(ConnectingFragment.EXTRA_SOFT_AP_SSID, softApSSID);
+            bundle.putString(ConnectingFragment.EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
+                    .getApplicationComponent().getGson().toJson(scan));
+            Navigation.findNavController(view).navigate(R.id.action_manualNetworkEntryFragment_to_connectingFragment, bundle);
         }
     }
 

@@ -21,9 +21,9 @@ import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
-import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.models.AccountInfo;
 import io.particle.android.sdk.cloud.models.SignUpInfo;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
@@ -61,7 +61,7 @@ public class CreateAccountActivity extends BaseActivity {
 
     @OnClick(R2.id.already_have_an_account_text)
     protected void onHasAccountClick(View view) {
-        startActivity(new Intent(view.getContext(), LoginActivity.class));
+//        startActivity(new Intent(view.getContext(), LoginActivity.class));
         finish();
     }
 

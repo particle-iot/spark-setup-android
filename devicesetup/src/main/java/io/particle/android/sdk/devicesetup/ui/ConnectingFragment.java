@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.ui;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,21 +54,7 @@ public class ConnectingFragment extends BaseFragment {
             EXTRA_NETWORK_SECRET = "EXTRA_NETWORK_SECRET",
             EXTRA_SOFT_AP_SSID = "EXTRA_SOFT_AP_SSID";
 
-    private static final TLog log = TLog.get(ConnectingActivity.class);
-
-    public static Intent buildIntent(Context ctx, SSID deviceSoftApSsid,
-                                     ScanApCommand.Scan networkToConnectTo) {
-        return new Intent(ctx, ConnectingActivity.class)
-                .putExtra(EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
-                        .getApplicationComponent().getGson().toJson(networkToConnectTo))
-                .putExtra(EXTRA_SOFT_AP_SSID, deviceSoftApSsid);
-    }
-
-    public static Intent buildIntent(Context ctx, SSID deviceSoftApSsid,
-                                     ScanApCommand.Scan networkToConnectTo, String secret) {
-        return buildIntent(ctx, deviceSoftApSsid, networkToConnectTo)
-                .putExtra(EXTRA_NETWORK_SECRET, secret);
-    }
+    private static final TLog log = TLog.get(ConnectingFragment.class);
 
     // FIXME: all this state needs to be configured and encapsulated better
     private ConnectingProcessWorkerTask connectingProcessWorkerTask;
@@ -103,15 +87,23 @@ public class ConnectingFragment extends BaseFragment {
         ButterKnife.bind(this, view);
         SEGAnalytics.screen("Device Setup: Connecting progress screen");
         publicKey = DeviceSetupState.publicKey;
-        deviceSoftApSsid = getActivity().getIntent().getParcelableExtra(EXTRA_SOFT_AP_SSID);
+        deviceSoftApSsid = getArguments().getParcelable(EXTRA_SOFT_AP_SSID);
 
-        String asJson = getActivity().getIntent().getStringExtra(EXTRA_NETWORK_TO_CONFIGURE);
+        String asJson = getArguments().getString(EXTRA_NETWORK_TO_CONFIGURE);
         networkToConnectTo = gson.fromJson(asJson, ScanApCommand.Scan.class);
-        networkSecretPlaintext = getActivity().getIntent().getStringExtra(EXTRA_NETWORK_SECRET);
+        networkSecretPlaintext = getArguments().getString(EXTRA_NETWORK_SECRET);
 
         log.d("Connecting to " + networkToConnectTo + ", with networkSecretPlaintext of size: "
                 + ((networkSecretPlaintext == null) ? 0 : networkSecretPlaintext.length()));
 
+        connectingProcessWorkerTask = new ConnectingProcessWorkerTask(getActivity(), buildSteps(), 15);
+        connectingProcessWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
         Ui.setText(view, R.id.network_name, networkToConnectTo.ssid);
         Ui.setText(view, R.id.connecting_text,
                 Phrase.from(getActivity(), R.string.connecting_text)
@@ -119,10 +111,6 @@ public class ConnectingFragment extends BaseFragment {
                         .format()
         );
         Ui.setText(view, R.id.network_name, networkToConnectTo.ssid);
-
-        connectingProcessWorkerTask = new ConnectingProcessWorkerTask(getActivity(), buildSteps(), 15);
-        connectingProcessWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        return view;
     }
 
     @Override

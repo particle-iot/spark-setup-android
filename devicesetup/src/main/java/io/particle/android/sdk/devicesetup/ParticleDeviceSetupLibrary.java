@@ -12,10 +12,8 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 
 import io.particle.android.sdk.accountsetup.CreateAccountActivity;
-import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
-import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 import io.particle.android.sdk.di.ApplicationComponent;
 import io.particle.android.sdk.di.ApplicationModule;
 import io.particle.android.sdk.di.DaggerApplicationComponent;
@@ -26,6 +24,8 @@ import io.particle.android.sdk.utils.TLog;
 
 import static io.particle.android.sdk.utils.Py.any;
 import static io.particle.android.sdk.utils.Py.truthy;
+
+//import io.particle.android.sdk.accountsetup.LoginActivity;
 
 public class ParticleDeviceSetupLibrary {
     private static final TLog log = TLog.get(ParticleDeviceSetupLibrary.class);
@@ -197,10 +197,10 @@ public class ParticleDeviceSetupLibrary {
             return new Intent(ctx, CreateAccountActivity.class);
         }
 
-        if (!isOAuthTokenPresent(cloud) && !BaseActivity.setupOnly) {
-            log.d("No auth token present");
-            return new Intent(ctx, LoginActivity.class);
-        }
+//        if (!isOAuthTokenPresent(cloud) && !BaseActivity.setupOnly) {
+//            log.d("No auth token present");
+//            return new Intent(ctx, LoginActivity.class);
+//        }
 
         log.d("Building setup complete activity...");
         Intent successActivity = completeIntent;

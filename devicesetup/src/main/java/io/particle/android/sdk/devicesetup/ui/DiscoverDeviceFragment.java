@@ -56,7 +56,7 @@ public class DiscoverDeviceFragment extends RequiresWifiScansFragment
     // see ApConnector for the timeout value used for connecting to the soft AP
     private static final int MAX_NUM_DISCOVER_PROCESS_ATTEMPTS = 5;
 
-    private static final TLog log = TLog.get(DiscoverDeviceActivity.class);
+    private static final TLog log = TLog.get(DiscoverDeviceFragment.class);
 
 
     @Inject protected WifiFacade wifiFacade;
@@ -333,12 +333,14 @@ public class DiscoverDeviceFragment extends RequiresWifiScansFragment
             @Override
             protected void onPostExecute(SetupStepException error) {
                 connectToApTask = null;
-                if (error == null || (BaseActivity.setupOnly && error instanceof DiscoverDeviceActivity.DeviceAlreadyClaimed)) {
+                if (error == null || (BaseActivity.setupOnly && error instanceof DiscoverDeviceFragment.DeviceAlreadyClaimed)) {
                     // no exceptions thrown, huzzah
                     hideProgressDialog();
-                    startActivity(SelectNetworkActivity.buildIntent(
-                            getActivity(), selectedSoftApSSID));
-                } else if (error instanceof DiscoverDeviceActivity.DeviceAlreadyClaimed) {
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable(SelectNetworkFragment.EXTRA_SOFT_AP, selectedSoftApSSID);
+                    Navigation.findNavController(getView()).navigate(R.id.action_discoverDeviceFragment_to_selectNetworkFragment, bundle);
+                } else if (error instanceof DiscoverDeviceFragment.DeviceAlreadyClaimed) {
                     hideProgressDialog();
                     onDeviceClaimedByOtherUser();
                 } else {

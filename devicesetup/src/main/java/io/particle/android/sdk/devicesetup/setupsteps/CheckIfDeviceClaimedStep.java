@@ -4,8 +4,8 @@ package io.particle.android.sdk.devicesetup.setupsteps;
 import java.util.List;
 
 import io.particle.android.sdk.cloud.ParticleCloud;
-import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.cloud.ParticleDevice;
+import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 
 
 public class CheckIfDeviceClaimedStep extends SetupStep {
