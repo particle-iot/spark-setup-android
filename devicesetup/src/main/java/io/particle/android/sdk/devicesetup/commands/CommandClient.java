@@ -1,6 +1,7 @@
 package io.particle.android.sdk.devicesetup.commands;
 
 import android.support.annotation.CheckResult;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
