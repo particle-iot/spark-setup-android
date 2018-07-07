@@ -79,7 +79,7 @@ public class ManualNetworkEntryActivity extends BaseActivity
 
         CheckBox requiresPassword = Ui.findView(this, R.id.network_requires_password);
         if (requiresPassword.isChecked()) {
-            startActivity(PasswordEntryActivity.buildIntent(this, softApSSID, scan));
+//            startActivity(PasswordEntryActivity.buildIntent(this, softApSSID, scan));
         } else {
 //            startActivity(ConnectingActivity.buildIntent(this, softApSSID, scan));
         }

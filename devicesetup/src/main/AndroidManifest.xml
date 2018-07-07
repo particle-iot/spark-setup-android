@@ -17,12 +17,6 @@
             android:theme="@style/ParticleSetupTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
         <activity
-            android:name="io.particle.android.sdk.devicesetup.ui.PasswordEntryActivity"
-            android:label="@string/title_activity_password_entry"
-            android:screenOrientation="portrait"
-            android:theme="@style/ParticleSetupTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize|stateVisible"/>
-        <activity
             android:name="io.particle.android.sdk.devicesetup.ui.SuccessActivity"
             android:label="@string/title_activity_success"
             android:screenOrientation="portrait"
@@ -31,11 +25,6 @@
         <activity
             android:name="io.particle.android.sdk.utils.ui.WebViewActivity"
             android:label="@string/title_activity_web_view"
-            android:screenOrientation="portrait"
-            android:theme="@style/ParticleSetupTheme.NoActionBar"/>
-        <activity
-            android:name="io.particle.android.sdk.devicesetup.ui.GetReadyActivity"
-            android:label="@string/title_activity_get_ready"
             android:screenOrientation="portrait"
             android:theme="@style/ParticleSetupTheme.NoActionBar"/>
         <activity

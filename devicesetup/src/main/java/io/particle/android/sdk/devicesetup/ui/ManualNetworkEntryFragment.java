@@ -83,7 +83,11 @@ public class ManualNetworkEntryFragment extends BaseFragment
 
         CheckBox requiresPassword = Ui.findView(this, R.id.network_requires_password);
         if (requiresPassword.isChecked()) {
-            startActivity(PasswordEntryActivity.buildIntent(getActivity(), softApSSID, scan));
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(PasswordEntryFragment.EXTRA_SOFT_AP_SSID, softApSSID);
+            bundle.putString(PasswordEntryFragment.EXTRA_NETWORK_TO_CONFIGURE, ParticleDeviceSetupLibrary.getInstance()
+                    .getApplicationComponent().getGson().toJson(scan));
+            Navigation.findNavController(view).navigate(R.id.action_manualNetworkEntryFragment_to_passwordEntryFragment, bundle);
         } else {
             Bundle bundle = new Bundle();
             bundle.putParcelable(ConnectingFragment.EXTRA_SOFT_AP_SSID, softApSSID);

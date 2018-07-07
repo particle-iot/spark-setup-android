@@ -39,7 +39,7 @@ import static io.particle.android.sdk.utils.Py.truthy;
 
 public class GetReadyFragment extends BaseFragment implements PermissionsFragment.Client {
 
-    private static final TLog log = TLog.get(GetReadyActivity.class);
+    private static final TLog log = TLog.get(GetReadyFragment.class);
 
     @Inject protected ParticleCloud sparkCloud;
     @Inject protected SoftAPConfigRemover softAPConfigRemover;

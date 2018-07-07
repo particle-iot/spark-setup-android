@@ -38,7 +38,7 @@ public class PasswordEntryFragment extends BaseFragment {
             EXTRA_SOFT_AP_SSID = "EXTRA_SOFT_AP_SSID";
 
 
-    private static final TLog log = TLog.get(PasswordEntryActivity.class);
+    private static final TLog log = TLog.get(PasswordEntryFragment.class);
 
     @BindView(R2.id.show_password) protected CheckBox showPwdBox;
     @BindView(R2.id.password) protected EditText passwordBox;
