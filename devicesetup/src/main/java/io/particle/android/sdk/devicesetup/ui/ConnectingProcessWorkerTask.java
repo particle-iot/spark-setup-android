@@ -2,6 +2,7 @@ package io.particle.android.sdk.devicesetup.ui;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.navigation.Navigation;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleDevice;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
@@ -80,7 +82,7 @@ public class ConnectingProcessWorkerTask extends SetupStepsRunnerTask {
         } else {
             log.d("HUZZAH, VICTORY!");
             // FIXME: handle "success, no ownership" case
-            resultCode = SuccessActivity.RESULT_SUCCESS;
+            resultCode = SuccessFragment.RESULT_SUCCESS;
 
             EZ.runAsync(() -> {
                 try {
@@ -105,8 +107,10 @@ public class ConnectingProcessWorkerTask extends SetupStepsRunnerTask {
 
         Activity activity = activityReference.get();
         if (activity != null) {
-            activity.startActivity(SuccessActivity.buildIntent(activity, resultCode, deviceId));
-            activity.finish();
+            Bundle bundle = new Bundle();
+            bundle.putInt(SuccessFragment.EXTRA_RESULT_CODE, resultCode);
+            bundle.putString(SuccessFragment.EXTRA_DEVICE_ID, deviceId);
+            Navigation.findNavController(activity, R.id.nav_host_fragment).navigate(R.id.action_connectingFragment_to_successFragment, bundle);
         }
     }
 

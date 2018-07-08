@@ -24,10 +24,6 @@ import io.particle.android.sdk.utils.TLog;
 import static io.particle.android.sdk.utils.Py.any;
 import static io.particle.android.sdk.utils.Py.truthy;
 
-//import io.particle.android.sdk.accountsetup.CreateAccountActivity;
-
-//import io.particle.android.sdk.accountsetup.LoginActivity;
-
 public class ParticleDeviceSetupLibrary {
     private static final TLog log = TLog.get(ParticleDeviceSetupLibrary.class);
     private ApplicationComponent applicationComponent;

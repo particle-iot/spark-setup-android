@@ -13,19 +13,12 @@ import io.particle.android.sdk.devicesetup.ui.GetReadyFragment;
 import io.particle.android.sdk.devicesetup.ui.ManualNetworkEntryFragment;
 import io.particle.android.sdk.devicesetup.ui.PasswordEntryFragment;
 import io.particle.android.sdk.devicesetup.ui.SelectNetworkFragment;
-import io.particle.android.sdk.devicesetup.ui.SuccessActivity;
 import io.particle.android.sdk.devicesetup.ui.SuccessFragment;
-
-//import io.particle.android.sdk.accountsetup.PasswordResetActivity;
 
 @PerActivity
 @Subcomponent(modules = {ApModule.class})
 @RestrictTo({RestrictTo.Scope.LIBRARY})
 public interface ActivityInjectorComponent {
-
-//    void inject(PasswordResetActivity passwordResetActivity);
-
-    void inject(SuccessActivity successActivity);
 
     void inject(ConnectToApFragment connectToApFragment);
 

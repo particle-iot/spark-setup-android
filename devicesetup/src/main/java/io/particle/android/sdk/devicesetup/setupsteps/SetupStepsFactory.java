@@ -9,7 +9,7 @@ import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
-import io.particle.android.sdk.devicesetup.ui.SuccessActivity;
+import io.particle.android.sdk.devicesetup.ui.SuccessFragment;
 import io.particle.android.sdk.utils.SSID;
 import io.particle.android.sdk.utils.WifiFacade;
 
@@ -28,7 +28,7 @@ public class SetupStepsFactory {
         return new ConfigureAPStep(
                 StepConfig.newBuilder()
                         .setMaxAttempts(MAX_RETRIES_CONFIGURE_AP)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
+                        .setResultCode(SuccessFragment.RESULT_FAILURE_CONFIGURE)
                         .setStepId(R.id.configure_device_wifi_credentials)
                         .build(),
                 commandClient, reconnector, networkToConnectTo, networkSecretPlaintext, publicKey);
@@ -40,7 +40,7 @@ public class SetupStepsFactory {
         return new ConnectDeviceToNetworkStep(
                 StepConfig.newBuilder()
                         .setMaxAttempts(MAX_RETRIES_CONNECT_AP)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
+                        .setResultCode(SuccessFragment.RESULT_FAILURE_CONFIGURE)
                         .setStepId(R.id.connect_to_wifi_network)
                         .build(),
                 commandClient, reconnector);
@@ -52,7 +52,7 @@ public class SetupStepsFactory {
         return new WaitForDisconnectionFromDeviceStep(
                 StepConfig.newBuilder()
                         .setMaxAttempts(MAX_RETRIES_DISCONNECT_FROM_DEVICE)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_NO_DISCONNECT)
+                        .setResultCode(SuccessFragment.RESULT_FAILURE_NO_DISCONNECT)
                         .setStepId(R.id.reconnect_to_wifi_network)
                         .build(),
                 deviceSoftApSsid, wifiFacade);
@@ -63,7 +63,7 @@ public class SetupStepsFactory {
         return new EnsureSoftApNotVisible(
                 StepConfig.newBuilder()
                         .setMaxAttempts(MAX_RETRIES_DISCONNECT_FROM_DEVICE)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_CONFIGURE)
+                        .setResultCode(SuccessFragment.RESULT_FAILURE_CONFIGURE)
                         .setStepId(R.id.wait_for_device_cloud_connection)
                         .build(),
                 deviceSoftApSsid, wifiFacade);
@@ -74,7 +74,7 @@ public class SetupStepsFactory {
         return new WaitForCloudConnectivityStep(
                 StepConfig.newBuilder()
                         .setMaxAttempts(MAX_RETRIES_DISCONNECT_FROM_DEVICE)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_NO_DISCONNECT)
+                        .setResultCode(SuccessFragment.RESULT_FAILURE_NO_DISCONNECT)
                         .setStepId(R.id.check_for_internet_connectivity)
                         .build(), context.getApplicationContext());
     }
@@ -84,7 +84,7 @@ public class SetupStepsFactory {
         return new CheckIfDeviceClaimedStep(
                 StepConfig.newBuilder()
                         .setMaxAttempts(MAX_RETRIES_CLAIM)
-                        .setResultCode(SuccessActivity.RESULT_FAILURE_CLAIMING)
+                        .setResultCode(SuccessFragment.RESULT_FAILURE_CLAIMING)
                         .setStepId(R.id.verify_product_ownership)
                         .build(),
                 sparkCloud, deviceId);

@@ -59,7 +59,7 @@ public class SuccessFragment extends BaseFragment {
 
 
     public static Intent buildIntent(Context ctx, int resultCode, String deviceId) {
-        return new Intent(ctx, SuccessActivity.class)
+        return new Intent(ctx, SuccessFragment.class)
                 .putExtra(EXTRA_RESULT_CODE, resultCode)
                 .putExtra(EXTRA_DEVICE_ID, deviceId);
     }

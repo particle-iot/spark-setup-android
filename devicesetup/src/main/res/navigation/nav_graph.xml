@@ -127,6 +127,9 @@
         android:id="@+id/connectingFragment"
         android:name="io.particle.android.sdk.devicesetup.ui.ConnectingFragment"
         android:label="ConnectingFragment">
+        <action
+            android:id="@+id/action_connectingFragment_to_successFragment"
+            app:destination="@id/successFragment"/>
         <argument
             android:name="deviceSoftApSsid"
             app:type="reference"/>
