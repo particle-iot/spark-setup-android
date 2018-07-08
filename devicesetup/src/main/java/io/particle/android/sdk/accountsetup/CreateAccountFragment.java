@@ -91,14 +91,14 @@ public class CreateAccountFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.activity_create_account, container, true);
+        View view = inflater.inflate(R.layout.activity_create_account, container, false);
         ButterKnife.bind(this, view);
         SEGAnalytics.screen("Auth: Sign Up screen");
-        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(getActivity());
+        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(view);
 
         companyChoiceView.setOnCheckedChangeListener(onCompanyCheckedChange);
 
-        Ui.setText(this, R.id.create_account_header_text,
+        Ui.setText(view, R.id.create_account_header_text,
                 Phrase.from(getActivity(), R.string.create_account_header_text)
                         .put("brand_name", getString(R.string.brand_name))
                         .format()
@@ -107,7 +107,7 @@ public class CreateAccountFragment extends BaseFragment {
         useOrganizationSignup = getResources().getBoolean(R.bool.organization);
         useProductionSignup = getResources().getBoolean(R.bool.productMode);
 
-        Ui.setTextFromHtml(getActivity(), R.id.already_have_an_account_text, R.string.msg_user_already_has_account);
+        Ui.setTextFromHtml(view, R.id.already_have_an_account_text, R.string.msg_user_already_has_account);
 
         if (getResources().getBoolean(R.bool.show_sign_up_page_fine_print)) {
             String tosUri = getString(R.string.terms_of_service_uri);
@@ -117,10 +117,10 @@ public class CreateAccountFragment extends BaseFragment {
                     .put("tos_link", tosUri)
                     .put("privacy_policy_link", privacyPolicyUri)
                     .format().toString();
-            Ui.setTextFromHtml(getActivity(), R.id.fine_print, finePrintText)
+            Ui.setTextFromHtml(view, R.id.fine_print, finePrintText)
                     .setMovementMethod(LinkMovementMethod.getInstance());
         } else {
-            Ui.findView(this, R.id.fine_print).setVisibility(View.GONE);
+            Ui.findView(view, R.id.fine_print).setVisibility(View.GONE);
         }
 
         return view;

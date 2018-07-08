@@ -1,7 +1,5 @@
 package io.particle.android.sdk.devicesetup.ui;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
@@ -37,15 +35,7 @@ import io.particle.android.sdk.utils.ui.Ui;
 public class ManualNetworkEntryFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<Set<ScanAPCommandResult>> {
 
-
-    public static Intent buildIntent(Context ctx, SSID softApSSID) {
-        return new Intent(ctx, ManualNetworkEntryActivity.class)
-                .putExtra(EXTRA_SOFT_AP, softApSSID);
-    }
-
-
-    private static final String EXTRA_SOFT_AP = "EXTRA_SOFT_AP";
-
+    public static final String EXTRA_SOFT_AP = "EXTRA_SOFT_AP";
 
     @Inject protected WifiFacade wifiFacade;
     @Inject protected CommandClientFactory commandClientFactory;
@@ -69,7 +59,7 @@ public class ManualNetworkEntryFragment extends BaseFragment
         ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
                 .apModule(new ApModule()).build().inject(this);
         SEGAnalytics.screen("Device Setup: Manual network entry screen");
-        softApSSID = getActivity().getIntent().getParcelableExtra(EXTRA_SOFT_AP);
+        softApSSID = getArguments().getParcelable(EXTRA_SOFT_AP);
 
         View view = inflater.inflate(R.layout.activity_manual_network_entry, container, true);
         ButterKnife.bind(this, view);

@@ -63,8 +63,9 @@ public class SelectNetworkFragment extends RequiresWifiScansFragment
     }
 
     public void onManualNetworkEntryClicked(View view) {
-        startActivity(ManualNetworkEntryActivity.buildIntent(getActivity(), softApSSID));
-//        finish();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(ManualNetworkEntryFragment.EXTRA_SOFT_AP, softApSSID);
+        Navigation.findNavController(getView()).navigate(R.id.action_selectNetworkFragment_to_manualNetworkEntryFragment, bundle);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package io.particle.android.sdk.accountsetup;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -54,6 +53,17 @@ public class LoginFragment extends BaseFragment {
     @BindView(R2.id.password)
     protected EditText passwordView;
 
+    @OnClick(R2.id.forgot_password)
+    protected void onPasswordResetClicked(View view) {
+        Bundle bundle = new Bundle();
+        String email = emailView.getText().toString();
+
+        if (truthy(email)) {
+            bundle.putString(PasswordResetFragment.EXTRA_EMAIL, email);
+        }
+        Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_passwordResetFragment, bundle);
+    }
+
     @OnEditorAction(R2.id.password)
     protected boolean onPasswordEditorAction(int id) {
         if (id == R.id.action_log_in || id == EditorInfo.IME_NULL) {
@@ -95,12 +105,6 @@ public class LoginFragment extends BaseFragment {
 
         Ui.setTextFromHtml(view, R.id.forgot_password, R.string.msg_forgot_password);
         return view;
-    }
-
-    public void onPasswordResetClicked(View v) {
-        Intent intent;
-        intent = PasswordResetActivity.buildIntent(getContext(), emailView.getText().toString());
-        startActivity(intent);
     }
 
     /**

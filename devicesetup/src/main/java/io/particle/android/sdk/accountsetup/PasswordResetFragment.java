@@ -1,7 +1,5 @@
 package io.particle.android.sdk.accountsetup;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -12,8 +10,10 @@ import android.widget.EditText;
 
 import javax.inject.Inject;
 
+import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
@@ -34,39 +34,14 @@ import static io.particle.android.sdk.utils.Py.truthy;
  */
 public class PasswordResetFragment extends BaseFragment {
 
-    private static final TLog log = TLog.get(PasswordResetActivity.class);
+    private static final TLog log = TLog.get(PasswordResetFragment.class);
 
     public static final String EXTRA_EMAIL = "EXTRA_EMAIL";
 
     @Inject protected ParticleCloud sparkCloud;
     @BindView(R2.id.email) protected EditText emailView;
 
-    public static Intent buildIntent(Context context, String email) {
-        Intent i = new Intent(context, PasswordResetActivity.class);
-        if (truthy(email)) {
-            i.putExtra(EXTRA_EMAIL, email);
-        }
-        return i;
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.activity_password_reset, container, true);
-        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
-                .apModule(new ApModule()).build().inject(this);
-        ButterKnife.bind(this, view);
-
-        SEGAnalytics.screen("Auth: Forgot password screen");
-        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(getActivity());
-
-        Ui.findView(this, R.id.action_cancel).setOnClickListener(cancelView -> //finish()
-        {
-        });
-        emailView.setText(getActivity().getIntent().getStringExtra(EXTRA_EMAIL));
-        return view;
-    }
-
+    @OnClick(R2.id.action_reset_password)
     public void onPasswordResetClicked(View v) {
         SEGAnalytics.track("Auth: Request password reset");
         final String email = emailView.getText().toString();
@@ -82,6 +57,22 @@ public class PasswordResetFragment extends BaseFragment {
                     })
                     .show();
         }
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.activity_password_reset, container, false);
+        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
+                .apModule(new ApModule()).build().inject(this);
+        ButterKnife.bind(this, view);
+
+        SEGAnalytics.screen("Auth: Forgot password screen");
+        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(view);
+
+        Ui.findView(view, R.id.action_cancel).setOnClickListener(cancelView -> Navigation.findNavController(view).navigateUp());
+        emailView.setText(getArguments().getString(EXTRA_EMAIL));
+        return view;
     }
 
     private void performReset() {

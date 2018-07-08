@@ -27,23 +27,5 @@
             android:label="@string/title_activity_web_view"
             android:screenOrientation="portrait"
             android:theme="@style/ParticleSetupTheme.NoActionBar"/>
-        <activity
-            android:name="io.particle.android.sdk.devicesetup.ui.ManualNetworkEntryActivity"
-            android:label="@string/title_activity_manual_network_entry"
-            android:screenOrientation="portrait"
-            android:theme="@style/ParticleSetupTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize|stateVisible"/>
-        <activity
-            android:name="io.particle.android.sdk.accountsetup.CreateAccountActivity"
-            android:label="@string/title_activity_create_account"
-            android:screenOrientation="portrait"
-            android:theme="@style/ParticleSetupTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
-        <activity
-            android:name="io.particle.android.sdk.accountsetup.PasswordResetActivity"
-            android:label="@string/title_activity_password_reset"
-            android:screenOrientation="portrait"
-            android:theme="@style/ParticleSetupTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize|stateVisible"/>
     </application>
 </manifest>

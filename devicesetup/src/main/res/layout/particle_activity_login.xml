@@ -8,8 +8,7 @@
     android:animateLayoutChanges="true"
     android:clipChildren="false"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-    tools:context="io.particle.android.sdk.accountsetup.LoginActivity">
+    android:orientation="vertical">
 
     <include layout="@layout/brand_image_header"/>
 
@@ -95,7 +94,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:onClick="onPasswordResetClicked"
                 android:text="@string/msg_forgot_password"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textSize="@dimen/text_size_small"/>

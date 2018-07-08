@@ -11,7 +11,6 @@ import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 
-import io.particle.android.sdk.accountsetup.CreateAccountActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.di.ApplicationComponent;
@@ -24,6 +23,8 @@ import io.particle.android.sdk.utils.TLog;
 
 import static io.particle.android.sdk.utils.Py.any;
 import static io.particle.android.sdk.utils.Py.truthy;
+
+//import io.particle.android.sdk.accountsetup.CreateAccountActivity;
 
 //import io.particle.android.sdk.accountsetup.LoginActivity;
 
@@ -194,7 +195,7 @@ public class ParticleDeviceSetupLibrary {
                                              SensitiveDataStorage sensitiveDataStorage) {
         if (!hasUserBeenLoggedInBefore(sensitiveDataStorage) && !BaseActivity.setupOnly) {
             log.d("User has not been logged in before");
-            return new Intent(ctx, CreateAccountActivity.class);
+//            return new Intent(ctx, CreateAccountActivity.class);
         }
 
 //        if (!isOAuthTokenPresent(cloud) && !BaseActivity.setupOnly) {

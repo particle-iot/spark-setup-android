@@ -42,6 +42,9 @@
         <action
             android:id="@+id/action_selectNetworkFragment_to_passwordEntryFragment"
             app:destination="@id/passwordEntryFragment"/>
+        <action
+            android:id="@+id/action_selectNetworkFragment_to_manualNetworkEntryFragment"
+            app:destination="@id/manualNetworkEntryFragment"/>
         <argument
             android:name="deviceSoftAP"
             app:type="reference"/>
@@ -82,6 +85,9 @@
         <action
             android:id="@+id/action_loginFragment_to_createAccountFragment"
             app:destination="@id/createAccountFragment"/>
+        <action
+            android:id="@+id/action_loginFragment_to_passwordResetFragment"
+            app:destination="@id/passwordResetFragment"/>
     </fragment>
     <fragment
         android:id="@+id/successFragment"
