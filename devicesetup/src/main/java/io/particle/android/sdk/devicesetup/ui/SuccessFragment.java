@@ -1,5 +1,6 @@
 package io.particle.android.sdk.devicesetup.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,7 +28,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleDevice;
-import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
@@ -188,16 +188,9 @@ public class SuccessFragment extends BaseFragment {
     }
 
     private void leaveActivity(Context context, boolean isSuccess) {
-        Intent intent = ParticleDeviceSetupLibrary.getInstance()
-                .buildIntentForNextActivity(getActivity(), particleCloud, SDKGlobals.getSensitiveDataStorage());
+        Intent intent = new Intent();
         intent.putExtra(EXTRA_SETUP_RESULT, new SetupResult(isSuccess, isSuccess ? DeviceSetupState.deviceToBeSetUpId : null));
-
-        // FIXME: we shouldn't do this in the lib.  looks like another argument for Fragments.
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        getActivity().setResult(Activity.RESULT_OK, intent);
 
         Intent result = new Intent(ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.ACTION_DEVICE_SETUP_COMPLETE)
                 .putExtra(ParticleDeviceSetupLibrary.DeviceSetupCompleteContract.EXTRA_DEVICE_SETUP_WAS_SUCCESSFUL, isSuccess);
@@ -207,7 +200,7 @@ public class SuccessFragment extends BaseFragment {
         }
         LocalBroadcastManager.getInstance(context).sendBroadcast(result);
 
-//        finish();
+        getActivity().finish();
     }
 
     private void setDeviceName(ParticleDevice device, String deviceName) throws ParticleCloudException {

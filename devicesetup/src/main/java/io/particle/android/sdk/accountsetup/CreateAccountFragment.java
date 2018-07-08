@@ -1,6 +1,5 @@
 package io.particle.android.sdk.accountsetup;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -25,13 +24,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
-import io.particle.android.sdk.cloud.SDKGlobals;
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.cloud.models.AccountInfo;
 import io.particle.android.sdk.cloud.models.SignUpInfo;
-import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
+import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.ui.BaseFragment;
 import io.particle.android.sdk.utils.Async;
 import io.particle.android.sdk.utils.SEGAnalytics;
@@ -318,12 +316,9 @@ public class CreateAccountFragment extends BaseFragment {
     }
 
     private void onLoginSuccess() {
-        Intent intent = ParticleDeviceSetupLibrary.getInstance()
-                .buildIntentForNextActivity(getActivity(),
-                        ParticleCloudSDK.getCloud(),
-                        SDKGlobals.getSensitiveDataStorage());
-
-        startActivity(intent);
+        if (truthy(ParticleCloudSDK.getCloud().getAccessToken()) && !BaseActivity.setupOnly) {
+            Navigation.findNavController(getView()).navigate(R.id.action_createAccountFragment_to_loginFragment);
+        }
     }
 
     private void attemptLogin(final String username, final String password) {
