@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.jakewharton.butterknife'
 
 // This is the library version used when deploying the artifact
@@ -98,6 +99,7 @@ dependencies {
 
     api "android.arch.navigation:navigation-fragment:1.0.0-alpha02"
     api "android.arch.navigation:navigation-ui:1.0.0-alpha02"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // TESTING ONLY (see other TESTING comments further up)
 //    compile(name: 'cloudsdk', ext: 'aar')
@@ -112,4 +114,7 @@ if (JavaVersion.current().isJava8Compatible()) {
         //noinspection SpellCheckingInspection
         options.addStringOption('Xdoclint:none', '-quiet')
     }
+}
+repositories {
+    mavenCentral()
 }
