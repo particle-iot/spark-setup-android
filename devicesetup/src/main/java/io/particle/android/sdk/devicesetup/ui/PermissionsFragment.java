@@ -34,17 +34,6 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
 
     public static final String TAG = WorkerFragment.buildFragmentTag(PermissionsFragment.class);
 
-
-    public static <T extends FragmentActivity & Client> PermissionsFragment ensureAttached(
-            T callbacksActivity) {
-        PermissionsFragment frag = get(callbacksActivity);
-        if (frag == null) {
-            frag = new PermissionsFragment();
-            WorkerFragment.addFragment(callbacksActivity, frag, TAG);
-        }
-        return frag;
-    }
-
     public static <T extends Fragment & Client> PermissionsFragment ensureAttached(
             T callbacksFragment) {
         PermissionsFragment frag = get(callbacksFragment);
@@ -53,10 +42,6 @@ public class PermissionsFragment extends Fragment implements OnRequestPermission
             WorkerFragment.addFragment(callbacksFragment, frag, TAG);
         }
         return frag;
-    }
-
-    public static <T extends FragmentActivity & Client> PermissionsFragment get(T callbacksActivity) {
-        return Ui.findFrag(callbacksActivity, TAG);
     }
 
     public static <T extends Fragment & Client> PermissionsFragment get(T callbackFragment) {
