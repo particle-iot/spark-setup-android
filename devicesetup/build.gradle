@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'kotlin-android-extensions'
 
 // This is the library version used when deploying the artifact
 version = '0.5.4'
@@ -101,6 +101,7 @@ dependencies {
     api "android.arch.navigation:navigation-fragment:1.0.0-alpha02"
     api "android.arch.navigation:navigation-ui:1.0.0-alpha02"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.23.4"
 
     // TESTING ONLY (see other TESTING comments further up)
 //    compile(name: 'cloudsdk', ext: 'aar')

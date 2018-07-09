@@ -9,6 +9,8 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 
 import com.squareup.phrase.Phrase
 
@@ -35,7 +37,9 @@ import io.particle.android.sdk.utils.ui.Ui
 import io.particle.android.sdk.utils.ui.WebViewActivity
 
 import io.particle.android.sdk.utils.Py.truthy
-import kotlinx.android.synthetic.main.activity_get_ready.*
+import kotlinx.android.synthetic.main.activity_get_ready.view.*
+import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.android.UI
 
 class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
 
@@ -43,8 +47,6 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
     lateinit var sparkCloud: ParticleCloud
     @Inject
     lateinit var softAPConfigRemover: SoftAPConfigRemover
-
-    private var claimCodeWorker: Async.AsyncApiWorker<ParticleCloud, Responses.ClaimCodeResponse>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -60,7 +62,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
 
         PermissionsFragment.ensureAttached<GetReadyFragment>(this)
 
-        action_im_ready.setOnClickListener { this.onReadyButtonClicked(it) }
+        view.action_im_ready.setOnClickListener { this.onReadyButtonClicked(it) }
 
         Ui.setTextFromHtml(view, R.id.action_troubleshooting, R.string.troubleshooting)
                 .setOnClickListener { v ->
@@ -68,13 +70,13 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
                     startActivity(WebViewActivity.buildIntent(v.context, uri))
                 }
 
-        get_ready_text.setText(Phrase.from(activity!!, R.string.get_ready_text)
+        view.get_ready_text.setText(Phrase.from(activity!!, R.string.get_ready_text)
                 .put("device_name", getString(R.string.device_name))
                 .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
                 .put("setup_button_identifier", getString(R.string.mode_button_name))
                 .format())
 
-        get_ready_text_title.setText(Phrase.from(activity!!, R.string.get_ready_title_text)
+        view.get_ready_text_title.setText(Phrase.from(activity!!, R.string.get_ready_title_text)
                 .put("device_name", getString(R.string.device_name))
                 .format())
         return view
@@ -91,9 +93,6 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
     }
 
     private fun onReadyButtonClicked(v: View) {
-        if (claimCodeWorker != null && !claimCodeWorker!!.isCancelled) {
-            return
-        }
         DeviceSetupState.reset()
 
         if (BaseActivity.setupOnly) {
@@ -103,24 +102,16 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
         showProgress(true)
         val ctx = activity
 
-        claimCodeWorker = Async.executeAsync<Responses.ClaimCodeResponse>(sparkCloud, object : Async.ApiWork<ParticleCloud, Responses.ClaimCodeResponse>() {
-            override fun callApi(sparkCloud: ParticleCloud): Responses.ClaimCodeResponse {
-                return generateClaimCode(ctx!!)
-            }
+        launch(UI) {
+            try {
+                var claimCode = withContext(CommonPool) { generateClaimCode(ctx!!) }
 
-            override fun onTaskFinished() {
-                claimCodeWorker = null
                 showProgress(false)
-            }
-
-            override fun onSuccess(result: Responses.ClaimCodeResponse) {
-                handleClaimCode(result)
-            }
-
-            override fun onFailure(error: ParticleCloudException) {
+                handleClaimCode(claimCode)
+            } catch (error: ParticleCloudException) {
                 onGenerateClaimCodeFail(error)
             }
-        })
+        }
     }
 
     private fun onGenerateClaimCodeFail(error: ParticleCloudException) {
