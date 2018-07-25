@@ -179,12 +179,14 @@ public class LoginActivity extends BaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                startActivity(NextActivitySelector.getNextActivityIntent(
-                        LoginActivity.this,
-                        sparkCloud,
-                        SDKGlobals.getSensitiveDataStorage(),
-                        null));
-                finish();
+                //TODO map when api returns error for 2fa
+                startActivity(new Intent(LoginActivity.this, TwoFactorActivity.class));
+//                startActivity(NextActivitySelector.getNextActivityIntent(
+//                        LoginActivity.this,
+//                        sparkCloud,
+//                        SDKGlobals.getSensitiveDataStorage(),
+//                        null));
+//                finish();
             }
 
             @Override
