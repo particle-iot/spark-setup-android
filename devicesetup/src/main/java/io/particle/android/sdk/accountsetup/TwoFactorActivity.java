@@ -9,7 +9,6 @@ import butterknife.OnClick;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
 import io.particle.android.sdk.ui.BaseActivity;
-import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
 
 public class TwoFactorActivity extends BaseActivity {
@@ -29,8 +28,6 @@ public class TwoFactorActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_two_factor);
         ButterKnife.bind(this);
-
-        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         Ui.setTextFromHtml(this, R.id.recover_auth, R.string.recover_link_text);
 
