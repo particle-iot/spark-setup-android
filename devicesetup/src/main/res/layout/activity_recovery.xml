@@ -1,6 +1,7 @@
 <io.particle.android.sdk.utils.ui.SoftKeyboardVisibilityDetectingLinearLayout
     android:id="@+id/keyboard_change_detector_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,7 +12,12 @@
     android:orientation="vertical"
     tools:context="io.particle.android.sdk.accountsetup.RecoveryActivity">
 
-    <include layout="@layout/brand_image_header"/>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"/>
 
     <ScrollView
         android:id="@+id/recovery_form"
@@ -44,6 +50,7 @@
                 android:id="@+id/recovery_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:layout_marginTop="6dp"
                 android:gravity="center"
                 android:text="@string/recovery_info"/>
@@ -58,7 +65,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
 
                 <Button
                     android:id="@+id/action_verify"

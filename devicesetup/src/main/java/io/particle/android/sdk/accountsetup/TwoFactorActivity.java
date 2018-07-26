@@ -2,6 +2,7 @@ package io.particle.android.sdk.accountsetup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -32,5 +33,9 @@ public class TwoFactorActivity extends BaseActivity {
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
 
         Ui.setTextFromHtml(this, R.id.recover_auth, R.string.recover_link_text);
+
+        Toolbar toolbar = Ui.findView(this, R.id.toolbar);
+        toolbar.setNavigationIcon(Ui.getTintedDrawable(this, R.drawable.ic_back, R.color.element_tint_color));
+        toolbar.setNavigationOnClickListener(view -> finish());
     }
 }
