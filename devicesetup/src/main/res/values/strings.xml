@@ -62,7 +62,6 @@
     <string name="action_done">Done</string>
     <string name="title_activity_password_reset">Password Reset</string>
     <string name="title_activity_two_factor">Two Factor Authentication</string>
-    <string name="title_activity_recovery">Recovery</string>
     <string name="manual_network_name">Manual network name</string>
     <string name="manual_network_name_entry">Manual network name entry</string>
     <string name="hint_network_name">network name</string>
