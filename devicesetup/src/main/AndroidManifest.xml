@@ -83,12 +83,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/ParticleSetupTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize|stateHidden"/>
-        <activity
-            android:name="io.particle.android.sdk.accountsetup.RecoveryActivity"
-            android:label="@string/title_activity_recovery"
-            android:screenOrientation="portrait"
-            android:theme="@style/ParticleSetupTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
     </application>
 
 </manifest>

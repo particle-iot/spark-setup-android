@@ -117,9 +117,7 @@
     <string name="login_code_hint">login code</string>
     <string name="authentication_info">Open your authenticator app on your mobile device and enter the 6-digit login code</string>
     <string name="verify_button_text">Verify</string>
-    <string name="recover_link_text">&lt;u&gt;Enter two-step verification recovery code&lt;/u&gt;</string>
-    <string name="recovery_title">Enter a recovery code</string>
-    <string name="recovery_info">"If you've lost access to your phone, you can provide a one-time recovery code to regain access to your account"</string>
-    <string name="recovery_code_hint">recovery code</string>
+    <string name="recover_link_text">&lt;u&gt;Lost access to your phone? Recover your account.&lt;/u&gt;</string>
+    <string name="recovery_link">https://login.particle.io/account-info</string>
 
 </resources>

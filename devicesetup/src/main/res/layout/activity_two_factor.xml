@@ -1,6 +1,6 @@
-<LinearLayout
+<io.particle.android.sdk.utils.ui.SoftKeyboardVisibilityDetectingLinearLayout
+    android:id="@+id/keyboard_change_detector_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,12 +11,8 @@
     android:orientation="vertical"
     tools:context="io.particle.android.sdk.accountsetup.TwoFactorActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"/>
+
+    <include layout="@layout/brand_image_header"/>
 
     <ScrollView
         android:id="@+id/authentication_form"
@@ -94,4 +90,4 @@
         </LinearLayout>
     </ScrollView>
 
-</LinearLayout>
+</io.particle.android.sdk.utils.ui.SoftKeyboardVisibilityDetectingLinearLayout>

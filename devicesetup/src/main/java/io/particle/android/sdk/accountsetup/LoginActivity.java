@@ -179,27 +179,33 @@ public class LoginActivity extends BaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                //TODO map when api returns error for 2fa
-                startActivity(new Intent(LoginActivity.this, TwoFactorActivity.class));
-//                startActivity(NextActivitySelector.getNextActivityIntent(
-//                        LoginActivity.this,
-//                        sparkCloud,
-//                        SDKGlobals.getSensitiveDataStorage(),
-//                        null));
-//                finish();
+                startActivity(NextActivitySelector.getNextActivityIntent(
+                        LoginActivity.this,
+                        sparkCloud,
+                        SDKGlobals.getSensitiveDataStorage(),
+                        null));
+                finish();
             }
 
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
-                log.d("onFailed(): " + error.getMessage());
-                SEGAnalytics.track("Auth: Login failure");
-                ParticleUi.showParticleButtonProgress(LoginActivity.this,
-                        R.id.action_log_in, false);
-                // FIXME: check specifically for 401 errors
-                // and set a better error message?  (Seems like
-                // this works fine already...)
-                passwordView.setError(error.getBestMessage());
-                passwordView.requestFocus();
+                ParticleUi.showParticleButtonProgress(LoginActivity.this, R.id.action_log_in, false);
+
+                if (error.getMfaToken() != null) {
+                    Intent intent = new Intent(LoginActivity.this, TwoFactorActivity.class);
+                    intent.putExtra(TwoFactorActivity.EMAIL_EXTRA, email);
+                    intent.putExtra(TwoFactorActivity.PASSWORD_EXTRA, password);
+                    intent.putExtra(TwoFactorActivity.MFA_EXTRA, error.getMfaToken());
+                    startActivity(intent);
+                } else {
+                    log.d("onFailed(): " + error.getMessage());
+                    SEGAnalytics.track("Auth: Login failure");
+                    // FIXME: check specifically for 401 errors
+                    // and set a better error message?  (Seems like
+                    // this works fine already...)
+                    passwordView.setError(error.getBestMessage());
+                    passwordView.requestFocus();
+                }
             }
         });
     }
