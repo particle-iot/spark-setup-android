@@ -20,6 +20,7 @@ import butterknife.OnTextChanged;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
 import io.particle.android.sdk.cloud.SDKGlobals;
+import io.particle.android.sdk.cloud.exceptions.ParticleLoginException;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
@@ -73,8 +74,15 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.particle_activity_login);
-        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
-                .apModule(new ApModule()).build().inject(this);
+
+        ParticleDeviceSetupLibrary
+                .getInstance()
+                .getApplicationComponent()
+                .activityComponentBuilder()
+                .apModule(new ApModule())
+                .build()
+                .inject(this);
+
         ButterKnife.bind(this);
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(this);
         SEGAnalytics.screen("Auth: Login Screen");
@@ -190,12 +198,11 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
                 ParticleUi.showParticleButtonProgress(LoginActivity.this, R.id.action_log_in, false);
+                ParticleLoginException loginException = (ParticleLoginException) error;
 
-                if (error.getMfaToken() != null) {
-                    Intent intent = new Intent(LoginActivity.this, TwoFactorActivity.class);
-                    intent.putExtra(TwoFactorActivity.EMAIL_EXTRA, email);
-                    intent.putExtra(TwoFactorActivity.PASSWORD_EXTRA, password);
-                    intent.putExtra(TwoFactorActivity.MFA_EXTRA, error.getMfaToken());
+                if (loginException.getMfaToken() != null) {
+                    Intent intent = TwoFactorActivity.buildIntent(LoginActivity.this, email,
+                            password, loginException.getMfaToken());
                     startActivity(intent);
                 } else {
                     log.d("onFailed(): " + error.getMessage());

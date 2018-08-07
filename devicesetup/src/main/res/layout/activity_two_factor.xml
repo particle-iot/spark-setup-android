@@ -37,7 +37,6 @@
                 style="@style/SectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:text="@string/enter_login_code_title"
                 tools:ignore="RtlHardcoded"/>
 
@@ -46,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/authentication_info"/>
 
@@ -77,6 +76,7 @@
             </RelativeLayout>
 
             <TextView
+                android:gravity="center"
                 android:id="@+id/recover_auth"
                 style="@style/LinkText"
                 android:layout_width="wrap_content"

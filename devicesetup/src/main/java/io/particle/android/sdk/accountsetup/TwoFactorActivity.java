@@ -1,5 +1,6 @@
 package io.particle.android.sdk.accountsetup;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ import io.particle.android.sdk.utils.TLog;
 import io.particle.android.sdk.utils.ui.ParticleUi;
 import io.particle.android.sdk.utils.ui.Ui;
 
+import static io.particle.android.sdk.utils.Py.truthy;
+
 public class TwoFactorActivity extends BaseActivity {
     public static final String EMAIL_EXTRA = "email";
     public static final String PASSWORD_EXTRA = "password";
@@ -39,6 +42,20 @@ public class TwoFactorActivity extends BaseActivity {
      * duplicate requests, etc.
      */
     private Async.AsyncApiWorker<ParticleCloud, Void> loginTask = null;
+
+    public static Intent buildIntent(Context context, String email, String password, String mfa) {
+        Intent i = new Intent(context, TwoFactorActivity.class);
+        if (truthy(email)) {
+            i.putExtra(EMAIL_EXTRA, email);
+        }
+        if (truthy(password)) {
+            i.putExtra(PASSWORD_EXTRA, password);
+        }
+        if (truthy(mfa)) {
+            i.putExtra(MFA_EXTRA, mfa);
+        }
+        return i;
+    }
 
     @Inject
     protected ParticleCloud sparkCloud;
@@ -76,8 +93,15 @@ public class TwoFactorActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_two_factor);
-        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
-                .apModule(new ApModule()).build().inject(this);
+        //dependency injection
+        ParticleDeviceSetupLibrary
+                .getInstance()
+                .getApplicationComponent()
+                .activityComponentBuilder()
+                .apModule(new ApModule())
+                .build()
+                .inject(this);
+        // Bind views, onclick listeners, etc.
         ButterKnife.bind(this);
         SEGAnalytics.screen("Auth: Two Factor Screen");
 
@@ -110,24 +134,27 @@ public class TwoFactorActivity extends BaseActivity {
                 SEGAnalytics.identify(email);
                 SEGAnalytics.track("Auth: Two Factor success");
                 log.d("Logged in...");
-                if (isFinishing()) {
-                    return;
+
+                if (!isFinishing()) {
+                    startActivity(NextActivitySelector.getNextActivityIntent(
+                            TwoFactorActivity.this,
+                            sparkCloud,
+                            SDKGlobals.getSensitiveDataStorage(),
+                            null));
+                    finish();
                 }
-                startActivity(NextActivitySelector.getNextActivityIntent(
-                        TwoFactorActivity.this,
-                        sparkCloud,
-                        SDKGlobals.getSensitiveDataStorage(),
-                        null));
-                finish();
             }
 
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
                 log.d("onFailed(): " + error.getMessage());
                 SEGAnalytics.track("Auth: Two Factor failure");
-                ParticleUi.showParticleButtonProgress(TwoFactorActivity.this, R.id.action_verify, false);
-                verificationCode.setError(error.getBestMessage());
-                verificationCode.requestFocus();
+
+                if (!isFinishing()) {
+                    ParticleUi.showParticleButtonProgress(TwoFactorActivity.this, R.id.action_verify, false);
+                    verificationCode.setError(error.getBestMessage());
+                    verificationCode.requestFocus();
+                }
             }
         });
     }
