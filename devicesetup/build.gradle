@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jakewharton.butterknife'
 
 // This is the library version used when deploying the artifact
-version = '0.5.3'
+version = '0.6.0'
 
 ext {
     bintrayRepo = 'android'
@@ -78,22 +78,22 @@ android {
 
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    api fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'io.particle:cloudsdk:0.4.9'
+    api 'io.particle:cloudsdk:0.5.1'
 
-    compile 'com.squareup.phrase:phrase:1.0.3'
-    compile 'uk.co.chrisjenx:calligraphy:2.3.0'
-    compile 'com.segment.analytics.android:analytics:4.2.6'
-    compile 'com.madgag.spongycastle:core:1.58.0.0'
+    api 'com.squareup.phrase:phrase:1.0.3'
+    api 'uk.co.chrisjenx:calligraphy:2.3.0'
+    api 'com.segment.analytics.android:analytics:4.3.1'
+    api 'com.madgag.spongycastle:core:1.58.0.0'
 
-    compile 'com.google.dagger:dagger:2.15'
+    api 'com.google.dagger:dagger:2.15'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
-    compile 'com.jakewharton:butterknife:8.8.1'
+    api 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support:recyclerview-v7:27.1.1'
+    api 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.android.support:recyclerview-v7:27.1.1'
 
     // TESTING ONLY (see other TESTING comments further up)
 //    compile(name: 'cloudsdk', ext: 'aar')
@@ -109,5 +109,3 @@ if (JavaVersion.current().isJava8Compatible()) {
         options.addStringOption('Xdoclint:none', '-quiet')
     }
 }
-
-apply plugin: 'com.getkeepsafe.dexcount'
