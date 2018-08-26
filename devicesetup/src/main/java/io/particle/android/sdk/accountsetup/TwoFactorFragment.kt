@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import javax.inject.Inject
 
 import androidx.navigation.Navigation
-import butterknife.ButterKnife
 import io.particle.android.sdk.cloud.ParticleCloud
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary
@@ -53,8 +52,7 @@ class TwoFactorFragment : BaseFragment() {
                 .apModule(ApModule())
                 .build()
                 .inject(this)
-        // Bind views, onclick listeners, etc.
-        ButterKnife.bind(this, view)
+
         SEGAnalytics.screen("Auth: Two Factor Screen")
 
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(view)
