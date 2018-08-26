@@ -165,10 +165,10 @@ public class SuccessFragment extends BaseFragment {
     }
 
     private void finishSetup(Context context, String deviceName, boolean isSuccess) {
-        ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_done, true);
+        ParticleUi.showParticleButtonProgress(getView(), R.id.action_done, true);
         Async.executeAsync(particleCloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
-            public Void callApi(@NonNull ParticleCloud cloud) throws ParticleCloudException, IOException {
+            public Void callApi(@NonNull ParticleCloud cloud) throws ParticleCloudException {
                 ParticleDevice device = particleCloud.getDevice(getActivity().getIntent().getStringExtra(EXTRA_DEVICE_ID));
                 setDeviceName(device, deviceName);
                 return null;
@@ -181,7 +181,7 @@ public class SuccessFragment extends BaseFragment {
 
             @Override
             public void onFailure(@NonNull ParticleCloudException e) {
-                ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_done, false);
+                ParticleUi.showParticleButtonProgress(getView(), R.id.action_done, false);
                 deviceNameView.setError(getString(R.string.device_naming_failure));
             }
         });
@@ -213,7 +213,7 @@ public class SuccessFragment extends BaseFragment {
     private void showDeviceName(ParticleCloud cloud) {
         Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, ParticleDevice>() {
             @Override
-            public ParticleDevice callApi(@NonNull ParticleCloud cloud) throws ParticleCloudException, IOException {
+            public ParticleDevice callApi(@NonNull ParticleCloud cloud) throws ParticleCloudException {
                 return particleCloud.getDevice(getActivity().getIntent().getStringExtra(EXTRA_DEVICE_ID));
             }
 

@@ -76,7 +76,7 @@ public class PasswordResetFragment extends BaseFragment {
     }
 
     private void performReset() {
-        ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_reset_password, true);
+        ParticleUi.showParticleButtonProgress(getView(), R.id.action_reset_password, true);
 
         Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
@@ -87,7 +87,7 @@ public class PasswordResetFragment extends BaseFragment {
 
             @Override
             public void onTaskFinished() {
-                ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_reset_password, false);
+                ParticleUi.showParticleButtonProgress(getView(), R.id.action_reset_password, false);
             }
 
             @Override

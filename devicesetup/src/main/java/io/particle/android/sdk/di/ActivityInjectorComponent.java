@@ -5,6 +5,7 @@ import android.support.annotation.RestrictTo;
 import dagger.Subcomponent;
 import io.particle.android.sdk.accountsetup.LoginFragment;
 import io.particle.android.sdk.accountsetup.PasswordResetFragment;
+import io.particle.android.sdk.accountsetup.TwoFactorFragment;
 import io.particle.android.sdk.devicesetup.ui.ConnectToApFragment;
 import io.particle.android.sdk.devicesetup.ui.ConnectingFragment;
 import io.particle.android.sdk.devicesetup.ui.ConnectingProcessWorkerTask;
@@ -41,6 +42,8 @@ public interface ActivityInjectorComponent {
     void inject(SelectNetworkFragment selectNetworkFragment);
 
     void inject(SuccessFragment successFragment);
+
+    void inject(TwoFactorFragment twoFactorFragment);
 
     @Subcomponent.Builder
     interface Builder {

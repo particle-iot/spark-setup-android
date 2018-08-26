@@ -107,11 +107,11 @@ public class Ui {
         return tv;
     }
 
-    public static void fadeViewVisibility(FragmentActivity activity, int viewId, final boolean show) {
+    public static void fadeViewVisibility(View view, int viewId, final boolean show) {
         // Fade-in the progress spinner.
-        int shortAnimTime = activity.getResources().getInteger(
+        int shortAnimTime = view.getResources().getInteger(
                 android.R.integer.config_shortAnimTime);
-        final View progressView = Ui.findView(activity, viewId);
+        final View progressView = Ui.findView(view, viewId);
         progressView.setVisibility(View.VISIBLE);
         progressView.animate()
                 .setDuration(shortAnimTime)

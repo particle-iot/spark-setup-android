@@ -21,6 +21,7 @@ import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException;
+import io.particle.android.sdk.cloud.exceptions.ParticleLoginException;
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.R2;
@@ -87,8 +88,14 @@ public class LoginFragment extends BaseFragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.particle_activity_login, container, false);
-        ParticleDeviceSetupLibrary.getInstance().getApplicationComponent().activityComponentBuilder()
-                .apModule(new ApModule()).build().inject(this);
+        ParticleDeviceSetupLibrary
+                .getInstance()
+                .getApplicationComponent()
+                .activityComponentBuilder()
+                .apModule(new ApModule())
+                .build()
+                .inject(this);
+
         ButterKnife.bind(this, view);
         ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(view);
         SEGAnalytics.screen("Auth: Login Screen");
@@ -96,8 +103,7 @@ public class LoginFragment extends BaseFragment {
         Ui.setText(view, R.id.log_in_header_text,
                 Phrase.from(getActivity(), R.string.log_in_header_text)
                         .put("brand_name", getString(R.string.brand_name))
-                        .format()
-        );
+                        .format());
 
         Ui.findView(view, R.id.forgot_password);
         Ui.setTextFromHtml(view, R.id.user_has_no_account, R.string.msg_no_account)
@@ -165,7 +171,7 @@ public class LoginFragment extends BaseFragment {
     private void login(String email, String password) {
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
-        ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_log_in, true);
+        ParticleUi.showParticleButtonProgress(getView(), R.id.action_log_in, true);
         loginTask = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
             public Void callApi(@NonNull ParticleCloud sparkCloud) throws ParticleCloudException {
@@ -195,14 +201,27 @@ public class LoginFragment extends BaseFragment {
 
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
-                log.d("onFailed(): " + error.getMessage());
-                SEGAnalytics.track("Auth: Login failure");
-                ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_log_in, false);
-                // FIXME: check specifically for 401 errors
-                // and set a better error message?  (Seems like
-                // this works fine already...)
-                passwordView.setError(error.getBestMessage());
-                passwordView.requestFocus();
+                ParticleUi.showParticleButtonProgress(getView(), R.id.action_log_in, false);
+                ParticleLoginException loginException = (ParticleLoginException) error;
+
+                if (loginException.getMfaToken() != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString(TwoFactorFragment.EMAIL_EXTRA, email);
+                    bundle.putString(TwoFactorFragment.PASSWORD_EXTRA, password);
+                    bundle.putString(TwoFactorFragment.MFA_EXTRA, loginException.getMfaToken());
+
+                    Navigation.findNavController(getView())
+                            .navigate(R.id.action_loginFragment_to_twoFactorFragment, bundle);
+
+                } else {
+                    log.d("onFailed(): " + error.getMessage());
+                    SEGAnalytics.track("Auth: Login failure");
+                    // FIXME: check specifically for 401 errors
+                    // and set a better error message?  (Seems like
+                    // this works fine already...)
+                    passwordView.setError(error.getBestMessage());
+                    passwordView.requestFocus();
+                }
             }
         });
     }

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest package="io.particle.android.sdk.devicesetup"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -6,8 +7,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <!-- Needed on API 23 in order to get Wi Fi scan info, since that information
-        can be used to track your location -->
+    <!--
+         Needed on API 23 in order to get Wi Fi scan info, since that information
+        can be used to track your location
+    -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application>
@@ -22,4 +25,5 @@
             android:screenOrientation="portrait"
             android:theme="@style/ParticleSetupTheme.NoActionBar"/>
     </application>
+
 </manifest>

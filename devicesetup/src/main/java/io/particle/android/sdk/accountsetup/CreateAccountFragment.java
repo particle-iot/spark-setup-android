@@ -214,7 +214,7 @@ public class CreateAccountFragment extends BaseFragment {
         SignUpInfo signUpInfo = new SignUpInfo(email, password, accountInfo);
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
-        ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_create_account, true);
+        ParticleUi.showParticleButtonProgress(getView(), R.id.action_create_account, true);
         final ParticleCloud cloud = ParticleCloudSDK.getCloud();
         createAccountTask = Async.executeAsync(cloud, new Async.ApiWork<ParticleCloud, Void>() {
             @Override
@@ -274,7 +274,7 @@ public class CreateAccountFragment extends BaseFragment {
     private void signUpTaskFailure(@NonNull ParticleCloudException error) {
         // FIXME: look at old Spark app for what we do here UI & workflow-wise
         log.d("onFailed()");
-        ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_create_account, false);
+        ParticleUi.showParticleButtonProgress(getView(), R.id.action_create_account, false);
 
         String msg = getString(R.string.create_account_unknown_error);
         if (error.getKind() == ParticleCloudException.Kind.NETWORK) {
@@ -342,7 +342,7 @@ public class CreateAccountFragment extends BaseFragment {
             @Override
             public void onFailure(@NonNull ParticleCloudException error) {
                 log.w("onFailed(): " + error.getMessage());
-                ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_create_account, false);
+                ParticleUi.showParticleButtonProgress(getView(), R.id.action_create_account, false);
                 passwordView.setError(error.getBestMessage());
                 passwordView.requestFocus();
             }

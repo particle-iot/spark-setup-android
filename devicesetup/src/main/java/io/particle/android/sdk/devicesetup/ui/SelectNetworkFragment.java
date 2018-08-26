@@ -42,7 +42,7 @@ public class SelectNetworkFragment extends RequiresWifiScansFragment
 
     @OnClick(R2.id.action_rescan)
     protected void onRescanClick() {
-        ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_rescan, true);
+        ParticleUi.showParticleButtonProgress(getView(), R.id.action_rescan, true);
         wifiListFragment.scanAsync();
     }
 
@@ -108,7 +108,7 @@ public class SelectNetworkFragment extends RequiresWifiScansFragment
 
     @Override
     public void onLoadFinished() {
-        ParticleUi.showParticleButtonProgress(getActivity(), R.id.action_rescan, false);
+        ParticleUi.showParticleButtonProgress(getView(), R.id.action_rescan, false);
     }
 
     @Override

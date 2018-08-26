@@ -2,15 +2,12 @@ package io.particle.android.sdk.devicesetup.ui
 
 import android.Manifest
 import android.content.Context
-import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 
 import com.squareup.phrase.Phrase
 
@@ -27,7 +24,6 @@ import io.particle.android.sdk.devicesetup.R
 import io.particle.android.sdk.di.ApModule
 import io.particle.android.sdk.ui.BaseActivity
 import io.particle.android.sdk.ui.BaseFragment
-import io.particle.android.sdk.utils.Async
 import io.particle.android.sdk.utils.SEGAnalytics
 import io.particle.android.sdk.utils.SoftAPConfigRemover
 import io.particle.android.sdk.utils.TLog
@@ -70,15 +66,15 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
                     startActivity(WebViewActivity.buildIntent(v.context, uri))
                 }
 
-        view.get_ready_text.setText(Phrase.from(activity!!, R.string.get_ready_text)
+        view.get_ready_text.text = Phrase.from(activity!!, R.string.get_ready_text)
                 .put("device_name", getString(R.string.device_name))
                 .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
                 .put("setup_button_identifier", getString(R.string.mode_button_name))
-                .format())
+                .format()
 
-        view.get_ready_text_title.setText(Phrase.from(activity!!, R.string.get_ready_title_text)
+        view.get_ready_text_title.text = Phrase.from(activity!!, R.string.get_ready_title_text)
                 .put("device_name", getString(R.string.device_name))
-                .format())
+                .format()
         return view
     }
 
@@ -104,7 +100,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
 
         launch(UI) {
             try {
-                var claimCode = withContext(CommonPool) { generateClaimCode(ctx!!) }
+                val claimCode = withContext(CommonPool) { generateClaimCode(ctx!!) }
 
                 showProgress(false)
                 handleClaimCode(claimCode)
@@ -194,7 +190,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
     }
 
     private fun showProgress(show: Boolean) {
-        ParticleUi.showParticleButtonProgress(activity, R.id.action_im_ready, show)
+        ParticleUi.showParticleButtonProgress(view, R.id.action_im_ready, show)
     }
 
     private fun moveToDeviceDiscovery() {

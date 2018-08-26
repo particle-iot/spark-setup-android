@@ -1,5 +1,6 @@
 package io.particle.android.sdk.utils.ui;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
@@ -10,12 +11,11 @@ public class ParticleUi {
 
     // since it's specific to the SDK UI, this method assumes that the id of the
     // progress spinner in the button layout is "R.id.button_progress_indicator"
-    public static void showParticleButtonProgress(FragmentActivity activity, int buttonId,
+    public static void showParticleButtonProgress(View view, int buttonId,
                                                   final boolean show) {
-        Ui.fadeViewVisibility(activity, R.id.button_progress_indicator, show);
-        Ui.findView(activity, buttonId).setEnabled(!show);
+        Ui.fadeViewVisibility(view, R.id.button_progress_indicator, show);
+        Ui.findView(view, buttonId).setEnabled(!show);
     }
-
 
     public static void enableBrandLogoInverseVisibilityAgainstSoftKeyboard(FragmentActivity activity) {
         SoftKeyboardVisibilityDetectingLinearLayout detectingLayout;
