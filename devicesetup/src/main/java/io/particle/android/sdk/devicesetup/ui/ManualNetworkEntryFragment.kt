@@ -36,7 +36,7 @@ class ManualNetworkEntryFragment : BaseFragment(), LoaderManager.LoaderCallbacks
     private var softApSSID: SSID? = null
     private var wifiSecurityType: Int? = WifiSecurity.WPA2_AES_PSK.asInt()
 
-    fun onSecureCheckedChange(isChecked: Boolean) {
+    private fun onSecureCheckedChange(isChecked: Boolean) {
         wifiSecurityType = if (isChecked) {
             SEGAnalytics.track("Device Setup: Selected secured network")
             WifiSecurity.WPA2_AES_PSK.asInt()
@@ -58,16 +58,20 @@ class ManualNetworkEntryFragment : BaseFragment(), LoaderManager.LoaderCallbacks
         SEGAnalytics.screen("Device Setup: Manual network entry screen")
         softApSSID = arguments!!.getParcelable(EXTRA_SOFT_AP)
 
-        val view = inflater.inflate(R.layout.activity_manual_network_entry, container, true)
-        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(activity)
+        val view = inflater.inflate(R.layout.activity_manual_network_entry, container, false)
+        ParticleUi.enableBrandLogoInverseVisibilityAgainstSoftKeyboard(view)
 
         view.network_requires_password.setOnCheckedChangeListener { _, isChecked ->
             onSecureCheckedChange(isChecked)
         }
+
+        view.action_connect.setOnClickListener { onConnectClicked(it) }
+
+        view.action_cancel.setOnClickListener { onCancelClicked(it) }
         return view
     }
 
-    fun onConnectClicked(view: View) {
+    private fun onConnectClicked(view: View) {
         val ssid = Ui.getText(this, R.id.network_name, true)
         val scan = ScanApCommand.Scan(ssid, wifiSecurityType, 0)
 
@@ -87,8 +91,8 @@ class ManualNetworkEntryFragment : BaseFragment(), LoaderManager.LoaderCallbacks
         }
     }
 
-    fun onCancelClicked(view: View) {
-        //finish();
+    private fun onCancelClicked(view: View) {
+        Navigation.findNavController(view).navigateUp()
     }
 
     // FIXME: loader not currently used, see note in onLoadFinished()

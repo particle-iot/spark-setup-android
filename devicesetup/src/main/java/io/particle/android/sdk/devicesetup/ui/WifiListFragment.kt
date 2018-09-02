@@ -100,9 +100,9 @@ class WifiListFragment<T : WifiNetwork> : ListFragment(), LoaderManager.LoaderCa
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
         super.onListItemClick(l, v, position, id)
 
-        val selectedNetwork = adapter!!.getItem(position)
+        val selectedNetwork = listAdapter!!.getItem(position)
         if (null != client) {
-            client!!.onNetworkSelected(selectedNetwork)
+            client!!.onNetworkSelected(selectedNetwork as T?)
         } else {
             log.e("Client was null")
         }

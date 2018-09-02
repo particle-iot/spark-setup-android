@@ -30,6 +30,7 @@ import io.particle.android.sdk.utils.ui.ParticleUi
 import io.particle.android.sdk.utils.ui.Ui
 import io.particle.android.sdk.utils.ui.WebViewActivity
 import kotlinx.android.synthetic.main.activity_success.*
+import kotlinx.android.synthetic.main.activity_success.view.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -59,7 +60,7 @@ class SuccessFragment : BaseFragment() {
         if (!isSuccess) {
             val image = Ui.findView<ImageView>(this, R.id.result_image)
             image.setImageResource(R.drawable.fail)
-            device_name.visibility = View.GONE
+            view.device_name.visibility = View.GONE
             val analyticProperties = Properties()
 
             when (resultCode) {

@@ -47,13 +47,11 @@
             android:id="@+id/action_connect"
             style="@style/SparkButton"
             android:layout_marginBottom="4dp"
-            android:onClick="onConnectClicked"
             android:text="@string/connect"/>
 
         <Button
             android:id="@+id/action_cancel"
             style="@style/SparkButton"
-            android:onClick="onCancelClicked"
             android:text="@string/cancel"/>
 
 

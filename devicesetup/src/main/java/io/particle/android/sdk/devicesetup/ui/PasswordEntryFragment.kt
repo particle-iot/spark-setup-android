@@ -62,7 +62,7 @@ class PasswordEntryFragment : BaseFragment() {
                 arguments!!.getString(EXTRA_NETWORK_TO_CONFIGURE),
                 ScanApCommand.Scan::class.java)
         softApSSID = arguments!!.getParcelable(EXTRA_SOFT_AP_SSID)
-        password.requestFocus()
+        view.password.requestFocus()
 
         view.action_cancel.setOnClickListener {
             onCancelClicked(it)

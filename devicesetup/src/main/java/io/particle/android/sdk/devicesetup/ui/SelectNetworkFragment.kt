@@ -58,10 +58,14 @@ class SelectNetworkFragment : RequiresWifiScansFragment(), WifiListFragment.Clie
             wifiListFragment!!.scanAsync()
         }
 
+        view.action_manual_network_entry.setOnClickListener {
+            onManualNetworkEntryClicked(it)
+        }
+
         return view
     }
 
-    fun onManualNetworkEntryClicked(view: View) {
+    private fun onManualNetworkEntryClicked(view: View) {
         val bundle = Bundle()
         bundle.putParcelable(ManualNetworkEntryFragment.EXTRA_SOFT_AP, softApSSID)
         Navigation.findNavController(getView()!!).navigate(R.id.action_selectNetworkFragment_to_manualNetworkEntryFragment, bundle)

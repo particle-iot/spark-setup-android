@@ -38,7 +38,6 @@
             android:id="@+id/action_manual_network_entry"
             style="@style/SparkButton"
             android:layout_marginTop="16dp"
-            android:onClick="onManualNetworkEntryClicked"
             android:text="@string/manual_network_name"
             android:textSize="14sp"/>
 
