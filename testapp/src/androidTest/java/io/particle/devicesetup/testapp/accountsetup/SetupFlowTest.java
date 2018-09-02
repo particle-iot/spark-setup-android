@@ -97,7 +97,7 @@ public class SetupFlowTest {
         //launch test activity
         activityRule.launchActivity(null);
         //launch setup process
-        ParticleDeviceSetupLibrary.startDeviceSetup(activityRule.getActivity(), MainActivity.class);
+        ParticleDeviceSetupLibrary.startDeviceSetup(activityRule.getActivity());
         try {
             setupFlow(ssid, wifiSSID);
         } catch (NoMatchingViewException e) {

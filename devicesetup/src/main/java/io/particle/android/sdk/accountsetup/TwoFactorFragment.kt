@@ -7,9 +7,6 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-import javax.inject.Inject
-
 import androidx.navigation.Navigation
 import io.particle.android.sdk.cloud.ParticleCloud
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException
@@ -27,6 +24,7 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
+import javax.inject.Inject
 
 class TwoFactorFragment : BaseFragment() {
 

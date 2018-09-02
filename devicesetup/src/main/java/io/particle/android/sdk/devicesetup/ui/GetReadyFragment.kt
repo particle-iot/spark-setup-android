@@ -8,14 +8,8 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-import com.squareup.phrase.Phrase
-
-import java.util.Arrays
-
-import javax.inject.Inject
-
 import androidx.navigation.Navigation
+import com.squareup.phrase.Phrase
 import io.particle.android.sdk.cloud.ParticleCloud
 import io.particle.android.sdk.cloud.Responses
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException
@@ -24,6 +18,7 @@ import io.particle.android.sdk.devicesetup.R
 import io.particle.android.sdk.di.ApModule
 import io.particle.android.sdk.ui.BaseActivity
 import io.particle.android.sdk.ui.BaseFragment
+import io.particle.android.sdk.utils.Py.truthy
 import io.particle.android.sdk.utils.SEGAnalytics
 import io.particle.android.sdk.utils.SoftAPConfigRemover
 import io.particle.android.sdk.utils.TLog
@@ -31,11 +26,13 @@ import io.particle.android.sdk.utils.ui.ParticleUi
 import io.particle.android.sdk.utils.ui.Toaster
 import io.particle.android.sdk.utils.ui.Ui
 import io.particle.android.sdk.utils.ui.WebViewActivity
-
-import io.particle.android.sdk.utils.Py.truthy
 import kotlinx.android.synthetic.main.activity_get_ready.view.*
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
+import java.util.*
+import javax.inject.Inject
 
 class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
 
@@ -56,9 +53,9 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
         softAPConfigRemover.removeAllSoftApConfigs()
         softAPConfigRemover.reenableWifiNetworks()
 
-        PermissionsFragment.ensureAttached<GetReadyFragment>(this)
+        PermissionsFragment.ensureAttached(this)
 
-        view.action_im_ready.setOnClickListener { this.onReadyButtonClicked(it) }
+        view.action_im_ready.setOnClickListener { this.onReadyButtonClicked() }
 
         Ui.setTextFromHtml(view, R.id.action_troubleshooting, R.string.troubleshooting)
                 .setOnClickListener { v ->
@@ -88,7 +85,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
         }
     }
 
-    private fun onReadyButtonClicked(v: View) {
+    private fun onReadyButtonClicked() {
         DeviceSetupState.reset()
 
         if (BaseActivity.setupOnly) {
@@ -197,7 +194,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
         if (PermissionsFragment.hasPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             Navigation.findNavController(view!!).navigate(R.id.action_getReadyFragment_to_discoverDeviceFragment)
         } else {
-            PermissionsFragment.get<GetReadyFragment>(this).ensurePermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+            PermissionsFragment[this]?.ensurePermission(Manifest.permission.ACCESS_COARSE_LOCATION)
         }
     }
 
@@ -212,7 +209,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        PermissionsFragment.get<GetReadyFragment>(this).onRequestPermissionsResult(requestCode, permissions, grantResults)
+        PermissionsFragment[this]?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     companion object {

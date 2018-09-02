@@ -1,6 +1,5 @@
 package io.particle.android.sdk.utils.ui;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 

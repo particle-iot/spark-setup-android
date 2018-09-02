@@ -54,7 +54,7 @@ public class WaitForDisconnectionFromDeviceStep extends SetupStep {
     }
 
     private void reenablePreviousWifi() {
-        SSID prevSSID = DeviceSetupState.previouslyConnectedWifiNetwork;
+        SSID prevSSID = DeviceSetupState.INSTANCE.getPreviouslyConnectedWifiNetwork();
         wifiFacade.reenableNetwork(prevSSID);
         wifiFacade.reassociate();
     }

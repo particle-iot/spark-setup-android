@@ -8,12 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-
-import com.squareup.phrase.Phrase
-
-import javax.inject.Inject
-
 import androidx.navigation.Navigation
+import com.squareup.phrase.Phrase
 import io.particle.android.sdk.cloud.ParticleCloud
 import io.particle.android.sdk.cloud.exceptions.ParticleCloudException
 import io.particle.android.sdk.cloud.exceptions.ParticleLoginException
@@ -21,18 +17,18 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary
 import io.particle.android.sdk.devicesetup.R
 import io.particle.android.sdk.di.ApModule
 import io.particle.android.sdk.ui.BaseFragment
+import io.particle.android.sdk.utils.Py.truthy
 import io.particle.android.sdk.utils.SEGAnalytics
 import io.particle.android.sdk.utils.TLog
 import io.particle.android.sdk.utils.ui.ParticleUi
 import io.particle.android.sdk.utils.ui.Ui
-
-import io.particle.android.sdk.utils.Py.truthy
 import kotlinx.android.synthetic.main.particle_activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
+import javax.inject.Inject
 
 /**
  * Created by Julius.
@@ -68,7 +64,6 @@ class LoginFragment : BaseFragment() {
                         .put("brand_name", getString(R.string.brand_name))
                         .format())
 
-        Ui.findView<View>(view, R.id.forgot_password)
         Ui.setTextFromHtml(view, R.id.user_has_no_account, R.string.msg_no_account)
                 .setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_loginFragment_to_createAccountFragment))
 
@@ -105,7 +100,7 @@ class LoginFragment : BaseFragment() {
         password.addTextChangedListener(formWatcher)
     }
 
-    fun onPasswordResetClicked(view: View) {
+    private fun onPasswordResetClicked(view: View) {
         val bundle = Bundle()
         val email = email!!.text.toString()
 
@@ -115,7 +110,7 @@ class LoginFragment : BaseFragment() {
         Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_passwordResetFragment, bundle)
     }
 
-    fun onPasswordEditorAction(id: Int): Boolean {
+    private fun onPasswordEditorAction(id: Int): Boolean {
         if (id == R.id.action_log_in || id == EditorInfo.IME_NULL) {
             attemptLogin()
             return true
@@ -128,7 +123,7 @@ class LoginFragment : BaseFragment() {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    fun attemptLogin() {
+    private fun attemptLogin() {
         if (loginJob != null) {
             log.wtf("Login being attempted again even though the button isn't enabled?!")
             return

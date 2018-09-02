@@ -34,7 +34,7 @@ public class ConfigureAPStep extends SetupStep {
     }
 
     protected void onRunStep() throws SetupStepException {
-        WifiSecurity wifiSecurity = WifiSecurity.fromInteger(networkToConnectTo.wifiSecurityType);
+        WifiSecurity wifiSecurity = WifiSecurity.Companion.fromInteger(networkToConnectTo.wifiSecurityType);
         ConfigureApCommand.Builder builder = ConfigureApCommand.newBuilder()
                 .setSsid(networkToConnectTo.ssid)
                 .setSecurityType(wifiSecurity)
