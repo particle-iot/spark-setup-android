@@ -4,7 +4,6 @@
               android:layout_height="match_parent"
               android:clipChildren="false"
               android:orientation="vertical"
-              tools:context="io.particle.android.sdk.devicesetup.ui.ConnectingActivity"
               tools:ignore="RtlHardcoded">
 
     <include layout="@layout/brand_image_header"/>

@@ -1,10 +1,8 @@
 package io.particle.android.sdk.devicesetup.model
 
 import android.net.wifi.ScanResult
-
-import io.particle.android.sdk.utils.SSID
-
 import io.particle.android.sdk.utils.Py.set
+import io.particle.android.sdk.utils.SSID
 
 
 // FIXME: this naming... is not ideal.

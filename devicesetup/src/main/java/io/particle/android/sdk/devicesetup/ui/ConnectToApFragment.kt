@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.wifi.WifiConfiguration
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
 import io.particle.android.sdk.devicesetup.ApConnector
 import io.particle.android.sdk.devicesetup.ApConnector.Client
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary
@@ -24,7 +23,7 @@ class ConnectToApFragment : WorkerFragment() {
     lateinit var apConnector: ApConnector
     @Inject
     lateinit var wifiFacade: WifiFacade
-    private var apConnectorClient: Client? = null
+    private lateinit var apConnectorClient: Client
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -57,24 +56,10 @@ class ConnectToApFragment : WorkerFragment() {
     }
 
     companion object {
-        private val TAG = WorkerFragment.buildFragmentTag(ConnectToApFragment::class.java)!!
-
-
-        operator fun get(activity: FragmentActivity): ConnectToApFragment? {
-            return Ui.findFrag(activity, TAG)
-        }
+        private val TAG = WorkerFragment.buildFragmentTag(ConnectToApFragment::class.java)
 
         operator fun get(fragment: Fragment): ConnectToApFragment? {
             return Ui.findFrag(fragment, TAG)
-        }
-
-        fun ensureAttached(activity: FragmentActivity): ConnectToApFragment {
-            var frag: ConnectToApFragment? = get(activity)
-            if (frag == null) {
-                frag = ConnectToApFragment()
-                WorkerFragment.addFragment(activity, frag, TAG)
-            }
-            return frag
         }
 
         fun ensureAttached(fragment: Fragment): ConnectToApFragment {

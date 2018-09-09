@@ -90,7 +90,7 @@ class TwoFactorFragment : BaseFragment() {
     private fun login(email: String?, password: String?, mfaToken: String?, otp: String) {
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
-        ParticleUi.showParticleButtonProgress(view, R.id.action_verify, true)
+        ParticleUi.showParticleButtonProgress(view!!, R.id.action_verify, true)
 
         loginJob = launch(UI) {
             try {
@@ -108,7 +108,7 @@ class TwoFactorFragment : BaseFragment() {
                 SEGAnalytics.track("Auth: Two Factor failure")
 
                 if (activity?.isFinishing == false) {
-                    ParticleUi.showParticleButtonProgress(view, R.id.action_verify, false)
+                    ParticleUi.showParticleButtonProgress(view!!, R.id.action_verify, false)
                     verificationCode.error = error.bestMessage
                     verificationCode.requestFocus()
                 }

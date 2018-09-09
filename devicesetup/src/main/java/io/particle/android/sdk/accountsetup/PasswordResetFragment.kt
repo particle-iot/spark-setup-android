@@ -75,7 +75,7 @@ class PasswordResetFragment : BaseFragment() {
     }
 
     private fun performReset() {
-        ParticleUi.showParticleButtonProgress(view, R.id.action_reset_password, true)
+        ParticleUi.showParticleButtonProgress(view!!, R.id.action_reset_password, true)
 
         launch(UI) {
             try {
@@ -90,7 +90,7 @@ class PasswordResetFragment : BaseFragment() {
                 log.d("onFailed(): " + ex.message)
                 onResetAttemptFinished("Could not find a user with supplied email address, please " + " check the address supplied or create a new user via the signup screen")
             }
-            ParticleUi.showParticleButtonProgress(view, R.id.action_reset_password, false)
+            ParticleUi.showParticleButtonProgress(view!!, R.id.action_reset_password, false)
         }
     }
 

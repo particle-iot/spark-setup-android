@@ -36,7 +36,7 @@ open class DiscoverProcessWorker {
         @Throws(Crypto.CryptoException::class, IOException::class)
         get() {
             val response = client!!.sendCommand(PublicKeyCommand(), PublicKeyCommand.Response::class.java)
-            return Crypto.readPublicKeyFromHexEncodedDerString(response.publicKey)
+            return Crypto.readPublicKeyFromHexEncodedDerString(response!!.publicKey)
         }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -130,13 +130,12 @@ open class DiscoverProcessWorker {
         try {
             log.d("Setting claim code using code: " + DeviceSetupState.claimCode)
 
-            val claimCodeNoBackslashes = ParticleDeviceSetupInternalStringUtils.remove(
-                    DeviceSetupState.claimCode, "\\")
+            val claimCodeNoBackslashes = ParticleDeviceSetupInternalStringUtils.remove(DeviceSetupState.claimCode, "\\")
             val response = client!!.sendCommand(SetCommand("cc", claimCodeNoBackslashes), SetCommand.Response::class.java)
 
-            if (truthy(response.responseCode)) {
+            if (truthy(response?.responseCode)) {
                 // a non-zero response indicates an error, ala UNIX return codes
-                throw SetupStepException("Received non-zero return code from set command: " + response.responseCode)
+                throw SetupStepException("Received non-zero return code from set command: " + response?.responseCode)
             }
 
             log.d("Successfully set claim code")

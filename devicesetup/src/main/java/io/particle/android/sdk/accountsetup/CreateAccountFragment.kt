@@ -21,7 +21,6 @@ import io.particle.android.sdk.cloud.exceptions.ParticleCloudException
 import io.particle.android.sdk.cloud.models.AccountInfo
 import io.particle.android.sdk.cloud.models.SignUpInfo
 import io.particle.android.sdk.devicesetup.R
-import io.particle.android.sdk.ui.BaseActivity
 import io.particle.android.sdk.ui.BaseFragment
 import io.particle.android.sdk.utils.Async
 import io.particle.android.sdk.utils.Py.truthy
@@ -201,7 +200,7 @@ class CreateAccountFragment : BaseFragment() {
         val signUpInfo = SignUpInfo(emailValue, password, accountInfo)
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
-        ParticleUi.showParticleButtonProgress(view, R.id.action_create_account, true)
+        ParticleUi.showParticleButtonProgress(view!!, R.id.action_create_account, true)
 
 
         createAccountJob = launch(UI) {
@@ -253,7 +252,7 @@ class CreateAccountFragment : BaseFragment() {
     private fun signUpTaskFailure(error: ParticleCloudException) {
         // FIXME: look at old Spark app for what we do here UI & workflow-wise
         log.d("onFailed()")
-        ParticleUi.showParticleButtonProgress(view, R.id.action_create_account, false)
+        ParticleUi.showParticleButtonProgress(view!!, R.id.action_create_account, false)
 
         var msg = getString(R.string.create_account_unknown_error)
         if (error.kind == ParticleCloudException.Kind.NETWORK) {
@@ -272,7 +271,7 @@ class CreateAccountFragment : BaseFragment() {
             msg = getString(R.string.create_account_account_already_exists_for_email_address)
         }
 
-        Toaster.l(activity, msg, Gravity.CENTER_VERTICAL)
+        Toaster.l(activity!!, msg, Gravity.CENTER_VERTICAL)
         email.requestFocus()
     }
 
@@ -293,7 +292,7 @@ class CreateAccountFragment : BaseFragment() {
     }
 
     private fun onLoginSuccess() {
-        if (truthy(ParticleCloudSDK.getCloud().accessToken) && !BaseActivity.setupOnly) {
+        if (truthy(ParticleCloudSDK.getCloud().accessToken) && !BaseFragment.setupOnly) {
             Navigation.findNavController(view!!).navigate(R.id.action_createAccountFragment_to_loginFragment)
         }
     }
@@ -317,7 +316,7 @@ class CreateAccountFragment : BaseFragment() {
 
             override fun onFailure(error: ParticleCloudException) {
                 log.w("onFailed(): " + error.message)
-                ParticleUi.showParticleButtonProgress(view, R.id.action_create_account, false)
+                ParticleUi.showParticleButtonProgress(view!!, R.id.action_create_account, false)
                 password.error = error.bestMessage
                 password.requestFocus()
             }

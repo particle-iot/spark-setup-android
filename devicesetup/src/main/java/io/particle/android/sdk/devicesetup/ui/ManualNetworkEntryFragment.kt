@@ -7,9 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-
-import javax.inject.Inject
-
 import androidx.navigation.Navigation
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary
 import io.particle.android.sdk.devicesetup.R
@@ -26,6 +23,7 @@ import io.particle.android.sdk.utils.WifiFacade
 import io.particle.android.sdk.utils.ui.ParticleUi
 import io.particle.android.sdk.utils.ui.Ui
 import kotlinx.android.synthetic.main.activity_manual_network_entry.view.*
+import javax.inject.Inject
 
 class ManualNetworkEntryFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Set<ScanAPCommandResult>> {
 

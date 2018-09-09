@@ -6,9 +6,6 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-import javax.inject.Inject
-
 import androidx.navigation.Navigation
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary
 import io.particle.android.sdk.devicesetup.R
@@ -23,6 +20,7 @@ import io.particle.android.sdk.utils.WifiFacade
 import io.particle.android.sdk.utils.ui.ParticleUi
 import io.particle.android.sdk.utils.ui.Ui
 import kotlinx.android.synthetic.main.activity_select_network.view.*
+import javax.inject.Inject
 
 class SelectNetworkFragment : RequiresWifiScansFragment(), WifiListFragment.Client<ScanAPCommandResult> {
     override val listEmptyText: String
@@ -108,7 +106,7 @@ class SelectNetworkFragment : RequiresWifiScansFragment(), WifiListFragment.Clie
     }
 
     override fun onLoadFinished() {
-        ParticleUi.showParticleButtonProgress(view, R.id.action_rescan, false)
+        ParticleUi.showParticleButtonProgress(view!!, R.id.action_rescan, false)
     }
 
     companion object {

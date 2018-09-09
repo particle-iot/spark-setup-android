@@ -2,6 +2,7 @@ package io.particle.android.sdk.devicesetup.ui
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
@@ -10,14 +11,10 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
-
-import java.util.Arrays
-
 import io.particle.android.sdk.devicesetup.R
 import io.particle.android.sdk.utils.WorkerFragment
 import io.particle.android.sdk.utils.ui.Ui
-
-import android.content.pm.PackageManager.PERMISSION_GRANTED
+import java.util.*
 
 
 class PermissionsFragment : Fragment(), OnRequestPermissionsResultCallback {
@@ -88,7 +85,7 @@ class PermissionsFragment : Fragment(), OnRequestPermissionsResultCallback {
     }
 
     companion object {
-        val TAG = WorkerFragment.buildFragmentTag(PermissionsFragment::class.java)!!
+        val TAG = WorkerFragment.buildFragmentTag(PermissionsFragment::class.java)
 
         fun <T> ensureAttached(callbacksFragment: T): PermissionsFragment where T : Fragment, T : PermissionsFragment.Client {
             var frag: PermissionsFragment? = get(callbacksFragment)

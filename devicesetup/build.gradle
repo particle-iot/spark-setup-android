@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 // This is the library version used when deploying the artifact
 version = '0.6.0'
@@ -90,13 +90,11 @@ dependencies {
     api 'com.madgag.spongycastle:core:1.58.0.0'
 
     api 'com.google.dagger:dagger:2.15'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
-    api 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    kapt 'com.google.dagger:dagger-compiler:2.15'
 
     api 'com.android.support:appcompat-v7:27.1.1'
     api 'com.android.support:recyclerview-v7:27.1.1'
-    api 'com.android.support.constraint:constraint-layout:1.1.2'
+    api 'com.android.support.constraint:constraint-layout:1.1.3'
 
     api "android.arch.navigation:navigation-fragment:1.0.0-alpha05"
     api "android.arch.navigation:navigation-ui:1.0.0-alpha05"

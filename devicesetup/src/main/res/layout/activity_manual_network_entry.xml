@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:orientation="vertical"
-    android:paddingBottom="24dp"
-    tools:context="io.particle.android.sdk.devicesetup.ui.ManualNetworkEntryActivity">
+    android:paddingBottom="24dp">
 
     <include layout="@layout/brand_image_header"/>
 

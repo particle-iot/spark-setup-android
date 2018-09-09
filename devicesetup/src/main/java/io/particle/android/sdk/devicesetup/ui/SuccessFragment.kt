@@ -21,7 +21,6 @@ import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary
 import io.particle.android.sdk.devicesetup.R
 import io.particle.android.sdk.devicesetup.SetupResult
 import io.particle.android.sdk.di.ApModule
-import io.particle.android.sdk.ui.BaseActivity
 import io.particle.android.sdk.ui.BaseFragment
 import io.particle.android.sdk.utils.Async
 import io.particle.android.sdk.utils.Py.list
@@ -79,9 +78,9 @@ class SuccessFragment : BaseFragment() {
         }
 
         val resultStrings = buildUiStringPair(resultCode)
-        Ui.setText(this, R.id.result_summary, resultStrings.first)
-        Ui.setText(this, R.id.result_details, resultStrings.second)
-        Ui.setTextFromHtml(activity, R.id.action_troubleshooting, R.string.troubleshooting)
+        Ui.setText(view, R.id.result_summary, resultStrings.first)
+        Ui.setText(view, R.id.result_details, resultStrings.second)
+        Ui.setTextFromHtml(view, R.id.action_troubleshooting, R.string.troubleshooting)
         return view
     }
 
@@ -90,7 +89,7 @@ class SuccessFragment : BaseFragment() {
 
         action_done.setOnClickListener {
             device_name.error = null
-            if (isSuccess && !BaseActivity.setupOnly) {
+            if (isSuccess && !BaseFragment.setupOnly) {
                 if (device_name.visibility == View.VISIBLE && device_name.text.toString().isEmpty()) {
                     device_name.error = getString(R.string.error_field_required)
                 } else {
@@ -108,7 +107,7 @@ class SuccessFragment : BaseFragment() {
     }
 
     private fun finishSetup(context: Context, deviceName: String, isSuccess: Boolean) {
-        ParticleUi.showParticleButtonProgress(view, R.id.action_done, true)
+        ParticleUi.showParticleButtonProgress(view!!, R.id.action_done, true)
 
         launch(UI) {
             try {
@@ -119,7 +118,7 @@ class SuccessFragment : BaseFragment() {
 
                 leaveActivity(context, isSuccess)
             } catch (ex: ParticleCloudException) {
-                ParticleUi.showParticleButtonProgress(view, R.id.action_done, false)
+                ParticleUi.showParticleButtonProgress(view!!, R.id.action_done, false)
                 device_name.error = getString(R.string.device_naming_failure)
             }
 
@@ -190,13 +189,6 @@ class SuccessFragment : BaseFragment() {
         const val RESULT_FAILURE_CONFIGURE = 4
         const val RESULT_FAILURE_NO_DISCONNECT = 5
         const val RESULT_FAILURE_LOST_CONNECTION_TO_DEVICE = 6
-
-
-        fun buildIntent(ctx: Context, resultCode: Int, deviceId: String): Intent {
-            return Intent(ctx, SuccessFragment::class.java)
-                    .putExtra(EXTRA_RESULT_CODE, resultCode)
-                    .putExtra(EXTRA_DEVICE_ID, deviceId)
-        }
 
         private val resultCodesToStringIds: SparseArray<Pair<Int, Int>> = SparseArray(6)
 

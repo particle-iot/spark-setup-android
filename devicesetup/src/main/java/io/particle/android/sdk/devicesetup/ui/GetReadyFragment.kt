@@ -16,7 +16,6 @@ import io.particle.android.sdk.cloud.exceptions.ParticleCloudException
 import io.particle.android.sdk.devicesetup.ParticleDeviceSetupLibrary
 import io.particle.android.sdk.devicesetup.R
 import io.particle.android.sdk.di.ApModule
-import io.particle.android.sdk.ui.BaseActivity
 import io.particle.android.sdk.ui.BaseFragment
 import io.particle.android.sdk.utils.Py.truthy
 import io.particle.android.sdk.utils.SEGAnalytics
@@ -80,7 +79,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
         softAPConfigRemover.removeAllSoftApConfigs()
         softAPConfigRemover.reenableWifiNetworks()
 
-        if (sparkCloud.accessToken == null && !BaseActivity.setupOnly) {
+        if (sparkCloud.accessToken == null && !BaseFragment.setupOnly) {
             view?.post { this.startLoginActivity() }
         }
     }
@@ -88,7 +87,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
     private fun onReadyButtonClicked() {
         DeviceSetupState.reset()
 
-        if (BaseActivity.setupOnly) {
+        if (BaseFragment.setupOnly) {
             moveToDeviceDiscovery()
             return
         }
@@ -187,7 +186,7 @@ class GetReadyFragment : BaseFragment(), PermissionsFragment.Client {
     }
 
     private fun showProgress(show: Boolean) {
-        ParticleUi.showParticleButtonProgress(view, R.id.action_im_ready, show)
+        ParticleUi.showParticleButtonProgress(view!!, R.id.action_im_ready, show)
     }
 
     private fun moveToDeviceDiscovery() {

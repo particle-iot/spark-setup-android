@@ -16,8 +16,8 @@ public class EspressoDaggerMockRule extends DaggerMockRule<ApplicationComponent>
     public EspressoDaggerMockRule() {
         super(ApplicationComponent.class, new ApplicationModule(getApp()));
         set(component -> {
-            ParticleDeviceSetupLibrary.init(getApp());
-            ParticleDeviceSetupLibrary.getInstance().setComponent(component);
+            ParticleDeviceSetupLibrary.Companion.init(getApp());
+            ParticleDeviceSetupLibrary.Companion.getInstance().setComponent(component);
         });
     }
 

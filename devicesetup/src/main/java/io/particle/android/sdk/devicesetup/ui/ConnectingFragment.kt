@@ -18,7 +18,6 @@ import io.particle.android.sdk.devicesetup.setupsteps.SetupStep
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepApReconnector
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepsFactory
 import io.particle.android.sdk.di.ApModule
-import io.particle.android.sdk.ui.BaseActivity
 import io.particle.android.sdk.ui.BaseFragment
 import io.particle.android.sdk.utils.*
 import io.particle.android.sdk.utils.Py.list
@@ -110,19 +109,17 @@ class ConnectingFragment : BaseFragment() {
     }
 
     private fun buildSteps(): List<SetupStep> {
-        val commandClient = commandClientFactory.newClientUsingDefaultsForDevices(
-                wifiFacade, deviceSoftApSsid)
-        val reconnector = SetupStepApReconnector(
-                wifiFacade, apConnector, Handler(), deviceSoftApSsid)
+        val commandClient = commandClientFactory.newClientUsingDefaultsForDevices(wifiFacade, deviceSoftApSsid)
+        val reconnector = SetupStepApReconnector(wifiFacade, apConnector, Handler(), deviceSoftApSsid!!)
 
         val configureAPStep = setupStepsFactory.newConfigureApStep(commandClient,
-                reconnector, networkToConnectTo, networkSecretPlaintext, publicKey)
+                reconnector, networkToConnectTo!!, networkSecretPlaintext!!, publicKey!!)
 
         val connectDeviceToNetworkStep = setupStepsFactory
                 .newConnectDeviceToNetworkStep(commandClient, reconnector)
 
         val waitForDisconnectionFromDeviceStep = setupStepsFactory
-                .newWaitForDisconnectionFromDeviceStep(deviceSoftApSsid, wifiFacade)
+                .newWaitForDisconnectionFromDeviceStep(deviceSoftApSsid!!, wifiFacade)
 
         val ensureSoftApNotVisible = setupStepsFactory
                 .newEnsureSoftApNotVisible(deviceSoftApSsid, wifiFacade)
@@ -131,7 +128,7 @@ class ConnectingFragment : BaseFragment() {
                 .newWaitForCloudConnectivityStep(context!!.applicationContext)
 
         val checkIfDeviceClaimedStep = setupStepsFactory
-                .newCheckIfDeviceClaimedStep(sparkCloud, DeviceSetupState.deviceToBeSetUpId)
+                .newCheckIfDeviceClaimedStep(sparkCloud, DeviceSetupState.deviceToBeSetUpId!!)
 
         val steps = list(
                 configureAPStep,
@@ -139,7 +136,7 @@ class ConnectingFragment : BaseFragment() {
                 waitForDisconnectionFromDeviceStep,
                 ensureSoftApNotVisible,
                 waitForLocalCloudConnectivityStep)
-        if (!BaseActivity.setupOnly) {
+        if (!BaseFragment.setupOnly) {
             steps.add(checkIfDeviceClaimedStep)
         }
         return steps

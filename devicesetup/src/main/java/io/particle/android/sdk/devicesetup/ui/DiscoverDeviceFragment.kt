@@ -26,7 +26,7 @@ import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException
 import io.particle.android.sdk.di.ApModule
-import io.particle.android.sdk.ui.BaseActivity
+import io.particle.android.sdk.ui.BaseFragment
 import io.particle.android.sdk.utils.*
 import io.particle.android.sdk.utils.Py.truthy
 import io.particle.android.sdk.utils.ui.Ui
@@ -118,7 +118,7 @@ class DiscoverDeviceFragment : RequiresWifiScansFragment(), WifiListFragment.Cli
             )
         }
 
-        view.action_log_out.visibility = if (BaseActivity.setupOnly) View.GONE else View.VISIBLE
+        view.action_log_out.visibility = if (BaseFragment.setupOnly) View.GONE else View.VISIBLE
         return view
     }
 
@@ -222,7 +222,7 @@ class DiscoverDeviceFragment : RequiresWifiScansFragment(), WifiListFragment.Cli
     }
 
     override fun createLoader(id: Int, args: Bundle?): Loader<Set<ScanResultNetwork>> {
-        return WifiScanResultLoader(context, wifiFacade)
+        return WifiScanResultLoader(context!!, wifiFacade)
     }
 
     override fun onLoadFinished() {
@@ -303,7 +303,7 @@ class DiscoverDeviceFragment : RequiresWifiScansFragment(), WifiListFragment.Cli
                 }
             }
 
-            if (error == null || BaseActivity.setupOnly && error is DiscoverDeviceFragment.DeviceAlreadyClaimed) {
+            if (error == null || BaseFragment.setupOnly && error is DiscoverDeviceFragment.DeviceAlreadyClaimed) {
                 // no exceptions thrown, huzzah
                 hideProgressDialog()
 

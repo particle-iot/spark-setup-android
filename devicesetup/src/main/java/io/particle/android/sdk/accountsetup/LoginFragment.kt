@@ -175,7 +175,7 @@ class LoginFragment : BaseFragment() {
     private fun login(email: String, passwordRaw: String) {
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
-        ParticleUi.showParticleButtonProgress(view, R.id.action_log_in, true)
+        ParticleUi.showParticleButtonProgress(view!!, R.id.action_log_in, true)
 
         loginJob = launch(UI) {
             try {
@@ -189,7 +189,7 @@ class LoginFragment : BaseFragment() {
                     Navigation.findNavController(view!!).navigateUp()
                 }
             } catch (error: ParticleCloudException) {
-                ParticleUi.showParticleButtonProgress(view, R.id.action_log_in, false)
+                ParticleUi.showParticleButtonProgress(view!!, R.id.action_log_in, false)
                 val loginException = error as ParticleLoginException
 
                 if (loginException.mfaToken != null) {

@@ -16,9 +16,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ParticleDeviceSetupLibrary.init(this.getApplicationContext());
+        ParticleDeviceSetupLibrary.Companion.init(this.getApplicationContext());
 
-        Ui.findView(this, R.id.start_setup_button).setOnClickListener(view -> invokeDeviceSetup());
+        Ui.INSTANCE.findView(this, R.id.start_setup_button).setOnClickListener(view -> invokeDeviceSetup());
     }
 
     @Override
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
             String setupLaunchTime = data.getStringExtra(EXTRA_SETUP_LAUNCHED_TIME);
 
             if (setupLaunchTime != null) {
-                TextView label = Ui.findView(this, R.id.textView);
+                TextView label = Ui.INSTANCE.findView(this, R.id.textView);
 
                 label.setText(String.format(getString(R.string.welcome_back), setupLaunchTime));
             }
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void invokeDeviceSetup() {
-        ParticleDeviceSetupLibrary.startDeviceSetup(this, SETUP_REQUEST);
+        ParticleDeviceSetupLibrary.Companion.startDeviceSetup(this, SETUP_REQUEST);
     }
 
 }

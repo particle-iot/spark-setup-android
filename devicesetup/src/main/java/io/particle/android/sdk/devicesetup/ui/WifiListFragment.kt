@@ -13,16 +13,14 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ListView
-
-import java.util.ArrayList
-
 import io.particle.android.sdk.devicesetup.R
 import io.particle.android.sdk.devicesetup.model.WifiNetwork
 import io.particle.android.sdk.utils.EZ
+import io.particle.android.sdk.utils.Py.set
 import io.particle.android.sdk.utils.TLog
 import io.particle.android.sdk.utils.ui.Ui
-
-import io.particle.android.sdk.utils.Py.set
+import java.util.ArrayList
+import kotlin.Comparator
 
 
 class WifiListFragment<T : WifiNetwork> : ListFragment(), LoaderManager.LoaderCallbacks<Set<T>> {
