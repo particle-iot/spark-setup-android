@@ -1,3 +1,7 @@
+0.6.1
+=====
+* Fix to accommodate Android 9 behavior change re: WiFi networks
+
 0.6.0
 =====
 * New features - Two factor authentication.
