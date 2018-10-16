@@ -3,6 +3,7 @@ package io.particle.android.sdk.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -106,16 +107,17 @@ public class WifiFacade {
 
     @Nullable
     @RequiresApi(api = VERSION_CODES.LOLLIPOP)
-    public Network getNetworkForSSID(SSID ssid) {
+    public Network getNetworkObjectForCurrentWifiConnection() {
         // Android doesn't have any means of directly asking
         // "I want the Network obj for the Wi-Fi network with SSID <foo>".
-        // Instead, you have to infer it based on a field.  Let's hope that
-        // the behavior of "NetworkInfo.getExtraInfo()" doesn't ever change...
+        // Instead, you have to infer it based on the fact that you can only
+        // have one connected Wi-Fi connection at a time.
         return Funcy.findFirstMatch(
                 Arrays.asList(connectivityManager.getAllNetworks()),
                 network -> {
-                    NetworkInfo networkInfo = connectivityManager.getNetworkInfo(network);
-                    return Py.truthy(networkInfo.getExtraInfo()) && SSID.from(networkInfo.getExtraInfo()).equals(ssid);
+                    NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+                    return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
                 }
         );
     }
