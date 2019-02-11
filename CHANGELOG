@@ -1,3 +1,7 @@
+0.6.3
+=====
+* Fix #69 (setting claim codes in "setup only" mode)
+
 0.6.2
 =====
 * Fix Photon setup for recent Samsung devices
