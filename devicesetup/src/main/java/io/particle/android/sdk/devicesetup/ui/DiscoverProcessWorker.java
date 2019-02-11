@@ -18,9 +18,6 @@ import io.particle.android.sdk.utils.TLog;
 
 import static io.particle.android.sdk.utils.Py.truthy;
 
-// FIXME: Even before it's done, I am pretty sure this will need
-// to go through a round of "solve et coagula" before it's
-// really right, at least maintenance-wise.
 // FIXME: this naming is no longer really applicable.
 public class DiscoverProcessWorker {
     private static final TLog log = TLog.get(DiscoverProcessWorker.class);
