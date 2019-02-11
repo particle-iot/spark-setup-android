@@ -11,6 +11,7 @@ import io.particle.android.sdk.devicesetup.commands.DeviceIdCommand;
 import io.particle.android.sdk.devicesetup.commands.PublicKeyCommand;
 import io.particle.android.sdk.devicesetup.commands.SetCommand;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
+import io.particle.android.sdk.ui.BaseActivity;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.ParticleDeviceSetupInternalStringUtils;
 import io.particle.android.sdk.utils.TLog;
@@ -76,6 +77,11 @@ public class DiscoverProcessWorker {
         //      user about taking ownership because device already belongs to this user
         // (3) device claimed `c=1` and NOT in the list from the API => mobile app asks whether
         //      use would like to take ownership
+        if (BaseActivity.setupOnly) {
+            // Claiming should never happen in "setup only" mode, so exit early
+            return;
+        }
+
         if (!gotOwnershipInfo) {
             needToClaimDevice = false;
 
